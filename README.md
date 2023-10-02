@@ -18,7 +18,6 @@
 - EC2
 - S3
 - Redis
-- ECS
 - Docker
 - github action
 - elastic beanstalk
@@ -26,7 +25,7 @@
 ---------------------------
 
 ## ERD Diagram
-<img src="./.jpg">
+<img src="mulmagi_entity.png">
    
 ---------------------------
 
