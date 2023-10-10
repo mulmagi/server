@@ -1,4 +1,4 @@
-# Cloud Projecet - mulmagi/server
+# Cloud Project - mulmagi/server
 
 ---------------------------
 ## Project Introduction
