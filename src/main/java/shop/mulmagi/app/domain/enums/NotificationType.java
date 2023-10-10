@@ -1,12 +1,12 @@
 package shop.mulmagi.app.domain.enums;
 
 public enum NotificationType {
-    PAYMENT("payment"),
-    OVERDUE("overdue"),
-    RENTAL("rental"),
-    RETURN("return"),
-    ETC("etc");
-    // REPORT("report")
+    PAYMENT("결제"),
+    OVERDUE("연체"),
+    RENTAL("대여"),
+    RETURN("반납"),
+    ETC("기타");
+    // REPORT("신고")
 
     private final String notificationType;
 
