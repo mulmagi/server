@@ -1,8 +1,9 @@
 package shop.mulmagi.app.domain.enums;
 
 public enum MessageType {
-	SATISFACTION("만족"),
-	DISSATISFACTION("불만족");
+	TEXT("텍스트"),
+	IMAGE("이미지"),
+	ETC("기타");
 
 	private final String typeName;
 
