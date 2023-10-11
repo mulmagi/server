@@ -13,14 +13,8 @@
 손은 가볍게 옷은 뽀송하게 지켜보아요!🥰
 
 ---------------------------
-## Stack
-- Spring Boot + JPA
-- EC2
-- S3
-- Redis
-- Docker
-- github action
-- elastic beanstalk
+## Architecture Diagram
+<img src="architecture_diagram.png">
 
 ---------------------------
 
@@ -31,6 +25,8 @@
 
 ## Collaboration Tool
 
+<img src="development_environment.png">
+
 - swagger - [Swagger Documentation](http://localhost:8080/swagger-ui/index.html#/)
 
 - Figma - [Figma Design](https://www.figma.com/file/T9cbZSQslVkdP1zqeV0W9k/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?type=design&node-id=1-3&mode=design&t=0s8Hqg2p9CXWEgH2-0)
@@ -40,11 +36,11 @@
 ---------------------------
 
 ## Member
-- 김가영
-- 박재윤
-- 유승근
-- 최유정
-- 최은지
+- [김가영](https://github.com/yonding)
+- [박재윤](https://github.com/qkrwodsbfjq)
+- [유승근](https://github.com/yuseunggeun)
+- [최유정](https://github.com/eqvyoo)
+- [최은지](https://github.com/ejalice)
 
 ---------------------------
 
