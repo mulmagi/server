@@ -12,5 +12,5 @@ public interface UmbrellaStandRepository extends JpaRepository<UmbrellaStand, Lo
 
     @Query("SELECT us.number FROM UmbrellaStand us " +
             "WHERE us.location.id = :locationId AND us.isWrong = :isWrong")
-    List<Integer> findNumbersByLocationAndIsWrong(@Param("locationId") Long locationId, @Param("isWrong") boolean isWrong);List<UmbrellaStand> findAllByLocation(Location location);
+    List<Integer> findNumbersByLocationAndIsWrong(Long locationId, boolean isWrong);
 }
