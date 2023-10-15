@@ -1,14 +1,11 @@
 package shop.mulmagi.app.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Builder
+@Builder @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UmbrellaStand {
@@ -22,7 +19,7 @@ public class UmbrellaStand {
     private Location location;
 
     @Column(unique = true, nullable = false)
-    private Integer qrCode;
+    private Long qrCode;
 
     private Integer number;
 
