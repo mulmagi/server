@@ -1,14 +1,11 @@
 package shop.mulmagi.app.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Builder
+@Builder @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location {
@@ -25,4 +22,5 @@ public class Location {
 
     @Column(columnDefinition = "Integer default 0")
     private Integer wrongCount;
+
 }
