@@ -19,6 +19,7 @@ import shop.mulmagi.app.service.impl.UmbrellaServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.TestRequestDto;
 import shop.mulmagi.app.web.dto.TestResponseDto;
+import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
 
@@ -45,6 +46,25 @@ public class UmbrellaController extends BaseController {
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.LOCATION_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.locationException e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @ApiOperation(value = "대여 페이지 불러오기 API")
+    @ApiResponse(code = 200, message = "대여 페이지 불러오기  성공")
+    @GetMapping("/main/rental")
+    public ResponseEntity rentalPage(@RequestBody UmbrellaRequestDto.RentalPageDto request){
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/main/rental", "대여 페이지 불러오기 API");
+
+            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
+            User user = userRepository.findByPhoneNumber("01029440386");
+
+            UmbrellaResponseDto.RentalPageDto res = umbrellaService.getRentalPage(user, request);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RENTAL_PAGE_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.rentalPageException e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }

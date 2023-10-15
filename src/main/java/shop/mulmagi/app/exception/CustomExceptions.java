@@ -14,4 +14,8 @@ public class CustomExceptions {
         public locationException(String message) { super(message); }
     }
 
+    public static class rentalPageException extends RuntimeException{
+        public rentalPageException(String message) { super(message); }
+    }
+
 }

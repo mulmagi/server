@@ -7,7 +7,7 @@ import shop.mulmagi.app.domain.enums.UserStatus;
 import javax.persistence.*;
 
 @Entity
-@Builder
+@Builder @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {

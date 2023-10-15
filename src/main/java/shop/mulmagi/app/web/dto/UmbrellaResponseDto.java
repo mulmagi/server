@@ -8,7 +8,6 @@ import java.util.List;
 public class UmbrellaResponseDto {
 
     @Builder
-    @Getter
     @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class LocationDto{
@@ -18,4 +17,11 @@ public class UmbrellaResponseDto {
         private List<Integer> umbrellaNumber;
     }
 
+    @Builder @Data
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class RentalPageDto{
+        private String rentalUmbrellaStand;
+        private Integer userPoint;
+    }
 }
