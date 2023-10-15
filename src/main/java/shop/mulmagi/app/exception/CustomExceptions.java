@@ -9,4 +9,9 @@ public class CustomExceptions {
         }
     }
 
+    // Umbrella
+    public static class locationException extends RuntimeException{
+        public locationException(String message) { super(message); }
+    }
+
 }
