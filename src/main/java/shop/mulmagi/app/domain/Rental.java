@@ -1,15 +1,12 @@
 package shop.mulmagi.app.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import shop.mulmagi.app.domain.base.BaseEntity;
 
 import javax.persistence.*;
 
 @Entity
-@Builder
+@Builder @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Rental extends BaseEntity {
@@ -36,15 +33,9 @@ public class Rental extends BaseEntity {
     @Column(columnDefinition = "Boolean default false")
     private Boolean isOverdue;
 
-    @Column(columnDefinition = "Integer default 9000")
-    private Integer depositAmount;
-
-    @Column(columnDefinition = "Integer default 1000")
-    private Integer paymentAmount;
+    @Column(columnDefinition = "Integer default 0")
+    private Integer overDueAmount;
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean isReturn;
-
-    @Column(columnDefinition = "Boolean default false")
-    private Boolean beforeUse;
 }

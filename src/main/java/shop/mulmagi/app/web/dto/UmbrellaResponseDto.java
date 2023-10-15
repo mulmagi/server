@@ -2,6 +2,7 @@ package shop.mulmagi.app.web.dto;
 
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,5 +24,17 @@ public class UmbrellaResponseDto {
     public static class RentalPageDto{
         private String rentalUmbrellaStand;
         private Integer userPoint;
+    }
+
+    @Builder @Data
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class ReturnPageDto{
+        private Long rentalId;
+        private LocalDateTime rentalTime;
+        private LocalDateTime returnTime;
+        private String rentalUmbrellaStand;
+        private String returnUmbrellaStand;
+        private Integer overDueAmount;
     }
 }

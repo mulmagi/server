@@ -50,13 +50,12 @@ public class UmbrellaController extends BaseController {
         }
     }
 
-
     @ApiOperation(value = "대여 페이지 불러오기 API")
     @ApiResponse(code = 200, message = "대여 페이지 불러오기  성공")
-    @GetMapping("/main/rental")
+    @GetMapping("/rental")
     public ResponseEntity rentalPage(@RequestBody UmbrellaRequestDto.RentalPageDto request){
         try {
-            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/main/rental", "대여 페이지 불러오기 API");
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/rental", "대여 페이지 불러오기 API");
 
             //로그인 구현 후 유저 정보 토큰으로 받아올 예정
             User user = userRepository.findByPhoneNumber("01029440386");
@@ -64,6 +63,24 @@ public class UmbrellaController extends BaseController {
             UmbrellaResponseDto.RentalPageDto res = umbrellaService.getRentalPage(user, request);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RENTAL_PAGE_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.rentalPageException e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation(value = "반납 완료 페이지 불러오기 API")
+    @ApiResponse(code = 200, message = "반납 완료 페이지 불러오기  성공")
+    @GetMapping("/return")
+    public ResponseEntity returnPage(@RequestBody UmbrellaRequestDto.ReturnPageDto request){
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/return", "반납 완료 페이지 불러오기 API");
+
+            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
+            User user = userRepository.findByPhoneNumber("01029440386");
+
+            UmbrellaResponseDto.ReturnPageDto res = umbrellaService.getReturnPage(request);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RETURN_PAGE_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.rentalPageException e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
