@@ -47,7 +47,12 @@ public class UmbrellaServiceImpl implements UmbrellaService {
 
         Integer userPoint = user.getPoint();
 
-        return umbrellaConverter.toRentalPage(location, umbrellaStandNumber, userPoint);
+        Boolean isUmbrella = false;
+
+        if (umbrellaStand.getIsUmbrella() && !umbrellaStand.getIsWrong())
+            isUmbrella = true;
+
+        return umbrellaConverter.toRentalPage(location, umbrellaStandNumber, userPoint, isUmbrella);
     }
 
     @Override

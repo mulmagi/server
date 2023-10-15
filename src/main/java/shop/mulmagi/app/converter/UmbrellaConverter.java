@@ -22,8 +22,9 @@ public class UmbrellaConverter {
                 .build();
     }
 
-    public UmbrellaResponseDto.RentalPageDto toRentalPage(Location location, String umbrellaStandNumber, Integer userPoint){
+    public UmbrellaResponseDto.RentalPageDto toRentalPage(Location location, String umbrellaStandNumber, Integer userPoint, Boolean isUmbrella){
         return UmbrellaResponseDto.RentalPageDto.builder()
+                .isUmbrella(isUmbrella)
                 .rentalUmbrellaStand(String.join(" ", location.getName(), umbrellaStandNumber))
                 .userPoint(userPoint)
                 .build();

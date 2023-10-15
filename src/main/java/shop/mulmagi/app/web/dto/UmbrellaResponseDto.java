@@ -22,6 +22,7 @@ public class UmbrellaResponseDto {
     @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class RentalPageDto{
+        private Boolean isUmbrella;
         private String rentalUmbrellaStand;
         private Integer userPoint;
     }
