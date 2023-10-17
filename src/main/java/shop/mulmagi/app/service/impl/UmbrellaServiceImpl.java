@@ -47,12 +47,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
 
         Integer userPoint = user.getPoint();
 
-        Boolean isUmbrella = false;
-
-        if (umbrellaStand.getIsUmbrella() && !umbrellaStand.getIsWrong())
-            isUmbrella = true;
-
-        return umbrellaConverter.toRentalPage(location, umbrellaStandNumber, userPoint, isUmbrella);
+        return umbrellaConverter.toRentalPage(location, umbrellaStandNumber, userPoint, umbrellaStand);
     }
 
     @Override
@@ -71,5 +66,28 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         String returnStr = String.join(" ", returnLocation.getName(), returnUmbrellaStandNumber);
 
         return umbrellaConverter.toReturnPAge(rental, rentalStr, returnStr);
+    }
+
+    @Override
+    @Transactional
+    public String rental(User user, UmbrellaRequestDto.RentalDto request){
+        UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(request.getUmbrellaStandId())
+                .orElseThrow(() -> new NoSuchElementException("Umbrella stand not found."));
+
+        if (user.getIsRental()){
+            return "이미 대여 중인 사용자입니다.";
+        } else if (user.getPoint() < 10000) {
+            return "충전이 필요합니다.";
+        }
+
+        umbrellaStand.updateRental();
+        user.updateRental();
+        user.updatePoint();
+
+        Rental rental = umbrellaConverter.toRental(user, umbrellaStand);
+
+        rentalRepository.save(rental);
+
+        return "우산 대여 완료";
     }
 }

@@ -19,4 +19,11 @@ public class UmbrellaRequestDto {
         @ApiParam(name = "rentalId", value = "rental ID 입력", required = true)
         private Long rentalId;
     }
+
+    @Getter
+    public static class RentalDto{
+        @ApiModelProperty(example = "1")
+        @ApiParam(name = "umbrellaStandId", value = "Umbrella Stand ID 입력", required = true)
+        private Long umbrellaStandId;
+    }
 }
