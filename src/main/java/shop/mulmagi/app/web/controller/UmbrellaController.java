@@ -1,7 +1,6 @@
 package shop.mulmagi.app.web.controller;
 
 import org.springframework.web.bind.annotation.*;
-import shop.mulmagi.app.converter.TestConverter;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
@@ -11,14 +10,10 @@ import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import shop.mulmagi.app.domain.Test;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.UserRepository;
-import shop.mulmagi.app.service.TestService;
 import shop.mulmagi.app.service.impl.UmbrellaServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
-import shop.mulmagi.app.web.dto.TestRequestDto;
-import shop.mulmagi.app.web.dto.TestResponseDto;
 import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
@@ -45,7 +40,7 @@ public class UmbrellaController extends BaseController {
             UmbrellaResponseDto.LocationDto res = umbrellaService.getLocation(locationId);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.LOCATION_READ_SUCCESS, res), HttpStatus.OK);
-        } catch (CustomExceptions.locationException e) {
+        } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }

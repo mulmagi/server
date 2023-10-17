@@ -83,6 +83,8 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             throw new CustomExceptions.Exception("충전이 필요합니다.");
         } else if (!umbrellaStand.getIsUmbrella()) {
             throw new CustomExceptions.Exception("빈 우산꽂이입니다.");
+        } else if (umbrellaStand.getIsWrong()){
+            throw new CustomExceptions.Exception("고장난 우산입니다.");
         }
 
         umbrellaStand.updateRental();
