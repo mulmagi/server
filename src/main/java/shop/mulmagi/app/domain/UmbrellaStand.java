@@ -28,4 +28,11 @@ public class UmbrellaStand {
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean isUmbrella;
+
+    public void updateRental(){
+        if (this.isUmbrella == true){
+
+        }
+        this.isUmbrella = false;
+    }
 }

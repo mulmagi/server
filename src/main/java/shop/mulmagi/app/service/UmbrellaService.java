@@ -9,4 +9,5 @@ public interface UmbrellaService {
     UmbrellaResponseDto.LocationDto getLocation(Long locationId);
     UmbrellaResponseDto.RentalPageDto getRentalPage(User user, UmbrellaRequestDto.RentalPageDto request);
     UmbrellaResponseDto.ReturnPageDto getReturnPage(UmbrellaRequestDto.ReturnPageDto request);
+    String rental(User user, UmbrellaRequestDto.RentalDto request);
 }

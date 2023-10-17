@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import shop.mulmagi.app.domain.Location;
 import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.UmbrellaStand;
+import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
 
 import java.util.List;
@@ -22,9 +23,10 @@ public class UmbrellaConverter {
                 .build();
     }
 
-    public UmbrellaResponseDto.RentalPageDto toRentalPage(Location location, String umbrellaStandNumber, Integer userPoint, Boolean isUmbrella){
+    public UmbrellaResponseDto.RentalPageDto toRentalPage(Location location, String umbrellaStandNumber, Integer userPoint, UmbrellaStand umbrellaStand){
         return UmbrellaResponseDto.RentalPageDto.builder()
-                .isUmbrella(isUmbrella)
+                .isUmbrella(umbrellaStand.getIsUmbrella())
+                .isWrong(umbrellaStand.getIsWrong())
                 .rentalUmbrellaStand(String.join(" ", location.getName(), umbrellaStandNumber))
                 .userPoint(userPoint)
                 .build();
@@ -38,6 +40,17 @@ public class UmbrellaConverter {
                 .rentalUmbrellaStand(rentalStr)
                 .returnUmbrellaStand(returnStr)
                 .overDueAmount(rental.getOverDueAmount())
+                .build();
+    }
+
+    public Rental toRental(User user, UmbrellaStand umbrellaStand){
+        return Rental.builder()
+                .user(user)
+                .rentalUmbrellaStand(umbrellaStand)
+                .isOverdue(false)
+                .isReturn(false)
+                .isWrong(false)
+                .overDueAmount(0)
                 .build();
     }
 }
