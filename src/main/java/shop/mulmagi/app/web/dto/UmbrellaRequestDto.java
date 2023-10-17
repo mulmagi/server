@@ -12,4 +12,11 @@ public class UmbrellaRequestDto {
         @ApiParam(name = "QR code", value = "QR 코드 입력", required = true)
         private Long qrCode;
     }
+
+    @Getter
+    public static class ReturnPageDto{
+        @ApiModelProperty(example = "1")
+        @ApiParam(name = "rentalId", value = "rental ID 입력", required = true)
+        private Long rentalId;
+    }
 }
