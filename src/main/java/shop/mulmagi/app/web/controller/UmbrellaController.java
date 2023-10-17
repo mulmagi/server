@@ -63,7 +63,7 @@ public class UmbrellaController extends BaseController {
             UmbrellaResponseDto.RentalPageDto res = umbrellaService.getRentalPage(user, request);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RENTAL_PAGE_READ_SUCCESS, res), HttpStatus.OK);
-        } catch (CustomExceptions.rentalPageException e) {
+        } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
@@ -81,25 +81,43 @@ public class UmbrellaController extends BaseController {
             UmbrellaResponseDto.ReturnPageDto res = umbrellaService.getReturnPage(request);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RETURN_PAGE_READ_SUCCESS, res), HttpStatus.OK);
-        } catch (CustomExceptions.rentalPageException e) {
+        } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
 
     @ApiOperation(value = "대여하기 API")
-    @ApiResponse(code = 200, message = "대여하기 API 성공")
+    @ApiResponse(code = 200, message = "대여 성공")
     @PostMapping("/rental")
-    public ResponseEntity rental(@RequestBody UmbrellaRequestDto.RentalDto request){
+    public ResponseEntity rentalUmbrella(@RequestBody UmbrellaRequestDto.RentalDto request){
         try {
             logger.info("Received request: method={}, path={}, description={}", "POST", "/api/rental", "대여하기 API");
 
             //로그인 구현 후 유저 정보 토큰으로 받아올 예정
             User user = userRepository.findByPhoneNumber("01029440386");
 
-            String res = umbrellaService.rental(user, request);
+            umbrellaService.rental(user, request);
 
-            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RENTAL_SUCCESS, res), HttpStatus.OK);
-        } catch (CustomExceptions.rentalPageException e) {
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RENTAL_SUCCESS), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation(value = "반납하기 API")
+    @ApiResponse(code = 200, message = "반납 성공")
+    @PatchMapping("/return")
+    public ResponseEntity returnUmbrella(@RequestBody UmbrellaRequestDto.ReturnDto request){
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "PATCH", "/api/return", "반납하기 API");
+
+            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
+            User user = userRepository.findByPhoneNumber("01029440386");
+
+            umbrellaService.returnUmb(user, request);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RETURN_SUCCESS), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }

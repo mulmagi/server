@@ -38,4 +38,9 @@ public class Rental extends BaseEntity {
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean isReturn;
+
+
+    public void updateReturn(){
+        this.isReturn = true;
+    }
 }

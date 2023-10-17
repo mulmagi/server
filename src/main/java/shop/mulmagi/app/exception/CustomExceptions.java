@@ -18,4 +18,8 @@ public class CustomExceptions {
         public rentalPageException(String message) { super(message); }
     }
 
+    public static class Exception extends RuntimeException {
+        public Exception(String message) { super(message);}
+    }
+
 }

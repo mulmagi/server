@@ -8,6 +8,8 @@ import shop.mulmagi.app.domain.UmbrellaStand;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component

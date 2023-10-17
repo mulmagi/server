@@ -30,9 +30,10 @@ public class UmbrellaStand {
     private Boolean isUmbrella;
 
     public void updateRental(){
-        if (this.isUmbrella == true){
-
-        }
         this.isUmbrella = false;
+    }
+
+    public void updateReturn(){
+        this.isUmbrella = true;
     }
 }

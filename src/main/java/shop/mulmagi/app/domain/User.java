@@ -45,13 +45,19 @@ public class User extends BaseEntity {
     private Boolean isComplaining;
 
     public void updateRental(){
-        if (this.isRental == false){
-
-        }
         this.isRental = true;
     }
 
     public void updatePoint(){
         this.point -= 10000;
+    }
+
+    public void updateReturn(){
+        this.isRental = false;
+        //this.rentalCount += 1;
+    }
+
+    public void returnPoint(Integer amount){
+        this.point += amount;
     }
 }

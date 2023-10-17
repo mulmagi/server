@@ -8,9 +8,11 @@ import shop.mulmagi.app.domain.Location;
 import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.UmbrellaStand;
 import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.LocationRepository;
 import shop.mulmagi.app.repository.RentalRepository;
 import shop.mulmagi.app.repository.UmbrellaStandRepository;
+import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UmbrellaService;
 import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
@@ -27,6 +29,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     private final UmbrellaStandRepository umbrellaStandRepository;
     private final UmbrellaConverter umbrellaConverter;
     private final RentalRepository rentalRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UmbrellaResponseDto.LocationDto getLocation(Long locationId) {
@@ -70,14 +73,16 @@ public class UmbrellaServiceImpl implements UmbrellaService {
 
     @Override
     @Transactional
-    public String rental(User user, UmbrellaRequestDto.RentalDto request){
+    public void rental(User user, UmbrellaRequestDto.RentalDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(request.getUmbrellaStandId())
                 .orElseThrow(() -> new NoSuchElementException("Umbrella stand not found."));
 
-        if (user.getIsRental()){
-            return "이미 대여 중인 사용자입니다.";
+        if (user.getIsRental()) {
+            throw new CustomExceptions.Exception("이미 대여 중인 사용자입니다.");
         } else if (user.getPoint() < 10000) {
-            return "충전이 필요합니다.";
+            throw new CustomExceptions.Exception("충전이 필요합니다.");
+        } else if (!umbrellaStand.getIsUmbrella()) {
+            throw new CustomExceptions.Exception("빈 우산꽂이입니다.");
         }
 
         umbrellaStand.updateRental();
@@ -87,7 +92,33 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         Rental rental = umbrellaConverter.toRental(user, umbrellaStand);
 
         rentalRepository.save(rental);
+        userRepository.save(user);
+        umbrellaStandRepository.save(umbrellaStand);
+    }
 
-        return "우산 대여 완료";
+    @Override
+    @Transactional
+    public void returnUmb(User user, UmbrellaRequestDto.ReturnDto request) throws CustomExceptions.Exception {
+        UmbrellaStand umbrellaStand = umbrellaStandRepository.findByQrCode(request.getQrCode());
+
+        Rental rental = rentalRepository.findById(request.getRentalId())
+                .orElseThrow(() -> new NoSuchElementException("Rental not found."));
+
+        if (umbrellaStand.getIsUmbrella()) {
+            throw new CustomExceptions.Exception("빈 우산꽂이를 이용하세요.");
+        } else if (!user.getIsRental()){
+            throw new CustomExceptions.Exception("우산을 대여 중이지 않은 사용자입니다.");
+        } else if (rental.getIsReturn()){
+            throw new CustomExceptions.Exception("이미 반납된 우산입니다.");
+        }
+
+        umbrellaStand.updateReturn();
+        user.updateReturn();
+        user.returnPoint(9000 - rental.getOverDueAmount());
+        rental.updateReturn();
+
+        rentalRepository.save(rental);
+        userRepository.save(user);
+        umbrellaStandRepository.save(umbrellaStand);
     }
 }
