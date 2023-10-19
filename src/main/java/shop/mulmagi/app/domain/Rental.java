@@ -39,7 +39,8 @@ public class Rental extends BaseEntity {
     @Column(columnDefinition = "Boolean default false")
     private Boolean isReturn;
 
-    public void updateReturn(){
+    public void updateReturn(UmbrellaStand umbrellaStand){
         this.isReturn = true;
+        this.returnUmbrellaStand = umbrellaStand;
     }
 }
