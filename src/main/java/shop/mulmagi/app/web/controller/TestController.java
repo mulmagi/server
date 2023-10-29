@@ -34,12 +34,12 @@ public class TestController extends BaseController {
     @PostMapping
     public ResponseEntity createTest(@RequestBody TestRequestDto.CreateTestDto request){
         try {
-            logger.info("Received request: method={}, path={}, description={}", "POST", "/my-profile/charge", "포인트 충전 API");
+            logger.info("Received request: method={}, path={}, description={}", "POST", "/my-profile/charge", "테스트 API");
 
             Test test = testService.create(request.getName());
             TestResponseDto.CreateTestDto res = testConverter.toCreateTestDto(test);
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.TEST_SUCCESS, res), HttpStatus.OK);
-        } catch (CustomExceptions.testException e) {
+        } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }

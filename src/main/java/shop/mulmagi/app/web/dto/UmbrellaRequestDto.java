@@ -26,4 +26,15 @@ public class UmbrellaRequestDto {
         @ApiParam(name = "umbrellaStandId", value = "Umbrella Stand ID 입력", required = true)
         private Long umbrellaStandId;
     }
+
+    @Getter
+    public static class ReturnDto{
+        @ApiModelProperty(example = "123225")
+        @ApiParam(name = "QR code", value = "QR 코드 입력", required = true)
+        private Long qrCode;
+
+        @ApiModelProperty(example = "1")
+        @ApiParam(name = "Rental ID", value = "Rental ID 입력", required = true)
+        private Long rentalId;
+    }
 }
