@@ -51,6 +51,9 @@ public class User extends BaseEntity {
     public void updatePoint(){
         this.point -= 10000;
     }
+    public void chargePoint(Integer amount){
+        this.point += amount;
+    }
 
     public void updateReturn(){
         this.isRental = false;
