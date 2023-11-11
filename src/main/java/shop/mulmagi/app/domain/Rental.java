@@ -34,7 +34,7 @@ public class Rental extends BaseEntity {
     private Boolean isOverdue;
 
     @Column(columnDefinition = "Integer default 0")
-    private Integer overDueAmount;
+    private Integer overdueAmount;
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean isReturn;
@@ -42,5 +42,22 @@ public class Rental extends BaseEntity {
     public void updateReturn(UmbrellaStand umbrellaStand){
         this.isReturn = true;
         this.returnUmbrellaStand = umbrellaStand;
+    }
+
+    public void updateIsOverdue(){
+        this.isOverdue = true;
+    }
+
+    public void updateOverdueAmount(Integer rentalPeriod){
+        Integer overduePeriod = rentalPeriod - 7;
+
+        this.overdueAmount = 500*overduePeriod;
+
+        if(this.overdueAmount >= 9000){
+            this.isReturn = true;
+            this.overdueAmount = 9000;
+            //자동 반납 알림 후 종료
+        }
+        //연체 알림 후 종료
     }
 }
