@@ -12,8 +12,8 @@ public class UmbrellaResponseDto {
     public static class LocationDto{
         private Long locationId;
         private String name;
-        private Integer umbrellaCount;
-        private List<Integer> umbrellaNumber;
+        private Integer count;
+        private List<Integer> umbrellaStandNumber;
     }
 
     @Builder @Data

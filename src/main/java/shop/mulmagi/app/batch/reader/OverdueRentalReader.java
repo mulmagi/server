@@ -6,7 +6,6 @@ import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import shop.mulmagi.app.domain.Rental;
-
 import javax.persistence.EntityManagerFactory;
 
 @Configuration

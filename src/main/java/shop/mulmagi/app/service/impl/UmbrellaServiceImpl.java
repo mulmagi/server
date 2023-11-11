@@ -32,11 +32,21 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     private final UserRepository userRepository;
 
     @Override
-    public UmbrellaResponseDto.LocationDto getLocation(Long locationId) {
+    public UmbrellaResponseDto.LocationDto getRentalLocation(Long locationId) {
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new NoSuchElementException("Location not found."));
 
-        List<Integer> umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsWrong(locationId, false);
+        List<Integer> umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsWrongAndIsUmbrella(locationId);
+
+        return umbrellaConverter.toLocation(location, umbrellaStandNumberList);
+    }
+
+    @Override
+    public UmbrellaResponseDto.LocationDto getReturnLocation(Long locationId) {
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new NoSuchElementException("Location not found."));
+
+        List<Integer> umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsUmbrella(locationId);
 
         return umbrellaConverter.toLocation(location, umbrellaStandNumberList);
     }
@@ -54,7 +64,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     }
 
     @Override
-    public UmbrellaResponseDto.ReturnPageDto  getReturnPage(UmbrellaRequestDto.ReturnPageDto request){
+    public UmbrellaResponseDto.ReturnPageDto getReturnPage(UmbrellaRequestDto.ReturnPageDto request){
         Rental rental = rentalRepository.findById(request.getRentalId())
                 .orElseThrow(() -> new NoSuchElementException("Rental not found."));
 
@@ -77,6 +87,8 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(request.getUmbrellaStandId())
                 .orElseThrow(() -> new NoSuchElementException("Umbrella stand not found."));
 
+        Location location = umbrellaStand.getLocation();
+
         if (user.getIsRental()) {
             throw new CustomExceptions.Exception("이미 대여 중인 사용자입니다.");
         } else if (user.getPoint() < 10000) {
@@ -87,12 +99,14 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             throw new CustomExceptions.Exception("고장난 우산입니다.");
         }
 
+        location.updateRental();
         umbrellaStand.updateRental();
         user.updateRental();
         user.updatePoint();
 
         Rental rental = umbrellaConverter.toRental(user, umbrellaStand);
 
+        locationRepository.save(location);
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
@@ -102,6 +116,8 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     @Transactional
     public void returnUmb(User user, UmbrellaRequestDto.ReturnDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findByQrCode(request.getQrCode());
+
+        Location location = umbrellaStand.getLocation();
 
         Rental rental = rentalRepository.findById(request.getRentalId())
                 .orElseThrow(() -> new NoSuchElementException("Rental not found."));
@@ -114,11 +130,13 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             throw new CustomExceptions.Exception("이미 반납된 우산입니다.");
         }
 
+        location.updateReturn();
         umbrellaStand.updateReturn();
         user.updateReturn();
         user.returnPoint(9000 - rental.getOverdueAmount());
         rental.updateReturn(umbrellaStand);
 
+        locationRepository.save(location);
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
