@@ -1,4 +1,3 @@
-/*
 package shop.mulmagi.app.web.controller;
 
 import com.siot.IamportRestClient.IamportClient;
@@ -76,4 +75,4 @@ public class PaymentController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-}*/
+}
