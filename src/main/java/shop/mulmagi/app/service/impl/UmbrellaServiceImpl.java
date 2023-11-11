@@ -32,21 +32,18 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     private final UserRepository userRepository;
 
     @Override
-    public UmbrellaResponseDto.LocationDto getRentalLocation(Long locationId) {
+    public UmbrellaResponseDto.LocationDto getLocation(User user, Long locationId) {
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new NoSuchElementException("Location not found."));
 
-        List<Integer> umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsWrongAndIsUmbrella(locationId);
+        Boolean isRental = user.getIsRental();
+        List<Integer> umbrellaStandNumberList;
 
-        return umbrellaConverter.toLocation(location, umbrellaStandNumberList);
-    }
-
-    @Override
-    public UmbrellaResponseDto.LocationDto getReturnLocation(Long locationId) {
-        Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new NoSuchElementException("Location not found."));
-
-        List<Integer> umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsUmbrella(locationId);
+        if (isRental){
+            umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsUmbrella(locationId);
+        } else {
+            umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsWrongAndIsUmbrella(locationId);
+        }
 
         return umbrellaConverter.toLocation(location, umbrellaStandNumberList);
     }
