@@ -17,7 +17,7 @@ public class Location {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(columnDefinition = "Integer default 9")
+    @Column(columnDefinition = "Integer default 0")
     private Integer umbrellaCount;
 
     @Column(columnDefinition = "Integer default 0")

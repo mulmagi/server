@@ -23,6 +23,8 @@ spring:
         use_sql_comments: false
         hbm2ddl:
           auto: update
-        default_batch_fetch_size: 1000
+  batch:
+    jdbc:
+      initialize-schema: always
 logging.level:
   org.hibernate.SQL: debug

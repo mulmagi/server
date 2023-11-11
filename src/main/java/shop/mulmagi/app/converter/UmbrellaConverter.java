@@ -31,14 +31,14 @@ public class UmbrellaConverter {
                 .build();
     }
 
-    public UmbrellaResponseDto.ReturnPageDto toReturnPAge(Rental rental, String rentalStr, String returnStr){
+    public UmbrellaResponseDto.ReturnPageDto toReturnPage(Rental rental, String rentalStr, String returnStr){
         return UmbrellaResponseDto.ReturnPageDto.builder()
                 .rentalId(rental.getId())
                 .rentalTime(rental.getCreatedAt())
                 .returnTime(rental.getUpdatedAt())
                 .rentalUmbrellaStand(rentalStr)
                 .returnUmbrellaStand(returnStr)
-                .overDueAmount(rental.getOverDueAmount())
+                .overDueAmount(rental.getOverdueAmount())
                 .build();
     }
 
@@ -49,7 +49,7 @@ public class UmbrellaConverter {
                 .isOverdue(false)
                 .isReturn(false)
                 .isWrong(false)
-                .overDueAmount(0)
+                .overdueAmount(0)
                 .build();
     }
 }

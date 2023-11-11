@@ -54,7 +54,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     }
 
     @Override
-    public UmbrellaResponseDto.ReturnPageDto getReturnPage(UmbrellaRequestDto.ReturnPageDto request){
+    public UmbrellaResponseDto.ReturnPageDto  getReturnPage(UmbrellaRequestDto.ReturnPageDto request){
         Rental rental = rentalRepository.findById(request.getRentalId())
                 .orElseThrow(() -> new NoSuchElementException("Rental not found."));
 
@@ -68,7 +68,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         String returnUmbrellaStandNumber = String.valueOf(returnUmbrellaStand.getNumber());
         String returnStr = String.join(" ", returnLocation.getName(), returnUmbrellaStandNumber);
 
-        return umbrellaConverter.toReturnPAge(rental, rentalStr, returnStr);
+        return umbrellaConverter.toReturnPage(rental, rentalStr, returnStr);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
 
         umbrellaStand.updateReturn();
         user.updateReturn();
-        user.returnPoint(9000 - rental.getOverDueAmount());
+        user.returnPoint(9000 - rental.getOverdueAmount());
         rental.updateReturn(umbrellaStand);
 
         rentalRepository.save(rental);
