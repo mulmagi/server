@@ -23,7 +23,6 @@ import shop.mulmagi.app.web.dto.base.DefaultRes;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UmbrellaController extends BaseController {
-
     private final UserRepository userRepository;
     private final UmbrellaServiceImpl umbrellaService;
 

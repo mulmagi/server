@@ -12,7 +12,7 @@ public class UmbrellaResponseDto {
     public static class LocationDto{
         private Long locationId;
         private String name;
-        private Integer count;
+        private Boolean isRental;
         private List<Integer> umbrellaStandNumber;
     }
 

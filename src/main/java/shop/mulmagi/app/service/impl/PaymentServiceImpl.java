@@ -3,7 +3,6 @@ package shop.mulmagi.app.service.impl;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.domain.User;
@@ -17,15 +16,8 @@ import shop.mulmagi.app.service.PaymentService;
 @Transactional
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-    private UserRepository userRepository;
-
-    private PaymentRepository paymentRepository;
-
-    @Autowired
-    public PaymentServiceImpl(UserRepository userRepository, PaymentRepository paymentRepository) {
-        this.userRepository = userRepository;
-        this.paymentRepository = paymentRepository;
-    }
+    private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     public void verifyIamportService(IamportResponse<Payment> irsp, User user, Integer amount, PaymentMethod method) throws CustomExceptions.Exception {
