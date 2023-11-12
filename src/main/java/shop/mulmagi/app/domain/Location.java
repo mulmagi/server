@@ -23,4 +23,12 @@ public class Location {
     @Column(columnDefinition = "Integer default 0")
     private Integer wrongCount;
 
+    public void updateRental(){
+        this.umbrellaCount -= 1;
+    }
+
+
+    public void updateReturn(){
+        this.umbrellaCount += 1;
+    }
 }

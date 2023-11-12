@@ -17,8 +17,8 @@ public class UmbrellaConverter {
         return UmbrellaResponseDto.LocationDto.builder()
                 .locationId(location.getId())
                 .name(location.getName())
-                .umbrellaCount(location.getUmbrellaCount())
-                .umbrellaNumber(umbrellaStandNumberList)
+                .count(location.getUmbrellaCount())
+                .umbrellaStandNumber(umbrellaStandNumberList)
                 .build();
     }
 

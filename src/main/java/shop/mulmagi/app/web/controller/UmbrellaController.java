@@ -37,7 +37,7 @@ public class UmbrellaController extends BaseController {
             //로그인 구현 후 유저 정보 토큰으로 받아올 예정
             User user = userRepository.findByPhoneNumber("01029440386");
 
-            UmbrellaResponseDto.LocationDto res = umbrellaService.getLocation(locationId);
+            UmbrellaResponseDto.LocationDto res = umbrellaService.getLocation(user, locationId);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.LOCATION_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
