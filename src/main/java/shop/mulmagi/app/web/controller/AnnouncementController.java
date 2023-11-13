@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.domain.Announcement;
 import shop.mulmagi.app.domain.enums.AnnouncementCategory;
@@ -45,6 +46,7 @@ public class AnnouncementController extends BaseController {
 	private final S3UploadServiceImpl s3UploadService;
 
 	@ApiOperation(value = "공지사항 불러오기 API")
+	@ApiResponse(code = 200, message = "공지사항 불러오기 성공")
 	@GetMapping
 	public ResponseEntity announcement(){
 		try {
@@ -59,6 +61,7 @@ public class AnnouncementController extends BaseController {
 	}
 
 	@ApiOperation(value = "공지사항 세부내용 불러오기 API")
+	@ApiResponse(code = 200, message = "공지사항 세부내용 불러오기 성공")
 	@GetMapping("/{id}")
 	public ResponseEntity announcementDetail(@PathVariable Long id){
 		try {
@@ -73,6 +76,7 @@ public class AnnouncementController extends BaseController {
 	}
 
 	@ApiOperation(value = "특정 카테고리 공지사항 불러오기 API")
+	@ApiResponse(code = 200, message = "공지사항 카테고리 불러오기 성공")
 	@GetMapping("/category/{category}")
 	public ResponseEntity announcementCategory(@PathVariable("category") String categoryValue){
 		try {
@@ -88,6 +92,7 @@ public class AnnouncementController extends BaseController {
 	}
 
 	@ApiOperation(value = "공지사항 업로드 API")
+	@ApiResponse(code = 200, message = "공지사항 업로드 성공")
 	@PostMapping("/add")
 	public ResponseEntity addAnnouncement(@ModelAttribute AnnouncementRequestDto.UploadDto request) throws IOException {
 		logger.info("Received request: method={}, path={}, description={}", "Post", "/api/announcement/add", "공지사항 업로드");
@@ -132,6 +137,7 @@ public class AnnouncementController extends BaseController {
 	}
 
 	@ApiOperation(value = "공지사항 삭제 API")
+	@ApiResponse(code = 200, message = "공지사항 삭제 성공")
 	@DeleteMapping("/{id}")
 	public ResponseEntity deleteNotice(@PathVariable Long id) {
 		try {
@@ -143,6 +149,7 @@ public class AnnouncementController extends BaseController {
 	}
 
 	@ApiOperation(value = "공지사항 수정 API")
+	@ApiResponse(code = 200, message = "공지사항 수정 성공")
 	@PutMapping("/{id}")
 	public ResponseEntity updateNotice(@PathVariable Long id, @ModelAttribute AnnouncementRequestDto.UpdateDto request) {
 		try {
