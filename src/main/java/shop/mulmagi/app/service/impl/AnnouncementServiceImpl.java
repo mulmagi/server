@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 
@@ -19,6 +20,7 @@ import shop.mulmagi.app.service.S3UploadService;
 import shop.mulmagi.app.web.dto.AnnouncementResponseDto;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AnnouncementServiceImpl implements AnnouncementService {
 	private final AnnouncementRepository announcementRepository;
@@ -72,8 +74,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	}
 
 	@Override
-	public void update(String title, AnnouncementCategory category, String content, String imgUrl, String fileUrl){
-		Announcement announcement = announcementConverter.toAnnouncement(title, category, content, imgUrl, fileUrl);
-		announcementRepository.save(announcement);
+	public void updateAnnouncement(Long id, String title, AnnouncementCategory category, String content, String imgUrl, String fileUrl){
+		Announcement announcement = announcementRepository.findById(id).orElseThrow();
+		s3UploadService.deleteAWSFile(announcement);
+		announcementRepository.updateAnnouncement(id, title, category, content, imgUrl, fileUrl);
 	}
 }

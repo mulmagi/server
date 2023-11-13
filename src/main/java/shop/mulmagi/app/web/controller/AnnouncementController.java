@@ -153,7 +153,21 @@ public class AnnouncementController extends BaseController {
 	@PutMapping("/{id}")
 	public ResponseEntity updateNotice(@PathVariable Long id, @ModelAttribute AnnouncementRequestDto.UpdateDto request) {
 		try {
-			announcementService.deleteAnnouncement(id);
+			String title = request.getTitle();
+			String content = request.getContent();
+			AnnouncementCategory category = request.getCategory();
+			MultipartFile image = request.getPhoto();
+			MultipartFile file = request.getFile_0();
+			String imgUrl = null;
+			String fileUrl = null;
+			if(image != null && !image.isEmpty()){ //나중에 서비스 층에서 처리하도록 수정
+				imgUrl = s3UploadService.uploadAWS(image);
+			}
+			if(file != null && !file.isEmpty()){
+				fileUrl = s3UploadService.uploadAWS(file);
+			}
+			announcementService.updateAnnouncement(id, title, category, content, imgUrl, fileUrl);
+
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_UPDATE_SUCCESS), HttpStatus.OK);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

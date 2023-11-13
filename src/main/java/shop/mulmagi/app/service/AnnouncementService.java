@@ -12,5 +12,5 @@ public interface AnnouncementService {
 	AnnouncementResponseDto.AnnouncementDetailDto getAnnouncementDetail(Long id);
 	void upload(String title, AnnouncementCategory category, String content, String imgUrl, String fileUrl);
 	void deleteAnnouncement(Long id);
-	void update(String title, AnnouncementCategory category, String content, String imgUrl, String fileUrl);
+	void updateAnnouncement(Long id, String title, AnnouncementCategory category, String content, String imgUrl, String fileUrl);
 }
