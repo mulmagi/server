@@ -20,7 +20,6 @@ import javax.persistence.EntityManagerFactory;
 @Configuration
 @EnableBatchProcessing
 @RequiredArgsConstructor
-@Slf4j
 public class OverdueRentalConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;

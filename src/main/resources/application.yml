@@ -26,5 +26,8 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
+  profiles:
+    include:
+      - secret
 logging.level:
   org.hibernate.SQL: debug

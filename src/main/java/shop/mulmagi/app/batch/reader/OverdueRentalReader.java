@@ -11,7 +11,6 @@ import javax.persistence.EntityManagerFactory;
 @Configuration
 @RequiredArgsConstructor
 public class OverdueRentalReader {
-
     private final EntityManagerFactory entityManagerFactory;
 
     @Bean

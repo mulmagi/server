@@ -13,11 +13,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UmbrellaConverter {
 
-    public UmbrellaResponseDto.LocationDto toLocation(Location location, List<Integer> umbrellaStandNumberList){
+    public UmbrellaResponseDto.LocationDto toLocation(Boolean isRental, Location location, List<Integer> umbrellaStandNumberList){
         return UmbrellaResponseDto.LocationDto.builder()
                 .locationId(location.getId())
+                .isRental(isRental)
                 .name(location.getName())
-                .count(location.getUmbrellaCount())
                 .umbrellaStandNumber(umbrellaStandNumberList)
                 .build();
     }
@@ -39,17 +39,6 @@ public class UmbrellaConverter {
                 .rentalUmbrellaStand(rentalStr)
                 .returnUmbrellaStand(returnStr)
                 .overDueAmount(rental.getOverdueAmount())
-                .build();
-    }
-
-    public Rental toRental(User user, UmbrellaStand umbrellaStand){
-        return Rental.builder()
-                .user(user)
-                .rentalUmbrellaStand(umbrellaStand)
-                .isOverdue(false)
-                .isReturn(false)
-                .isWrong(false)
-                .overdueAmount(0)
                 .build();
     }
 }

@@ -23,7 +23,6 @@ import shop.mulmagi.app.service.impl.PaymentServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.PaymentRequestDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
-
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 
@@ -37,10 +36,8 @@ public class PaymentController extends BaseController {
     @Value("${iamport.secret}")
     private String restApiSecret;
     private IamportClient iamportClient;
-    @Autowired
-    private PaymentServiceImpl paymentService;
-    @Autowired
-    private UserRepository userRepository;
+    private final PaymentServiceImpl paymentService;
+    private final UserRepository userRepository;
 
     @PostConstruct
     public void init() {

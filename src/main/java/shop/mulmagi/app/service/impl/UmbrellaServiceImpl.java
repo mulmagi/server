@@ -45,7 +45,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsWrongAndIsUmbrella(locationId);
         }
 
-        return umbrellaConverter.toLocation(location, umbrellaStandNumberList);
+        return umbrellaConverter.toLocation(isRental, location, umbrellaStandNumberList);
     }
 
     @Override
@@ -101,7 +101,14 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         user.updateRental();
         user.updatePoint();
 
-        Rental rental = umbrellaConverter.toRental(user, umbrellaStand);
+        Rental rental = Rental.builder()
+                .user(user)
+                .rentalUmbrellaStand(umbrellaStand)
+                .isOverdue(false)
+                .isReturn(false)
+                .isWrong(false)
+                .overdueAmount(0)
+                .build();
 
         locationRepository.save(location);
         rentalRepository.save(rental);
