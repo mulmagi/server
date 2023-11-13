@@ -12,6 +12,9 @@ public class ResponseMessage {
     public static final String RENTAL_SUCCESS = "대여 성공";
     public static final String RETURN_SUCCESS = "반납 성공";
 
+    //payment
+    public static final String PAYMENT_SUCCESS = "결제 성공";
+
     //notice
     public static final String NOTICE_READ_SUCCESS = "공지사항 불러오기 성공";
     public static final String NOTICE_DETAIL_READ_SUCCESS = "공지사항 세부내용 불러오기 성공";
@@ -21,5 +24,6 @@ public class ResponseMessage {
     public static final String NOTICE_UPDATE_SUCCESS = "공지사항 수정 성공";
 
     //report
-    public static final String REPORT_SUCCESS = "고장신고 접수 성공";
+    public static final String REPORT_RECEIVE_SUCCESS = "고장신고 접수 성공";
+    public static final String REPORT_SOLVE_SUCCESS = "고장신고 해결처리 성공";
 }

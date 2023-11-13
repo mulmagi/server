@@ -36,4 +36,12 @@ public class UmbrellaStand {
     public void updateReturn(){
         this.isUmbrella = true;
     }
+
+    public void receiveReport(){
+        this.isWrong = true;
+    }
+
+    public void solveReport(){
+        this.isWrong = false;
+    }
 }
