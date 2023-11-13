@@ -139,7 +139,7 @@ public class AnnouncementController extends BaseController {
 	@ApiOperation(value = "공지사항 삭제 API")
 	@ApiResponse(code = 200, message = "공지사항 삭제 성공")
 	@DeleteMapping("/{id}")
-	public ResponseEntity deleteNotice(@PathVariable Long id) {
+	public ResponseEntity deleteAnnouncement(@PathVariable Long id) {
 		try {
 			announcementService.deleteAnnouncement(id);
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_DELETE_SUCCESS), HttpStatus.OK);
@@ -151,7 +151,7 @@ public class AnnouncementController extends BaseController {
 	@ApiOperation(value = "공지사항 수정 API")
 	@ApiResponse(code = 200, message = "공지사항 수정 성공")
 	@PutMapping("/{id}")
-	public ResponseEntity updateNotice(@PathVariable Long id, @ModelAttribute AnnouncementRequestDto.UpdateDto request) {
+	public ResponseEntity updateAnnouncement(@PathVariable Long id, @ModelAttribute AnnouncementRequestDto.UpdateDto request) {
 		try {
 			String title = request.getTitle();
 			String content = request.getContent();
