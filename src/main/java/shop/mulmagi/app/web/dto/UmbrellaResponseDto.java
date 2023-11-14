@@ -20,6 +20,7 @@ public class UmbrellaResponseDto {
     @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class RentalPageDto{
+        private Long umbrellaStandId;
         private Boolean isUmbrella;
         private Boolean isWrong;
         private String rentalUmbrellaStand;
@@ -36,5 +37,43 @@ public class UmbrellaResponseDto {
         private String rentalUmbrellaStand;
         private String returnUmbrellaStand;
         private Integer overDueAmount;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LocationDataListDto {
+        private boolean isRental;
+        private List<LocationDataDto> umbrellaStandData;
+
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class LocationDataDto {
+            private Long locationId;
+            private PointDto point;
+        }
+
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class PointDto {
+            private Double latitude;
+            private Double longitude;
+        }
+
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class RentalDataDto {
+            private Long rentalId;
+            private boolean isOverdue;
+            private Integer overdueAmount;
+            private LocalDateTime rentalDate;
+        }
     }
 }

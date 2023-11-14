@@ -5,7 +5,6 @@ import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
 
 public interface UmbrellaService {
-
     UmbrellaResponseDto.LocationDto getLocation(User user, Long locationId);
     UmbrellaResponseDto.RentalPageDto getRentalPage(User user, UmbrellaRequestDto.RentalPageDto request);
     UmbrellaResponseDto.ReturnPageDto getReturnPage(UmbrellaRequestDto.ReturnPageDto request);

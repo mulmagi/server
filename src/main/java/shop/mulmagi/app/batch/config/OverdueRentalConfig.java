@@ -32,7 +32,7 @@ public class OverdueRentalConfig {
 
     @Bean
     public Job overdueRentalBatchJob() throws Exception {
-        return jobBuilderFactory.get("overdueRentalBatchJob")
+        return jobBuilderFactory.get("overdueBatchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .build();

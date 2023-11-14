@@ -23,6 +23,12 @@ public class Location {
     @Column(columnDefinition = "Integer default 0")
     private Integer wrongCount;
 
+    @Column(nullable = false)
+    private Double latitude;
+
+    @Column(nullable = false)
+    private Double longitude;
+
     public void updateRental(){
         this.umbrellaCount -= 1;
     }
