@@ -26,4 +26,5 @@ public class ResponseMessage {
     //report
     public static final String REPORT_RECEIVE_SUCCESS = "고장신고 접수 성공";
     public static final String REPORT_SOLVE_SUCCESS = "고장신고 해결처리 성공";
+  
 }

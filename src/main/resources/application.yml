@@ -26,9 +26,9 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
-    profiles:
-      include:
-        - secret
+  profiles:
+    include:
+      - secret
   servlet:
     multipart:
       max-file-size: 10MB

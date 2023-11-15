@@ -13,12 +13,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UmbrellaConverter {
 
-    public UmbrellaResponseDto.LocationDto toLocation(Location location, List<Integer> umbrellaStandNumberList){
+    public UmbrellaResponseDto.LocationDto toLocation(Boolean isRental, Location location, List<Integer> umbrellaStandNumberList){
         return UmbrellaResponseDto.LocationDto.builder()
                 .locationId(location.getId())
+                .isRental(isRental)
                 .name(location.getName())
-                .umbrellaCount(location.getUmbrellaCount())
-                .umbrellaNumber(umbrellaStandNumberList)
+                .umbrellaStandNumber(umbrellaStandNumberList)
                 .build();
     }
 
@@ -31,25 +31,14 @@ public class UmbrellaConverter {
                 .build();
     }
 
-    public UmbrellaResponseDto.ReturnPageDto toReturnPAge(Rental rental, String rentalStr, String returnStr){
+    public UmbrellaResponseDto.ReturnPageDto toReturnPage(Rental rental, String rentalStr, String returnStr){
         return UmbrellaResponseDto.ReturnPageDto.builder()
                 .rentalId(rental.getId())
                 .rentalTime(rental.getCreatedAt())
                 .returnTime(rental.getUpdatedAt())
                 .rentalUmbrellaStand(rentalStr)
                 .returnUmbrellaStand(returnStr)
-                .overDueAmount(rental.getOverDueAmount())
-                .build();
-    }
-
-    public Rental toRental(User user, UmbrellaStand umbrellaStand){
-        return Rental.builder()
-                .user(user)
-                .rentalUmbrellaStand(umbrellaStand)
-                .isOverdue(false)
-                .isReturn(false)
-                .isWrong(false)
-                .overDueAmount(0)
+                .overDueAmount(rental.getOverdueAmount())
                 .build();
     }
 }

@@ -6,14 +6,14 @@ import java.util.List;
 
 public class UmbrellaResponseDto {
 
-    @Builder
+    @Builder @Data
     @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class LocationDto{
         private Long locationId;
         private String name;
-        private Integer umbrellaCount;
-        private List<Integer> umbrellaNumber;
+        private Boolean isRental;
+        private List<Integer> umbrellaStandNumber;
     }
 
     @Builder @Data

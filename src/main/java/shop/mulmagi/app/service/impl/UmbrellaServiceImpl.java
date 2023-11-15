@@ -32,13 +32,20 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     private final UserRepository userRepository;
 
     @Override
-    public UmbrellaResponseDto.LocationDto getLocation(Long locationId) {
+    public UmbrellaResponseDto.LocationDto getLocation(User user, Long locationId) {
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new NoSuchElementException("Location not found."));
 
-        List<Integer> umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsWrong(locationId, false);
+        Boolean isRental = user.getIsRental();
+        List<Integer> umbrellaStandNumberList;
 
-        return umbrellaConverter.toLocation(location, umbrellaStandNumberList);
+        if (isRental){
+            umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsUmbrella(locationId);
+        } else {
+            umbrellaStandNumberList = umbrellaStandRepository.findNumbersByLocationAndIsWrongAndIsUmbrella(locationId);
+        }
+
+        return umbrellaConverter.toLocation(isRental, location, umbrellaStandNumberList);
     }
 
     @Override
@@ -68,7 +75,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         String returnUmbrellaStandNumber = String.valueOf(returnUmbrellaStand.getNumber());
         String returnStr = String.join(" ", returnLocation.getName(), returnUmbrellaStandNumber);
 
-        return umbrellaConverter.toReturnPAge(rental, rentalStr, returnStr);
+        return umbrellaConverter.toReturnPage(rental, rentalStr, returnStr);
     }
 
     @Override
@@ -76,6 +83,8 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     public void rental(User user, UmbrellaRequestDto.RentalDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(request.getUmbrellaStandId())
                 .orElseThrow(() -> new NoSuchElementException("Umbrella stand not found."));
+
+        Location location = umbrellaStand.getLocation();
 
         if (user.getIsRental()) {
             throw new CustomExceptions.Exception("이미 대여 중인 사용자입니다.");
@@ -87,12 +96,21 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             throw new CustomExceptions.Exception("고장난 우산입니다.");
         }
 
+        location.updateRental();
         umbrellaStand.updateRental();
         user.updateRental();
         user.updatePoint();
 
-        Rental rental = umbrellaConverter.toRental(user, umbrellaStand);
+        Rental rental = Rental.builder()
+                .user(user)
+                .rentalUmbrellaStand(umbrellaStand)
+                .isOverdue(false)
+                .isReturn(false)
+                .isWrong(false)
+                .overdueAmount(0)
+                .build();
 
+        locationRepository.save(location);
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
@@ -102,6 +120,8 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     @Transactional
     public void returnUmb(User user, UmbrellaRequestDto.ReturnDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findByQrCode(request.getQrCode());
+
+        Location location = umbrellaStand.getLocation();
 
         Rental rental = rentalRepository.findById(request.getRentalId())
                 .orElseThrow(() -> new NoSuchElementException("Rental not found."));
@@ -114,11 +134,13 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             throw new CustomExceptions.Exception("이미 반납된 우산입니다.");
         }
 
+        location.updateReturn();
         umbrellaStand.updateReturn();
         user.updateReturn();
-        user.returnPoint(9000 - rental.getOverDueAmount());
+        user.returnPoint(9000 - rental.getOverdueAmount());
         rental.updateReturn(umbrellaStand);
 
+        locationRepository.save(location);
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
