@@ -46,6 +46,13 @@ dependencies {
 	implementation 'com.h2database:h2:2.1.214'
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
 
+	//aws
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// chatting
+	//implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	//implementation 'org.webjars:sockjs-client:1.5.1'
+
 }
 
 tasks.named('test') {
