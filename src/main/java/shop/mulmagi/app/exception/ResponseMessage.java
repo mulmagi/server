@@ -14,5 +14,6 @@ public class ResponseMessage {
 
     //payment
     public static final String PAYMENT_SUCCESS = "결제 성공";
+    public static final String PAYMENT_HISTORY_READ_SUCCESS = "포인트 내역 불러오기 성공";
 
 }
