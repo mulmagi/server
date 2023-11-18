@@ -4,16 +4,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
+@EnableRedisHttpSession
 @Configuration
-@EnableRedisRepositories
 public class RedisConfig {
 
-    @Value("${redis.host")
+    @Value("${spring.redis.host}")
     private String redisHost;
-    @Value("${spring.redis.port")
+    @Value("${spring.redis.port}")
     private int redisPort;
 
     @Bean
@@ -21,11 +21,11 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
-    @Bean
-    public RedisTemplate<?,?> redisTemplate(){
-        RedisTemplate<byte[],byte[]> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        return redisTemplate;
+    @Bean(name = "redisTemplate")
+    public StringRedisTemplate stringRedisTemplate() {
+        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
+        return stringRedisTemplate;
     }
 
 }

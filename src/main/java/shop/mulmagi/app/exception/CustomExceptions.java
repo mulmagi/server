@@ -9,4 +9,10 @@ public class CustomExceptions {
         public SmsCertificationNumberMismatchException(String message){super(message);}
     }
 
+    public static class MessageNotSentException extends RuntimeException {
+        public MessageNotSentException(String message) { super(message);}
+    }
+
+
+
 }
