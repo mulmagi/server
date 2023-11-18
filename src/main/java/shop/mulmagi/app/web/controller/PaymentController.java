@@ -8,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +22,7 @@ import shop.mulmagi.app.service.impl.PaymentServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.PaymentRequestDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
+
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 
@@ -58,7 +58,7 @@ public class PaymentController extends BaseController {
 
             String impUid = request.getImpUid();
             Integer amount = request.getAmount();
-            PaymentMethod method = PaymentMethod.valueOf(request.getMethod());
+            PaymentMethod method = PaymentMethod.valueOf(request.getMethod().toUpperCase());
 
             logger.info("Received Data: impUid={}, amount={}, method={}", impUid, amount, method);
 
@@ -72,4 +72,5 @@ public class PaymentController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
+
 }
