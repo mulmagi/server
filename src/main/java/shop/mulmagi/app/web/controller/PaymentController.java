@@ -21,10 +21,12 @@ import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.impl.PaymentServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.PaymentRequestDto;
+import shop.mulmagi.app.web.dto.PaymentResponseDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.List;
 
 @Api(tags = "포인트 결제 관련 API")
 @RestController
@@ -73,4 +75,20 @@ public class PaymentController extends BaseController {
         }
     }
 
+    @ApiOperation(value = "포인트 충전/사용 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "포인트 충전/사용 내역 불러오기 성공")
+    @GetMapping("/payment/history")
+    public ResponseEntity paymentHistory() {
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Post", "/api/payment/history", "포인트 충전 내역 불러오기 API");
+
+            User user = userRepository.findByPhoneNumber("01043939869");
+
+            List<PaymentResponseDto.PaymentHistoryDto> res = paymentService.getPaymentHistory(user);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.PAYMENT_HISTORY_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

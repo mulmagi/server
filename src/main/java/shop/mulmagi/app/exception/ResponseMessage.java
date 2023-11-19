@@ -12,6 +12,8 @@ public class ResponseMessage {
 
     //payment
     public static final String PAYMENT_SUCCESS = "결제 성공";
+    public static final String PAYMENT_HISTORY_READ_SUCCESS = "포인트 내역 불러오기 성공";
+  
     //notice
     public static final String NOTICE_READ_SUCCESS = "공지사항 불러오기 성공";
     public static final String NOTICE_DETAIL_READ_SUCCESS = "공지사항 세부내용 불러오기 성공";
@@ -27,7 +29,6 @@ public class ResponseMessage {
     //sms certification
     public static final String SMS_CERT_SUCCESS = "sms 본인 확인 성공";
     public static final String SMS_CERT_MESSAGE_SUCCESS = "인증 문자 전송 성공";
-
 
     //notice
     public static final String NOTICE_READ_SUCCESS = "공지사항 불러오기 성공";

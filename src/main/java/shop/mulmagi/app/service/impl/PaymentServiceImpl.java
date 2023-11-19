@@ -11,6 +11,9 @@ import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.PaymentRepository;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.PaymentService;
+import shop.mulmagi.app.web.dto.PaymentResponseDto;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -37,5 +40,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         user.chargePoint(amount);
         userRepository.save(user);
+    }
+
+    @Override
+    public List<PaymentResponseDto.PaymentHistoryDto> getPaymentHistory(User user){
+        List<PaymentResponseDto.PaymentHistoryDto> paymentHistoryDtoList = paymentRepository.findAmountAndCreatedAtByUserId(user);
+        return paymentHistoryDtoList;
     }
 }
