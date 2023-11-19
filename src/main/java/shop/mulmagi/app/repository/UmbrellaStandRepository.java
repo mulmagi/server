@@ -9,7 +9,6 @@ import shop.mulmagi.app.domain.UmbrellaStand;
 import java.util.List;
 
 public interface UmbrellaStandRepository extends JpaRepository<UmbrellaStand, Long> {
-
     @Query("SELECT us.number FROM UmbrellaStand us " +
             "WHERE us.location.id = :locationId AND us.isWrong = false AND us.isUmbrella = true")
     List<Integer> findNumbersByLocationAndIsWrongAndIsUmbrella(Long locationId);

@@ -26,8 +26,26 @@ public class UmbrellaController extends BaseController {
     private final UserRepository userRepository;
     private final UmbrellaServiceImpl umbrellaService;
 
+    @ApiOperation(value = "메인 화면 불러오기 API")
+    @ApiResponse(code = 200, message = "메인 화면 불러오기 성공")
+    @GetMapping("/main")
+    public ResponseEntity main(@RequestBody UmbrellaRequestDto.LocationPointDto request){
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/main", "메인 화면 불러오기 API");
+
+            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
+            User user = userRepository.findByPhoneNumber("01029440386");
+
+            UmbrellaResponseDto.LocationDataListDto res = umbrellaService.getLocationData(user, request);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.MAIN_SCREEN_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @ApiOperation(value = "location 불러오기 API")
-    @ApiResponse(code = 200, message = "location 불러오기  성공")
+    @ApiResponse(code = 200, message = "location 불러오기 성공")
     @GetMapping("/main/{location-id}")
     public ResponseEntity location(@PathVariable("location-id") Long locationId){
         try {
@@ -45,7 +63,7 @@ public class UmbrellaController extends BaseController {
     }
 
     @ApiOperation(value = "대여 페이지 불러오기 API")
-    @ApiResponse(code = 200, message = "대여 페이지 불러오기  성공")
+    @ApiResponse(code = 200, message = "대여 페이지 불러오기 성공")
     @GetMapping("/rental")
     public ResponseEntity rentalPage(@RequestBody UmbrellaRequestDto.RentalPageDto request){
         try {
@@ -63,7 +81,7 @@ public class UmbrellaController extends BaseController {
     }
 
     @ApiOperation(value = "반납 완료 페이지 불러오기 API")
-    @ApiResponse(code = 200, message = "반납 완료 페이지 불러오기  성공")
+    @ApiResponse(code = 200, message = "반납 완료 페이지 불러오기 성공")
     @GetMapping("/return")
     public ResponseEntity returnPage(@RequestBody UmbrellaRequestDto.ReturnPageDto request){
         try {

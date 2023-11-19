@@ -60,7 +60,7 @@ public class PaymentController extends BaseController {
 
             String impUid = request.getImpUid();
             Integer amount = request.getAmount();
-            PaymentMethod method = PaymentMethod.valueOf(request.getMethod());
+            PaymentMethod method = PaymentMethod.valueOf(request.getMethod().toUpperCase());
 
             logger.info("Received Data: impUid={}, amount={}, method={}", impUid, amount, method);
 

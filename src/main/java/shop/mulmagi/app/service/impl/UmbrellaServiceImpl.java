@@ -16,7 +16,6 @@ import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UmbrellaService;
 import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -24,12 +23,32 @@ import java.util.NoSuchElementException;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UmbrellaServiceImpl implements UmbrellaService {
-
     private final LocationRepository locationRepository;
     private final UmbrellaStandRepository umbrellaStandRepository;
     private final UmbrellaConverter umbrellaConverter;
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
+
+    @Override
+    public UmbrellaResponseDto.LocationDataListDto getLocationData(User user, UmbrellaRequestDto.LocationPointDto request){
+        Double userLatitude = request.getLatitude();
+        Double userLongitude = request.getLongitude();
+
+        List<Location> nearbyLocations;
+        Double distanceThreshold = 1000.0;
+
+        boolean isRental = user.getIsRental();
+
+        if (isRental){
+            Rental rental = rentalRepository.findByUserAndIsReturn(user, false);
+
+            nearbyLocations = locationRepository.findNearbyLocationsByAvailable(userLatitude, userLongitude, distanceThreshold);
+            return umbrellaConverter.toLocationDataListDto(nearbyLocations, rental);
+        } else {
+            nearbyLocations = locationRepository.findNearbyLocationsByIsUmbrella(userLatitude, userLongitude, distanceThreshold);
+            return umbrellaConverter.toLocationDataListDto(nearbyLocations, null);
+        }
+    }
 
     @Override
     public UmbrellaResponseDto.LocationDto getLocation(User user, Long locationId) {
@@ -67,11 +86,13 @@ public class UmbrellaServiceImpl implements UmbrellaService {
 
         UmbrellaStand rentalUmbrellaStand = rental.getRentalUmbrellaStand();
         Location rentalLocation = rentalUmbrellaStand.getLocation();
+
         String rentalUmbrellaStandNumber = String.valueOf(rentalUmbrellaStand.getNumber());
         String rentalStr = String.join(" ", rentalLocation.getName(), rentalUmbrellaStandNumber);
 
         UmbrellaStand returnUmbrellaStand = rental.getReturnUmbrellaStand();
         Location returnLocation = returnUmbrellaStand.getLocation();
+
         String returnUmbrellaStandNumber = String.valueOf(returnUmbrellaStand.getNumber());
         String returnStr = String.join(" ", returnLocation.getName(), returnUmbrellaStandNumber);
 

@@ -1,7 +1,6 @@
 package shop.mulmagi.app.batch.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -15,7 +14,6 @@ import shop.mulmagi.app.batch.processor.OverdueRentalProcessor;
 import shop.mulmagi.app.batch.reader.OverdueRentalReader;
 import shop.mulmagi.app.batch.writer.OverdueRentalWriter;
 import shop.mulmagi.app.domain.Rental;
-import javax.persistence.EntityManagerFactory;
 
 @Configuration
 @EnableBatchProcessing
@@ -32,7 +30,7 @@ public class OverdueRentalConfig {
 
     @Bean
     public Job overdueRentalBatchJob() throws Exception {
-        return jobBuilderFactory.get("overdueRentalBatchJob")
+        return jobBuilderFactory.get("calculateOverdueBatchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
                 .build();
@@ -46,6 +44,9 @@ public class OverdueRentalConfig {
                 .reader(overdueRentalReader.rentalItemReader())
                 .processor(overdueRentalProcessor)
                 .writer(overdueRentalWriter)
+                .faultTolerant() // Skip 및 Retry를 사용하도록 설정
+                .skip(Exception.class)
+                .skipLimit(10) // 허용되는 최대 건너뛰기 수
                 .build();
     }
 
