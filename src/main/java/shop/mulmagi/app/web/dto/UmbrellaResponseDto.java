@@ -44,8 +44,8 @@ public class UmbrellaResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LocationDataListDto {
-        private boolean isRental;
         private List<LocationDataDto> LocationData;
+        private RentalDataDto rentalData;
 
         @Data
         @Builder
@@ -64,16 +64,16 @@ public class UmbrellaResponseDto {
             private Double latitude;
             private Double longitude;
         }
+    }
 
-        @Data
-        @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class RentalDataDto {
-            private Long rentalId;
-            private boolean isOverdue;
-            private Integer overdueAmount;
-            private LocalDateTime rentalDate;
-        }
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RentalDataDto {
+        private Long rentalId;
+        private boolean isOverdue;
+        private Integer overdueAmount;
+        private LocalDateTime rentalDate;
     }
 }

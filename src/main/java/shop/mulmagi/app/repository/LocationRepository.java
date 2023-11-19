@@ -16,7 +16,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query("SELECT lo FROM Location lo " +
             "WHERE FUNCTION('ST_Distance_Sphere', POINT(:userLongitude, :userLatitude), POINT(lo.longitude, lo.latitude)) < :distanceThreshold " +
-            "AND (lo.umbrellaCount - lo.wrongCount) > 0")
+            "AND (9 - lo.umbrellaCount) > 0")
     List<Location> findNearbyLocationsByAvailable(@Param("userLatitude") Double userLatitude, @Param("userLongitude") Double userLongitude, @Param("distanceThreshold") Double distanceThreshold);
 
 
