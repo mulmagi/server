@@ -1,7 +1,6 @@
 package shop.mulmagi.app.batch.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -15,7 +14,6 @@ import shop.mulmagi.app.batch.processor.OverdueRentalProcessor;
 import shop.mulmagi.app.batch.reader.OverdueRentalReader;
 import shop.mulmagi.app.batch.writer.OverdueRentalWriter;
 import shop.mulmagi.app.domain.Rental;
-import javax.persistence.EntityManagerFactory;
 
 @Configuration
 @EnableBatchProcessing

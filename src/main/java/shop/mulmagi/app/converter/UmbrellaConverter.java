@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import shop.mulmagi.app.domain.Location;
 import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.UmbrellaStand;
-import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,11 +28,26 @@ public class UmbrellaConverter {
                 .collect(Collectors.toList());
     }
 
-    public UmbrellaResponseDto.LocationDataListDto toLocationDataListDto(List<Location> nearbyLocations, Boolean isRental) {
+    public UmbrellaResponseDto.RentalDataDto toRentalDataDto(Rental rental) {
+        return UmbrellaResponseDto.RentalDataDto.builder()
+                .rentalId(rental.getId())
+                .isOverdue(rental.getIsOverdue())
+                .overdueAmount(rental.getOverdueAmount())
+                .rentalDate(rental.getCreatedAt())
+                .build();
+    }
+
+    public UmbrellaResponseDto.LocationDataListDto toLocationDataListDto(List<Location> nearbyLocations, Rental rental) {
+        if (rental != null){
             return UmbrellaResponseDto.LocationDataListDto.builder()
-                    .isRental(isRental)
+                    .LocationData(this.toLocationDataDtoList(nearbyLocations))
+                    .rentalData(toRentalDataDto(rental))
+                    .build();
+        }else {
+            return UmbrellaResponseDto.LocationDataListDto.builder()
                     .LocationData(this.toLocationDataDtoList(nearbyLocations))
                     .build();
+        }
     }
 
     public UmbrellaResponseDto.LocationDto toLocation(Boolean isRental, Location location, List<Integer> umbrellaStandNumberList){
