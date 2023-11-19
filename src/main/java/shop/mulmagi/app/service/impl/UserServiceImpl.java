@@ -1,9 +1,6 @@
 package shop.mulmagi.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.dao.SmsCertificationDao;
@@ -20,12 +17,12 @@ public class UserServiceImpl implements UserService {
     private final SmsCertificationUtil smsUtil;
     private final SmsCertificationDao smsCertificationDao;
 
-    public SingleMessageSentResponse sendSms(String phone) {
-        Message message = smsUtil.makeMessage(phone);
-        SingleMessageSentResponse response = smsUtil.messageService.sendOne(new SingleMessageSendingRequest(message));
-        smsCertificationDao.createSmsCertification(phone, smsUtil.certificationNumber);
-        return response;
-
+    public void sendSms(UserDto.SmsCertificationRequest requestDto){
+        String to = requestDto.getPhone();
+        int randomNumber = (int) (Math.random() * 9000) + 1000;
+        String certificationNumber = String.valueOf(randomNumber);
+        smsUtil.sendSms(to, certificationNumber);
+        smsCertificationDao.createSmsCertification(to,certificationNumber);
     }
 
     public void verifySms(UserDto.SmsCertificationRequest requestDto) {
