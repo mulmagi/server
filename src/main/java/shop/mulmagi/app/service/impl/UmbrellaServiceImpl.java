@@ -19,17 +19,35 @@ import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UmbrellaServiceImpl implements UmbrellaService {
-
     private final LocationRepository locationRepository;
     private final UmbrellaStandRepository umbrellaStandRepository;
     private final UmbrellaConverter umbrellaConverter;
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
+
+    @Override
+    public UmbrellaResponseDto.LocationDataListDto getLocationData(User user, UmbrellaRequestDto.LocationPointDto request){
+        Double userLatitude = request.getLatitude();
+        Double userLongitude = request.getLongitude();
+        boolean isRental = user.getIsRental();
+
+        List<Location> nearbyLocations;
+        Double distanceThreshold = 1000.0;
+
+        if (isRental){
+            nearbyLocations = locationRepository.findNearbyLocationsByAvailable(userLatitude, userLongitude, distanceThreshold);
+        } else {
+            nearbyLocations = locationRepository.findNearbyLocationsByIsUmbrella(userLatitude, userLongitude, distanceThreshold);
+        }
+
+        return umbrellaConverter.toLocationDataListDto(nearbyLocations, isRental);
+    }
 
     @Override
     public UmbrellaResponseDto.LocationDto getLocation(User user, Long locationId) {

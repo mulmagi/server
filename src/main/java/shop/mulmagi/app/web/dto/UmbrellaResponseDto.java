@@ -45,7 +45,7 @@ public class UmbrellaResponseDto {
     @AllArgsConstructor
     public static class LocationDataListDto {
         private boolean isRental;
-        private List<LocationDataDto> umbrellaStandData;
+        private List<LocationDataDto> LocationData;
 
         @Data
         @Builder
