@@ -63,4 +63,5 @@ public class User extends BaseEntity {
     public void returnPoint(Integer amount){
         this.point += amount;
     }
+
 }
