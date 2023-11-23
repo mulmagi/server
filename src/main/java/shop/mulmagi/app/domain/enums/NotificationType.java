@@ -1,5 +1,8 @@
 package shop.mulmagi.app.domain.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum NotificationType {
     PAYMENT("결제"),
     OVERDUE("연체"),
