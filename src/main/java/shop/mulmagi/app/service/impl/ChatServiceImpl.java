@@ -15,6 +15,8 @@ import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.ChatService;
 import shop.mulmagi.app.web.dto.ChatResponseDto;
 import shop.mulmagi.app.web.dto.MessageDto;
+import shop.mulmagi.app.web.dto.MessageRequestDto;
+import shop.mulmagi.app.web.dto.MessageResponseDto;
 
 @Service
 @Transactional
@@ -63,9 +65,17 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public void saveMessage(MessageDto messageDto){
+	public void saveMessage(MessageResponseDto.MessageDto messageDto){
 		User user = userRepository.findById(messageDto.getUserId()).orElseThrow();
 		Message message = chatConverter.toMessage(user, messageDto);
 		messageRepository.save(message);
+	}
+
+	public MessageResponseDto.MessageDto getMessage(MessageRequestDto.TextMessageDto request){
+		return chatConverter.toResponseMessage(request);
+	}
+
+	public MessageResponseDto.MessageDto getMessage(MessageRequestDto.ImgMessageDto request, String imgUrl){
+		return chatConverter.toResponseMessage(request, imgUrl);
 	}
 }

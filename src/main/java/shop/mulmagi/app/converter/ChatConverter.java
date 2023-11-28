@@ -7,6 +7,8 @@ import shop.mulmagi.app.domain.Message;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.web.dto.ChatResponseDto;
 import shop.mulmagi.app.web.dto.MessageDto;
+import shop.mulmagi.app.web.dto.MessageRequestDto;
+import shop.mulmagi.app.web.dto.MessageResponseDto;
 
 @Component
 @RequiredArgsConstructor
@@ -29,11 +31,29 @@ public class ChatConverter {
 			.build();
 	}
 
-	public Message toMessage(User user, MessageDto messageDto){
+	public Message toMessage(User user, MessageResponseDto.MessageDto messageDto){
 		return Message.builder()
 			.user(user)
 			.type(messageDto.getType())
 			.content(messageDto.getContents())
+			.isAdmin(messageDto.isAdmin())
+			.build();
+	}
+
+	public MessageResponseDto.MessageDto toResponseMessage(MessageRequestDto.TextMessageDto messageDto){
+		return MessageResponseDto.MessageDto.builder()
+			.userId(messageDto.getUserId())
+			.contents(messageDto.getContents())
+			.type(messageDto.getType())
+			.isAdmin(messageDto.isAdmin())
+			.build();
+	}
+
+	public MessageResponseDto.MessageDto toResponseMessage(MessageRequestDto.ImgMessageDto messageDto, String imgUrl){
+		return MessageResponseDto.MessageDto.builder()
+			.userId(messageDto.getUserId())
+			.contents(imgUrl)
+			.type(messageDto.getType())
 			.isAdmin(messageDto.isAdmin())
 			.build();
 	}

@@ -18,6 +18,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.domain.Announcement;
+import shop.mulmagi.app.domain.Message;
 import shop.mulmagi.app.service.S3UploadService;
 
 @Service
@@ -93,4 +94,36 @@ public class S3UploadServiceImpl implements S3UploadService {
 		}
 	}
 
+	@Override
+	public String uploadAWSChatImg(MultipartFile img){
+		String imgUrl = "";
+
+		String imgName = createFileName(img.getOriginalFilename());
+		ObjectMetadata objectMetadata = new ObjectMetadata();
+		objectMetadata.setContentLength(img.getSize());
+		objectMetadata.setContentType(img.getContentType());
+
+		try (InputStream inputStream = img.getInputStream()) {
+			amazonS3.putObject(new PutObjectRequest(bucket + "/chat/img", imgName, inputStream, objectMetadata)
+				.withCannedAcl(CannedAccessControlList.PublicRead));
+			imgUrl = amazonS3.getUrl(bucket + "/chat/img", imgName).toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return imgUrl;
+	}
+
+	@Override
+	public void deleteAWSChatImg(Message message) {
+		try {
+			String imgUrl = message.getContent();
+			if(imgUrl != null){
+				String decodedImgUri = URLDecoder.decode(imgUrl, "UTF-8");
+				String imgName = decodedImgUri.substring(decodedImgUri.lastIndexOf('/') + 1);
+				amazonS3.deleteObject(bucket + "/chat/img", imgName);
+			}
+		} catch(Exception e){
+			throw new RuntimeException(e);
+		}
+	}
 }

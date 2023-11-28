@@ -4,15 +4,19 @@ import static shop.mulmagi.app.domain.enums.MessageType.*;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.service.impl.ChatServiceImpl;
+import shop.mulmagi.app.service.impl.S3UploadServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
-import shop.mulmagi.app.web.dto.MessageDto;
 import shop.mulmagi.app.web.dto.MessageRequestDto;
+import shop.mulmagi.app.web.dto.MessageResponseDto;
 
 @Api(tags = "메시지 관련 API")
 @RestController
@@ -21,26 +25,38 @@ import shop.mulmagi.app.web.dto.MessageRequestDto;
 public class MessageController extends BaseController {
 	private final SimpMessageSendingOperations sendingOperations;
 	private final ChatServiceImpl chatService;
+	private final S3UploadServiceImpl s3UploadService;
 
 	@MessageMapping("/enter")
-	public void enter(MessageDto message){
-		if(!message.isAdmin()){
-			message.setContents("환영합니다 "+ message.getUserId().toString() + "님");
-		}
-		message.setType(ENTER);
-		sendingOperations.convertAndSend("/topic/chat/room/" + message.getUserId().toString(), message);
+	public void enter(MessageRequestDto.TextMessageDto messageDto){
+		MessageResponseDto.MessageDto messageRes = chatService.getMessage(messageDto);
+		if(!messageRes.isAdmin()){
+			messageRes.setContents("환영합니다 "+ messageRes.getUserId().toString() + "님");
+		}messageRes.setType(ENTER);
 
-		chatService.saveMessage(message);
+		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
+
+		chatService.saveMessage(messageRes);
 	}
 
 	@MessageMapping("/message")
-	public void sendMessage(MessageDto message) {
-		/*if(message.getType() == IMAGE){
-			base64 img code를 multipartfile로 변환
-			s3에 업로드하고 url반환
-		}*/
-		sendingOperations.convertAndSend("/topic/chat/room/" + message.getUserId().toString(), message);
+	public void sendTextMessage(MessageRequestDto.TextMessageDto messageDto) {
+		MessageResponseDto.MessageDto messageRes = chatService.getMessage(messageDto);
+		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 
-		chatService.saveMessage(message);
+		chatService.saveMessage(messageRes);
+	}
+	//이미지 채팅 전송
+	@PostMapping("/message")
+	public void sendImgMessage(@RequestBody MessageRequestDto.ImgMessageDto request) {
+		MultipartFile img = request.getImg();
+		String imgUrl = "";
+		if(img != null && !img.isEmpty()) {
+			imgUrl = s3UploadService.uploadAWSChatImg(img);
+		}
+		MessageResponseDto.MessageDto messageRes = chatService.getMessage(request, imgUrl);
+		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
+
+		chatService.saveMessage(messageRes);
 	}
 }
