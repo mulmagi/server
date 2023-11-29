@@ -3,6 +3,8 @@ package shop.mulmagi.app.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,7 @@ public class ChatServiceImpl implements ChatService {
 		return chatRoomDtos;
 	}
 
+	@Cacheable(key = "#userId", value = "ChatRoom", cacheManager = "redisCacheManager")
 	@Override
 	public List<MessageDto> getMessages(Long userId){
 		User user = userRepository.findById(userId).orElseThrow();
@@ -64,6 +67,7 @@ public class ChatServiceImpl implements ChatService {
 		userRepository.save(user);
 	}
 
+	@CacheEvict(key = "#messageDto.userId", value = "ChatRoom", cacheManager = "redisCacheManager")
 	@Override
 	public void saveMessage(MessageResponseDto.MessageDto messageDto){
 		User user = userRepository.findById(messageDto.getUserId()).orElseThrow();

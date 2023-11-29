@@ -1,10 +1,15 @@
 package shop.mulmagi.app.web.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import shop.mulmagi.app.domain.enums.MessageType;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter @Setter
 @Builder
 public class MessageDto {

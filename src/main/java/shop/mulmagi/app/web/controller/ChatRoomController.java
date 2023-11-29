@@ -46,9 +46,11 @@ public class ChatRoomController extends BaseController {
 	}
 
 	@ApiOperation(value = "특정 채팅방 메시지 불러오기 API")
-	@GetMapping("/rooms/{userId}")
+	@GetMapping("/room/{userId}")
 	public ResponseEntity getChatMessages(@PathVariable Long userId){
 		try {
+			logger.info("Received request: method={}, path={}, description={}", "Get", "/chat/room/{userId}", "특정 채팅방 메시지 불러오기 API");
+
 			List<MessageDto> res = chatService.getMessages(userId); //userId == roomId
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, "Get messages success", res), HttpStatus.OK);
