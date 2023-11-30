@@ -9,19 +9,17 @@ public class MessageRequestDto {
 
 	@Getter
 	public static class TextMessageDto{
-		private Long id;
 		private Long userId;
 		private String contents;
 		private MessageType type;
-		private boolean isAdmin;
+		private Boolean isAdmin;
 	}
 	@Getter
 	public static class ImgMessageDto{
-		private Long id;
 		private Long userId;
 		private MultipartFile img;
 		private MessageType type;
 		private String imgUrl;
-		private boolean isAdmin;
+		private Boolean isAdmin;
 	}
 }

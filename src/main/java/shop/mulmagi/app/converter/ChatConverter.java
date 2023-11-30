@@ -36,7 +36,7 @@ public class ChatConverter {
 			.user(user)
 			.type(messageDto.getType())
 			.content(messageDto.getContents())
-			.isAdmin(messageDto.isAdmin())
+			.isAdmin(messageDto.getIsAdmin())
 			.build();
 	}
 
@@ -45,7 +45,7 @@ public class ChatConverter {
 			.userId(messageDto.getUserId())
 			.contents(messageDto.getContents())
 			.type(messageDto.getType())
-			.isAdmin(messageDto.isAdmin())
+			.isAdmin(messageDto.getIsAdmin())
 			.build();
 	}
 
@@ -54,7 +54,7 @@ public class ChatConverter {
 			.userId(messageDto.getUserId())
 			.contents(imgUrl)
 			.type(messageDto.getType())
-			.isAdmin(messageDto.isAdmin())
+			.isAdmin(messageDto.getIsAdmin())
 			.build();
 	}
 }

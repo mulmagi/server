@@ -67,6 +67,7 @@ public class ChatServiceImpl implements ChatService {
 		userRepository.save(user);
 	}
 
+	//write through?
 	@CacheEvict(key = "#messageDto.userId", value = "ChatRoom", cacheManager = "redisCacheManager")
 	@Override
 	public void saveMessage(MessageResponseDto.MessageDto messageDto){

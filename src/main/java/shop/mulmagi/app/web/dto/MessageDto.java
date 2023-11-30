@@ -18,5 +18,5 @@ public class MessageDto {
 	private Long userId;
 	private String contents;
 	private MessageType type;
-	private boolean isAdmin;
+	private Boolean isAdmin;
 }
