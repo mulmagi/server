@@ -4,18 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.dao.SmsCertificationDao;
+import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
+import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final SmsCertificationUtil smsUtil;
     private final SmsCertificationDao smsCertificationDao;
+
+    private final UserRepository userRepository;
 
     public void sendSms(UserDto.SmsCertificationRequest requestDto){
         String to = requestDto.getPhone();
@@ -38,4 +42,24 @@ public class UserServiceImpl implements UserService {
                         .equals(requestDto.getCertificationNumber()));
     }
 
+    public void registerMember(UserDto.SmsCertificationRequest requestDto){
+        if (isVerify(requestDto)) {
+            User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
+            if (existingUser == null) {
+                User user = User
+                        .builder()
+                        .name(requestDto.getPhone())
+                        .phoneNumber(requestDto.getPhone())
+                        .isAdmin(false)
+                        .level(0)
+                        .experience(0.0)
+                        .point(0)
+                        .profileUrl(" ")
+                        .isRental(false)
+                        .isComplaining(false)
+                        .build();
+                userRepository.save(user);
+            }
+        }
+    }
 }

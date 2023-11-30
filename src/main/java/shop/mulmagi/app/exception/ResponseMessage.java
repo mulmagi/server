@@ -32,5 +32,13 @@ public class ResponseMessage {
     //sms certification
     public static final String SMS_CERT_SUCCESS = "sms 본인 확인 성공";
     public static final String SMS_CERT_MESSAGE_SUCCESS = "인증 문자 전송 성공";
-  
+
+    // user
+    public static final String USER_REGISTER_SUCCESS = "회원 가입 성공";
+    public static final String USER_LOGIN_SUCCESS = "로그인 성공";
+    public static final String USER_LOGOUT_SUCCESS = "로그아웃 성공";
+    public static final String REFRESH_TOKEN_ISSUE_SUCCESS = "Refresh Token 발급 완료";
+    public static final String ACCESS_TOKEN_ISSUE_SUCCESS = "Access Token 발급 완료";
+
+    public static final String TOKEN_VALIDATE_SUCCESS = "Token 인증 완료";
 }
