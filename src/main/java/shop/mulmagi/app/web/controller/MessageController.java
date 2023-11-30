@@ -21,33 +21,33 @@ import shop.mulmagi.app.web.dto.MessageResponseDto;
 @Api(tags = "메시지 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/chat")
 public class MessageController extends BaseController {
 	private final SimpMessageSendingOperations sendingOperations;
 	private final ChatServiceImpl chatService;
 	private final S3UploadServiceImpl s3UploadService;
 
-	@MessageMapping("/enter")
+	@MessageMapping("/chat/enter")
 	public void enter(MessageRequestDto.TextMessageDto messageDto){
 		MessageResponseDto.MessageDto messageRes = chatService.getMessage(messageDto);
-		if(!messageRes.isAdmin()){
+		if(!messageRes.getIsAdmin()){
 			messageRes.setContents("환영합니다 "+ messageRes.getUserId().toString() + "님");
-		}messageRes.setType(ENTER);
+			messageRes.setType(ENTER);
+			sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 
-		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
-
-		chatService.saveMessage(messageRes);
+			chatService.saveMessage(messageRes);
+		}
 	}
 
-	@MessageMapping("/message")
+	@MessageMapping("/chat/message")
 	public void sendTextMessage(MessageRequestDto.TextMessageDto messageDto) {
+		logger.info(messageDto.getContents());
 		MessageResponseDto.MessageDto messageRes = chatService.getMessage(messageDto);
 		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 
 		chatService.saveMessage(messageRes);
 	}
 	//이미지 채팅 전송
-	@PostMapping("/message")
+	@PostMapping("/chat/message")
 	public void sendImgMessage(@RequestBody MessageRequestDto.ImgMessageDto request) {
 		MultipartFile img = request.getImg();
 		String imgUrl = "";
