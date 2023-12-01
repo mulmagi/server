@@ -6,11 +6,11 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.service.impl.ChatServiceImpl;
 import shop.mulmagi.app.service.impl.S3UploadServiceImpl;
@@ -40,13 +40,15 @@ public class MessageController extends BaseController {
 
 	@MessageMapping("/chat/message")
 	public void sendTextMessage(MessageRequestDto.TextMessageDto messageDto) {
-		logger.info(messageDto.getContents());
+		//logger.info(messageDto.getContents());
 		MessageResponseDto.MessageDto messageRes = chatService.getMessage(messageDto);
 		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 
 		chatService.saveMessage(messageRes);
 	}
+
 	//이미지 채팅 전송
+	@ApiOperation(value = "이미지 메시지 전송하기 API")
 	@PostMapping("/chat/message")
 	public void sendImgMessage(@RequestBody MessageRequestDto.ImgMessageDto request) {
 		MultipartFile img = request.getImg();

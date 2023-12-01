@@ -38,6 +38,8 @@ public class ChatRoomController extends BaseController {
 	@GetMapping("/rooms")
 	public ResponseEntity getAllChatRooms(){
 		try {
+			logger.info("Received request: method={}, path={}, description={}", "Get", "/chat/rooms", "모든 채팅방 불러오기 API");
+			
 			List<ChatResponseDto.chatRoomDto> res = chatService.findAllChatRooms();
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_READ_SUCCESS, res), HttpStatus.OK);
@@ -64,6 +66,8 @@ public class ChatRoomController extends BaseController {
 	@PostMapping("room/{userId}")
 	public ResponseEntity createChatRoom(@PathVariable Long userId){
 		try {
+			logger.info("Received request: method={}, path={}, description={}", "Post", "/chat/room/{userId}", "채팅방 생성 API");
+
 			chatService.createRoom(userId);
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_CREAT_SUCCESS), HttpStatus.OK);
@@ -76,6 +80,8 @@ public class ChatRoomController extends BaseController {
 	@DeleteMapping("room/{userId}")
 	public ResponseEntity deleteChatRoom(@PathVariable Long userId){
 		try {
+			logger.info("Received request: method={}, path={}, description={}", "Delete", "/chat/room/{userId}", "채팅방 삭제 API");
+
 			chatService.deleteRoom(userId);
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_DELETE_SUCCESS), HttpStatus.OK);
