@@ -29,5 +29,10 @@ public class ResponseMessage {
     //sms certification
     public static final String SMS_CERT_SUCCESS = "sms 본인 확인 성공";
     public static final String SMS_CERT_MESSAGE_SUCCESS = "인증 문자 전송 성공";
-  
+
+    //chat
+    public static final String CHATROOM_READ_SUCCESS = "모든 채팅방 불러오기 성공";
+    public static final String CHATROOM_CREAT_SUCCESS = "채팅방 생성 성공";
+    public static final String CHATROOM_DELETE_SUCCESS = "채팅방 삭제 성공";
+    public static final String MESSAGE_READ_SUCCESS = "메시지 목록 불러오기 성공";
 }

@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.domain.Message;
 import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.impl.ChatServiceImpl;
@@ -39,7 +40,7 @@ public class ChatRoomController extends BaseController {
 		try {
 			List<ChatResponseDto.chatRoomDto> res = chatService.findAllChatRooms();
 
-			return new ResponseEntity(DefaultRes.res(StatusCode.OK, "Get all chatrooms success", res), HttpStatus.OK);
+			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_READ_SUCCESS, res), HttpStatus.OK);
 		} catch (Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
@@ -53,7 +54,7 @@ public class ChatRoomController extends BaseController {
 
 			List<MessageDto> res = chatService.getMessages(userId); //userId == roomId
 
-			return new ResponseEntity(DefaultRes.res(StatusCode.OK, "Get messages success", res), HttpStatus.OK);
+			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.MESSAGE_READ_SUCCESS, res), HttpStatus.OK);
 		} catch (Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
@@ -65,7 +66,7 @@ public class ChatRoomController extends BaseController {
 		try {
 			chatService.createRoom(userId);
 
-			return new ResponseEntity(DefaultRes.res(StatusCode.OK, "Create room success"), HttpStatus.OK);
+			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_CREAT_SUCCESS), HttpStatus.OK);
 		} catch (Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
@@ -77,7 +78,7 @@ public class ChatRoomController extends BaseController {
 		try {
 			chatService.deleteRoom(userId);
 
-			return new ResponseEntity(DefaultRes.res(StatusCode.OK, "Delete room success"), HttpStatus.OK);
+			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_DELETE_SUCCESS), HttpStatus.OK);
 		} catch (Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
