@@ -84,7 +84,7 @@ public class UmbrellaController extends BaseController {
     @ApiOperation(value = "반납 완료 페이지 불러오기 API")
     @ApiResponse(code = 200, message = "반납 완료 페이지 불러오기 성공")
     @GetMapping("/return/{rental-id}")
-    public ResponseEntity returnPage(@PathVariable("rental-Id") @ApiParam(value = "rental ID", example = "1") Long rentalId){
+    public ResponseEntity returnPage(@PathVariable("rental-id") @ApiParam(value = "rental ID", example = "1") Long rentalId){
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/return", "반납 완료 페이지 불러오기 API");
 
