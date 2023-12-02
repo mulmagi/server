@@ -159,6 +159,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         umbrellaStand.updateReturn();
         user.updateReturn();
         user.returnPoint(9000 - rental.getOverdueAmount());
+        user.updateExperience(rental.getOverdueAmount()+1000);
         rental.updateReturn(umbrellaStand);
 
         locationRepository.save(location);

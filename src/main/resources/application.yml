@@ -24,6 +24,8 @@ spring:
         hbm2ddl:
           auto: update
   batch:
+    job:
+      enabled: false
     jdbc:
       initialize-schema: always
   profiles:
