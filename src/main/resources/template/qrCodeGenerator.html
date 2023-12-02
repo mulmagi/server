@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+</head>
+<body>
+
+<div id="qrcode"></div>
+
+<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 특정한 6자리 숫자를 생성
+        var sixDigitNumber = generateSixDigitNumber();
+
+        // QR 코드 생성 및 특정한 숫자 추가
+        generateQRCodeWithNumber(sixDigitNumber);
+    });
+
+    function generateSixDigitNumber() {
+        // 원하는 방법으로 6자리 숫자를 생성
+        // 여기에서는 간단하게 무작위로 생성하는 예시를 사용합니다.
+        return Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+    }
+
+    function generateQRCodeWithNumber(number) {
+        // QR 코드에 추가할 텍스트 데이터
+        var text = "CustomData:" + number;
+
+        // QR 코드 생성
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: text,
+            width: 128,
+            height: 128
+        });
+    }
+</script>
+
+</body>
+</html>
