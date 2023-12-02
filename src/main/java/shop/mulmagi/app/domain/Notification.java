@@ -1,15 +1,12 @@
 package shop.mulmagi.app.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import shop.mulmagi.app.domain.base.BaseEntity;
 import shop.mulmagi.app.domain.enums.NotificationType;
 import javax.persistence.*;
 
 @Entity
-@Builder
+@Builder @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification extends BaseEntity {
@@ -25,5 +22,6 @@ public class Notification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    private String content;
+    private String mainContent;
+    private String subContent;
 }
