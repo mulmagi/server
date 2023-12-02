@@ -9,6 +9,7 @@ import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.JwtBlacklist;
 import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.domain.enums.UserStatus;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.JwtBlacklistRepository;
 import shop.mulmagi.app.repository.UserRepository;
@@ -133,7 +134,7 @@ public class UserServiceImpl implements UserService {
             jwtBlacklistRepository.save(jwtBlacklist);
         }
 
-        // Access token도 블랙리스트에 추가
+        // Access token 블랙리스트에 추가
         JwtBlacklist jwtBlacklistAccessToken = JwtBlacklist.builder()
                 .token(accessToken)
                 .build();
@@ -142,6 +143,30 @@ public class UserServiceImpl implements UserService {
 
     public boolean isTokenBlacklisted(String token) {
         return jwtBlacklistRepository.existsByToken(token);
+    }
+
+    public void deleteUser(String accessToken) {
+        String refreshToken = jwtUtil.extractRefreshToken(accessToken);
+
+        // AccessToken 블랙리스트에 추가
+        JwtBlacklist jwtBlacklistAccessToken = JwtBlacklist.builder()
+                .token(accessToken)
+                .build();
+        jwtBlacklistRepository.save(jwtBlacklistAccessToken);
+
+        // RefreshToken 블랙리스트에 추가
+        JwtBlacklist jwtBlacklistRefreshToken = JwtBlacklist.builder()
+                .token(refreshToken)
+                .build();
+        jwtBlacklistRepository.save(jwtBlacklistRefreshToken);
+
+        // 사용자 정보 삭제
+        String phoneNumber = jwtUtil.extractUsername(accessToken);
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user != null) {
+            user = user.builder().status(UserStatus.INACTIVE).build();
+            userRepository.save(user);
+        }
     }
 }
 

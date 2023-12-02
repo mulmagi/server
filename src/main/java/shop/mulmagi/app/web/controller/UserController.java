@@ -75,9 +75,22 @@ public class UserController extends BaseController {
         return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGOUT_SUCCESS), HttpStatus.OK);
     }
 
-    // 로그아웃했을 때 넘어가는 임시페이지
+    // 로그아웃했을 때 넘어가는 임시 페이지
     @GetMapping("/")
     public String home() {
         return "index";
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.substring(7); // "Bearer " 부분 제외한 토큰 추출
+
+        try {
+            userService.deleteUser(jwtToken); // 사용자 정보 삭제 및 토큰 블랙리스트 추가
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_DELETION_SUCCESS), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to logout", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

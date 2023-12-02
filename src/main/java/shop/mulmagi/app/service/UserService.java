@@ -13,5 +13,6 @@ public interface UserService {
 
     boolean verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
     void logout(String accessToken);
+    void deleteUser(String accessToken);
 
 }

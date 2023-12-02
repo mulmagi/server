@@ -81,13 +81,6 @@ public class JwtUtil {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-//    public String recreateAccessToken(String refreshToken,CustomUserDetails userDetails) {
-//        if(validateToken(refreshToken, userDetails)){
-//            String username = extractUsername(refreshToken);
-//            userDetails = userService.loadUserByPhoneNumber(username);
-//        }
-//        return generateAccessToken(userDetails);
-//    }
 
 
 }

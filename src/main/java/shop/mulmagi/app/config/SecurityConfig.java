@@ -26,6 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/sms-certification/send")
                 .permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/delete").authenticated()
                 .anyRequest().authenticated().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
