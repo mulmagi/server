@@ -64,6 +64,9 @@ public class User extends BaseEntity {
         this.point += amount;
     }
 
+    public void updateExperience(Integer payment){
+        this.experience += payment * 0.05;
+    }
     public void resetExperience(){ this.experience = 0.0; }
 
     public void startComplain(){ this.isComplaining = true; }
