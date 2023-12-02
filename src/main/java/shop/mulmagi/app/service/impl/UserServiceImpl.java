@@ -1,8 +1,11 @@
 package shop.mulmagi.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
@@ -10,6 +13,10 @@ import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 @Transactional
@@ -42,7 +49,11 @@ public class UserServiceImpl implements UserService {
                         .equals(requestDto.getCertificationNumber()));
     }
 
-    public void registerMember(UserDto.SmsCertificationRequest requestDto){
+    public User findByPhoneNumber(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber);
+    }
+
+    public void registerUser(UserDto.SmsCertificationRequest requestDto){
         if (isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser == null) {
@@ -62,4 +73,39 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+    public CustomUserDetails loadUserByPhoneNumber(String phoneNumber){
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            throw new CustomExceptions.UserPhoneNumberNotFoundException("User not found with phone number: " + phoneNumber);
+        }
+        // User 객체를 UserDetails로 변환하여 반환
+        return CustomUserDetails.builder()
+                .id(user.getId())
+                .phoneNumber(user.getPhoneNumber())
+                .isAdmin(user.getIsAdmin())
+                .level(user.getLevel())
+                .experience(user.getExperience())
+                .point(user.getPoint())
+                .profileUrl(user.getProfileUrl())
+                .isRental(user.getIsRental())
+                .status(user.getStatus())
+                .isComplaining(user.getIsComplaining())
+                .locked(false) // 잠금 여부
+                .authorities(getAuthorities(user.getIsAdmin()))
+                .build();
+    }
+    private Collection<GrantedAuthority> getAuthorities(boolean isAdmin) {
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+
+        if (isAdmin) {
+            authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else {
+            authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+
+        return authorityList;
+    }
+
+
+
 }

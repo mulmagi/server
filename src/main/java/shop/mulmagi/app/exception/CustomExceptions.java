@@ -13,6 +13,10 @@ public class CustomExceptions {
         public MessageNotSentException(String message) { super(message);}
     }
 
+    public static class UserPhoneNumberNotFoundException extends  RuntimeException{
+        public UserPhoneNumberNotFoundException(String message){super(message);}
+    }
+
 
 
 }
