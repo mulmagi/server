@@ -64,4 +64,5 @@ public class User extends BaseEntity {
         this.point += amount;
     }
 
+    public void resetExperience(){ this.experience = 0.0; }
 }
