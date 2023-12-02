@@ -37,8 +37,6 @@ public class CustomUserDetails implements UserDetails, Serializable {
 
     private Boolean isComplaining;
 
-    private boolean locked;	//계정 잠김 여부
-    private String nickname;	//닉네임
     private Collection<GrantedAuthority> authorities;	//권한 목록
 
     @Override

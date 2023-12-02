@@ -90,7 +90,6 @@ public class UserServiceImpl implements UserService {
                 .isRental(user.getIsRental())
                 .status(user.getStatus())
                 .isComplaining(user.getIsComplaining())
-                .locked(false) // 잠금 여부
                 .authorities(getAuthorities(user.getIsAdmin()))
                 .build();
     }
