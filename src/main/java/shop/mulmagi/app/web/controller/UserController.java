@@ -52,7 +52,6 @@ public class UserController extends BaseController {
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_REGISTER_SUCCESS), HttpStatus.OK);
             }
 
-            userService.verifySms(requestDto);
             CustomUserDetails userDetails = userService.loadUserByPhoneNumber(requestDto.getPhone());
             String accessToken = jwtUtil.generateAccessToken(userDetails);
             String refreshToken = jwtUtil.generateRefreshToken(userDetails);
