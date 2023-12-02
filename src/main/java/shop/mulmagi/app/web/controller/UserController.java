@@ -1,16 +1,19 @@
 package shop.mulmagi.app.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
 import shop.mulmagi.app.service.UserService;
+import shop.mulmagi.app.util.JwtBlacklistUtil;
 import shop.mulmagi.app.util.JwtUtil;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.UserDto;
@@ -26,6 +29,8 @@ import java.util.Map;
 public class UserController extends BaseController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    @Autowired
+    private JwtBlacklistUtil jwtBlacklist;
 
     @PostMapping("/sms-certification/send")
     public ResponseEntity<?> sendSms(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
@@ -43,6 +48,7 @@ public class UserController extends BaseController {
         try {
 
             boolean isNewUser = userService.verifyAndRegisterUser(requestDto);
+            log.info(ResponseMessage.SMS_CERT_SUCCESS);
 
             CustomUserDetails userDetails = userService.loadUserByPhoneNumber(requestDto.getPhone());
             String accessToken = jwtUtil.generateAccessToken(userDetails);
@@ -50,7 +56,10 @@ public class UserController extends BaseController {
 
             Map<String, String> tokens = new HashMap<>();
             tokens.put("access_token", accessToken);
+            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + " : " + accessToken);
+
             tokens.put("refresh_token", refreshToken);
+            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS+ " : "+ refreshToken);
 
             if (isNewUser) {
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_REGISTER_LOGIN_SUCCESS), HttpStatus.OK);
@@ -62,5 +71,14 @@ public class UserController extends BaseController {
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.substring(7); // Bearer 다음의 토큰 부분 추출
+        jwtBlacklist.addToBlacklist(jwtToken); // 블랙리스트에 추가
+        log.info(ResponseMessage.USER_LOGOUT_SUCCESS);
+        return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGOUT_SUCCESS), HttpStatus.OK);
     }
 }
