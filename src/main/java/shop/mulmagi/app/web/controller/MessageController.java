@@ -4,6 +4,7 @@ import static shop.mulmagi.app.domain.enums.MessageType.*;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +51,8 @@ public class MessageController extends BaseController {
 	//이미지 채팅 전송
 	@ApiOperation(value = "이미지 메시지 전송하기 API")
 	@PostMapping("/chat/message")
-	public void sendImgMessage(@RequestBody MessageRequestDto.ImgMessageDto request) {
+	public void sendImgMessage(@ModelAttribute MessageRequestDto.ImgMessageDto request) {
+		logger.info(request.getUserId().toString());
 		MultipartFile img = request.getImg();
 		String imgUrl = "";
 		if(img != null && !img.isEmpty()) {

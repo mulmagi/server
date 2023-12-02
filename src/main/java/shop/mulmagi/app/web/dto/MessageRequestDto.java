@@ -5,11 +5,12 @@ import org.springframework.web.multipart.MultipartFile;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.Getter;
+import lombok.Setter;
 import shop.mulmagi.app.domain.enums.MessageType;
 
 public class MessageRequestDto {
 
-	@Getter
+	@Getter @Setter
 	public static class TextMessageDto{
 		@ApiModelProperty(example = "2")
 		@ApiParam(name = "userId", value = "유저(채팅방) id 입력")
@@ -27,7 +28,7 @@ public class MessageRequestDto {
 		@ApiParam(name = "isAdmin", value = "관리자 여부 입력")
 		private Boolean isAdmin;
 	}
-	@Getter
+	@Getter @Setter
 	public static class ImgMessageDto{
 		@ApiModelProperty(example = "2")
 		@ApiParam(name = "userId", value = "유저(채팅방) id 입력")
