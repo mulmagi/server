@@ -14,8 +14,8 @@ public class NotificationConverter {
     public NotificationResponseDto.NotificationHistoryDto toNotificationHistoryDto(Notification notification) {
         return NotificationResponseDto.NotificationHistoryDto.builder()
                 .type(notification.getType().getNotificationType())
-                .mainContent(notification.getMainContent())
-                .subContent(notification.getSubContent())
+                .title(notification.getTitle())
+                .body(notification.getBody())
                 .createdAt(notification.getCreatedAt())
                 .build();
     }

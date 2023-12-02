@@ -44,6 +44,8 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "Boolean default false")
     private Boolean isComplaining;
 
+    private String firebaseToken;
+
     public void updateRental(){
         this.isRental = true;
     }

@@ -22,6 +22,6 @@ public class Notification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    private String mainContent;
-    private String subContent;
+    private String title;
+    private String body;
 }

@@ -11,9 +11,8 @@ public class NotificationResponseDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class NotificationHistoryDto{
         private String type;
-        private String mainContent;
-        private String subContent;
-
+        private String title;
+        private String body;
         private LocalDateTime createdAt;
     }
 }
