@@ -64,4 +64,6 @@ public class User extends BaseEntity {
         this.point += amount;
     }
 
+    public void startComplain(){ this.isComplaining = true; }
+    public void endComplain(){ this.isComplaining = false; }
 }
