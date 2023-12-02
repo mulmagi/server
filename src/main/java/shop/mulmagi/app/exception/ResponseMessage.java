@@ -34,7 +34,7 @@ public class ResponseMessage {
     public static final String SMS_CERT_MESSAGE_SUCCESS = "인증 문자 전송 성공";
 
     // user
-    public static final String USER_REGISTER_SUCCESS = "회원 가입 성공";
+    public static final String USER_REGISTER_LOGIN_SUCCESS = "회원 가입, 로그인 성공";
     public static final String USER_LOGIN_SUCCESS = "로그인 성공";
     public static final String USER_LOGOUT_SUCCESS = "로그아웃 성공";
     public static final String REFRESH_TOKEN_ISSUE_SUCCESS = "Refresh Token 발급 완료";

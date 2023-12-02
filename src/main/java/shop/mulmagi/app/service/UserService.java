@@ -7,11 +7,10 @@ import shop.mulmagi.app.web.dto.UserDto;
 
 public interface UserService {
     void sendSms(UserDto.SmsCertificationRequest requestDto);
-    void verifySms(UserDto.SmsCertificationRequest requestDto);
-    boolean isVerify(UserDto.SmsCertificationRequest requestDto);
-    void registerUser(UserDto.SmsCertificationRequest requestDto);
     CustomUserDetails loadUserByPhoneNumber(String phoneNumber);
 
     User findByPhoneNumber(String phoneNumber);
+
+    boolean verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
 
 }

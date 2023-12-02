@@ -36,14 +36,14 @@ public class UserServiceImpl implements UserService {
         smsCertificationDao.createSmsCertification(to,certificationNumber);
     }
 
-    public void verifySms(UserDto.SmsCertificationRequest requestDto) {
+    private void verifySms(UserDto.SmsCertificationRequest requestDto) {
         if (isVerify(requestDto)) {
             throw new CustomExceptions.SmsCertificationNumberMismatchException("인증번호가 일치하지 않습니다.");
         }
         smsCertificationDao.removeSmsCertification(requestDto.getPhone());
     }
 
-    public boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
+    private boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
         return !(smsCertificationDao.hasKey(requestDto.getPhone()) &&
                 smsCertificationDao.getSmsCertification(requestDto.getPhone())
                         .equals(requestDto.getCertificationNumber()));
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByPhoneNumber(phoneNumber);
     }
 
-    public void registerUser(UserDto.SmsCertificationRequest requestDto){
+    private void registerUser(UserDto.SmsCertificationRequest requestDto){
         if (isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser == null) {
@@ -103,6 +103,18 @@ public class UserServiceImpl implements UserService {
         }
 
         return authorityList;
+    }
+
+    public boolean verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
+        verifySms(requestDto);
+
+        User user = findByPhoneNumber(requestDto.getPhone());
+        boolean isNewUser = user == null;
+
+        if (isNewUser) {
+            registerUser(requestDto);
+        }
+        return isNewUser;
     }
 
 
