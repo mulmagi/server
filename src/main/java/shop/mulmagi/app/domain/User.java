@@ -65,4 +65,8 @@ public class User extends BaseEntity {
     }
 
     public void resetExperience(){ this.experience = 0.0; }
+
+    public void startComplain(){ this.isComplaining = true; }
+    public void endComplain(){ this.isComplaining = false; }
+
 }
