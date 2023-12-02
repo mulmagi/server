@@ -1,19 +1,20 @@
 package shop.mulmagi.app.util;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import shop.mulmagi.app.dao.CustomUserDetails;
-import shop.mulmagi.app.service.UserService;
-import shop.mulmagi.app.web.dto.TokenDto;
-
 import java.util.Date;
 import java.util.function.Function;
 
-@Component
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class JwtUtil {
     @Value("${spring.jwt.secretKey}")
     private String secret;
@@ -24,7 +25,7 @@ public class JwtUtil {
     @Value("${spring.jwt.refresh-expiration-time}")
     private long refreshExpTime;
 
-    private UserService userService;
+
 
 
     public String extractUsername(String token) {
@@ -43,6 +44,16 @@ public class JwtUtil {
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
+
+
+    public String extractRefreshToken(String accessToken) {
+        // AccessToken 파싱
+        Claims claims = extractAllClaims(accessToken);
+
+        // RefreshToken 추출
+        return (String) claims.get("refreshToken");
+    }
+
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
@@ -70,12 +81,13 @@ public class JwtUtil {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public String recreateAccessToken(String refreshToken,CustomUserDetails userDetails) {
-        if(validateToken(refreshToken, userDetails)){
-            String username = extractUsername(refreshToken);
-            userDetails = userService.loadUserByPhoneNumber(username);
-        }
-        return generateAccessToken(userDetails);
-    }
+//    public String recreateAccessToken(String refreshToken,CustomUserDetails userDetails) {
+//        if(validateToken(refreshToken, userDetails)){
+//            String username = extractUsername(refreshToken);
+//            userDetails = userService.loadUserByPhoneNumber(username);
+//        }
+//        return generateAccessToken(userDetails);
+//    }
+
 
 }

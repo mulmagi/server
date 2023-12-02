@@ -7,10 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
+import shop.mulmagi.app.domain.JwtBlacklist;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
+import shop.mulmagi.app.repository.JwtBlacklistRepository;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UserService;
+import shop.mulmagi.app.util.JwtUtil;
 import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
 
@@ -26,7 +29,11 @@ public class UserServiceImpl implements UserService {
     private final SmsCertificationUtil smsUtil;
     private final SmsCertificationDao smsCertificationDao;
 
+    private final JwtUtil jwtUtil;
+
     private final UserRepository userRepository;
+
+    private final JwtBlacklistRepository jwtBlacklistRepository;
 
     public void sendSms(UserDto.SmsCertificationRequest requestDto){
         String to = requestDto.getPhone();
@@ -116,7 +123,25 @@ public class UserServiceImpl implements UserService {
         }
         return isNewUser;
     }
+    public void logout(String accessToken) {
+        String refreshToken = jwtUtil.extractRefreshToken(accessToken);
 
+        if (refreshToken != null) {
+            JwtBlacklist jwtBlacklist = JwtBlacklist.builder()
+                    .token(refreshToken)
+                    .build();
+            jwtBlacklistRepository.save(jwtBlacklist);
+        }
 
+        // Access token도 블랙리스트에 추가
+        JwtBlacklist jwtBlacklistAccessToken = JwtBlacklist.builder()
+                .token(accessToken)
+                .build();
+        jwtBlacklistRepository.save(jwtBlacklistAccessToken);
+    }
 
+    public boolean isTokenBlacklisted(String token) {
+        return jwtBlacklistRepository.existsByToken(token);
+    }
 }
+

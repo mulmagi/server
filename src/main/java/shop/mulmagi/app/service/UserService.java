@@ -12,5 +12,6 @@ public interface UserService {
     User findByPhoneNumber(String phoneNumber);
 
     boolean verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
+    void logout(String accessToken);
 
 }
