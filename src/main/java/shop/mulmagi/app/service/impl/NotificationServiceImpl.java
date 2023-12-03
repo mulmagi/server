@@ -40,7 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
         rentalList.add(NotificationType.RETURN);
         rentalList.add(NotificationType.OVERDUE);
 
-        List<Notification> notificationList = notificationRepository.findRentalByUserId(user, rentalList);
+        List<Notification> notificationList = notificationRepository.findRentalByUser(user, rentalList);
 
         return notificationConverter.toNotificationHistoryDtoList(notificationList);
     }
@@ -53,7 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
         pointList.add(NotificationType.USE_POINT);
         pointList.add(NotificationType.PAYMENT);
 
-        List<Notification> notificationList = notificationRepository.findPointByUserId(user, pointList);
+        List<Notification> notificationList = notificationRepository.findPointByUser(user, pointList);
 
         return notificationConverter.toNotificationHistoryDtoList(notificationList);
     }
@@ -66,7 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
         etcList.add(NotificationType.REPORT);
         etcList.add(NotificationType.ETC);
 
-        List<Notification> notificationList = notificationRepository.findEtcByUserId(user, etcList);
+        List<Notification> notificationList = notificationRepository.findEtcByUser(user, etcList);
 
         return notificationConverter.toNotificationHistoryDtoList(notificationList);
     }
