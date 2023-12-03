@@ -60,4 +60,7 @@ public class Rental extends BaseEntity {
         }
         //연체 알림 후 종료
     }
+    public void receiveReport(){ this.isWrong = true; }
+
+    public void solveReport(){ this.isWrong = false; }
 }

@@ -37,4 +37,14 @@ public class Location {
     public void updateReturn(){
         this.umbrellaCount += 1;
     }
+
+    public void receiveReport(){
+        this.wrongCount += 1;
+        this.umbrellaCount -= 1;
+    }
+
+    public void solveReport(){
+        this.wrongCount -= 1;
+        this.umbrellaCount += 1;
+    }
 }

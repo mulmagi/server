@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://cdn.rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+</head>
+<body>
+
+<video id="preview"></video>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Instascan 라이브러리 초기화
+        let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+
+        // QR 코드 스캔 시 이벤트 핸들러
+        scanner.addListener('scan', function(content) {
+            // 스캔된 QR 코드 내용을 가져옴
+            console.log(content);
+
+            // "CustomData:"로 시작하는 경우에만 처리
+            if (content.startsWith("CustomData:")) {
+                // 숫자 부분 추출
+                let number = content.substring("CustomData:".length);
+
+                // JSON 형태로 데이터 생성
+                let data = { number: parseInt(number) };
+
+                // HTTP GET 요청 보내기
+                fetch('http://localhost:8080/api/rental', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+
+        // 카메라를 사용하여 QR 코드 스캔을 시작
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+            } else {
+                console.error('No cameras found.');
+            }
+        }).catch(function (e) {
+            console.error(e);
+        });
+    });
+</script>
+
+</body>
+</html>

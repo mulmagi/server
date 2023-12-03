@@ -1,12 +1,12 @@
 package shop.mulmagi.app.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 
-@RequiredArgsConstructor
 @Repository
 public class SmsCertificationDao {
 
@@ -14,6 +14,12 @@ public class SmsCertificationDao {
     private final int LIMIT_TIME = 3 * 60;
 
     private final StringRedisTemplate redisTemplate;
+
+    @Autowired
+    public SmsCertificationDao(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
 
     public void createSmsCertification(String phone, String certificationNumber) {
         redisTemplate.opsForValue()
