@@ -7,6 +7,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.UserRepository;
@@ -15,8 +16,9 @@ import shop.mulmagi.app.web.dto.NotificationRequestDto;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class FcmNotificationServiceImpl implements FcmNotificationService {
 
     private final FirebaseMessaging firebaseMessaging;
