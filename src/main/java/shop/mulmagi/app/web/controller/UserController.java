@@ -53,12 +53,11 @@ public class UserController extends BaseController {
             log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + " : " + accessToken);
 
             tokens.put("refresh_token", refreshToken);
-            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS+ " : "+ refreshToken);
+            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + " : " + refreshToken);
 
             if (isNewUser) {
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_REGISTER_LOGIN_SUCCESS), HttpStatus.OK);
-            }
-            else {
+            } else {
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGIN_SUCCESS), HttpStatus.OK);
             }
 
@@ -68,11 +67,13 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
-        String jwtToken = token.substring(7); // Bearer 다음의 토큰 부분 추출
-        userService.logout(jwtToken); // 블랙리스트에 추가
-        log.info(ResponseMessage.USER_LOGOUT_SUCCESS);
-        return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGOUT_SUCCESS), HttpStatus.OK);
+    public ResponseEntity<String> logout(@RequestParam("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws Exception {
+        try {
+            userService.logout(accessToken, refreshToken);
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGOUT_SUCCESS), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 로그아웃했을 때 넘어가는 임시 페이지
@@ -80,17 +81,4 @@ public class UserController extends BaseController {
     public String home() {
         return "index";
     }
-
-    @PostMapping("/delete")
-    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token) {
-        String jwtToken = token.substring(7); // "Bearer " 부분 제외한 토큰 추출
-
-        try {
-            userService.deleteUser(jwtToken); // 사용자 정보 삭제 및 토큰 블랙리스트 추가
-            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_DELETION_SUCCESS), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to logout", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
 }
