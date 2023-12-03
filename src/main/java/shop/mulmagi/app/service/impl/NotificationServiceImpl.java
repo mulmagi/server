@@ -61,4 +61,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void saveFirebaseToken(User user, String firebaseToken){
         userRepository.updateFirebaseToken(user.getId(), firebaseToken);
     }
+
+    @Override
+    public void deleteFirebaseToken(User user){
+        userRepository.deleteFirebaseToken(user.getId());
+    }
+
 }

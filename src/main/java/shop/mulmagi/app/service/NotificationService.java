@@ -11,4 +11,5 @@ public interface NotificationService {
     public void sendAndSaveNotification(User user, NotificationType type, String title, String body);
 
     public void saveFirebaseToken(User user, String firebaseToken);
+    public void deleteFirebaseToken(User user);
 }
