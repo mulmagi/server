@@ -29,12 +29,12 @@ public class NotificationController extends BaseController {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
 
-    @ApiOperation(value = "알림 내역 불러오기 API")
-    @ApiResponse(code = 200, message = "알림 내역 불러오기 성공")
-    @GetMapping("/notification/history")
+    @ApiOperation(value = "전체 알림 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "전체 알림 내역 불러오기 성공")
+    @GetMapping("/notification/history/all")
     public ResponseEntity notificationHistory() {
         try {
-            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history", "알림 내역 불러오기 API");
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/all", "전체 알림 내역 불러오기 API");
 
             User user = userRepository.findByPhoneNumber("01043939869");
 
