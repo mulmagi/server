@@ -27,7 +27,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationConverter notificationConverter;
     @Override
     public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryAll(Long userId){
-        List<Notification> notificationList = notificationRepository.findByUserId(userId);
+        List<Notification> notificationList = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
         return notificationConverter.toNotificationHistoryDtoList(notificationList);
     }
