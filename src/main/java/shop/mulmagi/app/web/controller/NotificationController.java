@@ -43,7 +43,24 @@ public class NotificationController extends BaseController {
 
             List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryAll(user.getId());
 
-            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_READ_SUCCESS, res), HttpStatus.OK);
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_ALL_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation(value = "대여/반납/연체 알림 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "대여/반납/연체 알림 내역 불러오기 성공")
+    @GetMapping("/notification/history/rental")
+    public ResponseEntity notificationHistoryRental() {
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/rental", "대여/반납/연체 알림 내역 불러오기 API");
+
+            User user = userRepository.findByPhoneNumber("01043939869");
+
+            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryRental(user);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_RENTAL_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }

@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface NotificationService {
     public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryAll(Long id);
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryRental(User user);
     public void sendAndSaveNotification(User user, NotificationType type, String title, String body);
 
     public void saveFirebaseToken(User user, String firebaseToken);

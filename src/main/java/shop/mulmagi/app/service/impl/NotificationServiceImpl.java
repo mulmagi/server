@@ -14,6 +14,7 @@ import shop.mulmagi.app.service.NotificationService;
 import shop.mulmagi.app.web.dto.NotificationRequestDto;
 import shop.mulmagi.app.web.dto.NotificationResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,6 +28,18 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryAll(Long userId){
         List<Notification> notificationList = notificationRepository.findByUserId(userId);
+
+        return notificationConverter.toNotificationHistoryDtoList(notificationList);
+    }
+
+    @Override
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryRental(User user){
+        List<NotificationType> rentalList = new ArrayList<>();
+        rentalList.add(NotificationType.RENTAL);
+        rentalList.add(NotificationType.RETURN);
+        rentalList.add(NotificationType.OVERDUE);
+
+        List<Notification> notificationList = notificationRepository.findRentalByUserId(user, rentalList);
 
         return notificationConverter.toNotificationHistoryDtoList(notificationList);
     }
