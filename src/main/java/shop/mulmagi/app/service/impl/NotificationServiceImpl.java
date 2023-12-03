@@ -8,7 +8,9 @@ import shop.mulmagi.app.domain.Notification;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.NotificationType;
 import shop.mulmagi.app.repository.NotificationRepository;
+import shop.mulmagi.app.service.FcmNotificationService;
 import shop.mulmagi.app.service.NotificationService;
+import shop.mulmagi.app.web.dto.NotificationRequestDto;
 import shop.mulmagi.app.web.dto.NotificationResponseDto;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
+    private final FcmNotificationService fcmNotificationService;
     private final NotificationRepository notificationRepository;
     private final NotificationConverter notificationConverter;
     @Override
@@ -27,17 +30,27 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendAndSaveNotification(User user, NotificationType type, String mainContent, String subContent){
+    public void sendAndSaveNotification(User user, NotificationType type, String title, String body){
+
+        // FcmRequestDto 생성
+        NotificationRequestDto.FcmRequestDto fcmRequestDto
+                = NotificationRequestDto.FcmRequestDto.builder()
+                .targetUserId(user.getId())
+                .title(title)
+                .body(body)
+                .build();
+
         // 푸시 알림 보내기
+        fcmNotificationService.sendNotification(fcmRequestDto);
 
         // 알림 내역 저장
         Notification notification =
                 Notification.builder()
-                .user(user)
-                .type(type)
-                .mainContent(mainContent)
-                .subContent(subContent)
-                .build();
+                        .user(user)
+                        .type(type)
+                        .title(title)
+                        .body(body)
+                        .build();
 
         notificationRepository.save(notification);
     }

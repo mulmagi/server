@@ -43,6 +43,9 @@ dependencies {
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
+	//fcm
+	implementation 'com.google.firebase:firebase-admin:8.1.0'
+
 	// swagger
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
