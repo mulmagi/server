@@ -8,6 +8,7 @@ import shop.mulmagi.app.domain.Notification;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.NotificationType;
 import shop.mulmagi.app.repository.NotificationRepository;
+import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.FcmNotificationService;
 import shop.mulmagi.app.service.NotificationService;
 import shop.mulmagi.app.web.dto.NotificationRequestDto;
@@ -21,6 +22,7 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
     private final FcmNotificationService fcmNotificationService;
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
     private final NotificationConverter notificationConverter;
     @Override
     public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistory(Long userId){
@@ -53,5 +55,10 @@ public class NotificationServiceImpl implements NotificationService {
                         .build();
 
         notificationRepository.save(notification);
+    }
+
+    @Override
+    public void saveFirebaseToken(User user, String firebaseToken){
+        userRepository.updateFirebaseToken(user.getId(), firebaseToken);
     }
 }
