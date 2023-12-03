@@ -19,4 +19,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             "WHERE n.user = :user AND n.type IN :pointList")
     List<Notification> findPointByUserId(User user, List<NotificationType> pointList);
 
+    @Query("SELECT n FROM Notification n " +
+            "WHERE n.user = :user AND n.type IN :etcList")
+    List<Notification> findEtcByUserId(User user, List<NotificationType> etcList);
+
 }

@@ -59,6 +59,19 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryEtc(User user){
+        List<NotificationType> etcList = new ArrayList<>();
+
+        etcList.add(NotificationType.ANNOUNCE);
+        etcList.add(NotificationType.REPORT);
+        etcList.add(NotificationType.ETC);
+
+        List<Notification> notificationList = notificationRepository.findEtcByUserId(user, etcList);
+
+        return notificationConverter.toNotificationHistoryDtoList(notificationList);
+    }
+
+    @Override
     public void sendAndSaveNotification(User user, NotificationType type, String title, String body){
 
         // FcmRequestDto 생성

@@ -83,6 +83,23 @@ public class NotificationController extends BaseController {
         }
     }
 
+    @ApiOperation(value = "기타 알림 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "기타 알림 내역 불러오기 성공")
+    @GetMapping("/notification/history/etc")
+    public ResponseEntity notificationHistoryEtc() {
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/etc", "기타 알림 내역 불러오기 API");
+
+            User user = userRepository.findByPhoneNumber("01043939869");
+
+            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryEtc(user);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_ETC_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @ApiOperation(value = "푸시 알림 허용하기 API")
     @ApiResponse(code = 200, message = "푸시 알림 허용하기 성공")
     @PostMapping("/notification/allow")
