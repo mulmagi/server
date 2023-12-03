@@ -35,11 +35,25 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryRental(User user){
         List<NotificationType> rentalList = new ArrayList<>();
+
         rentalList.add(NotificationType.RENTAL);
         rentalList.add(NotificationType.RETURN);
         rentalList.add(NotificationType.OVERDUE);
 
         List<Notification> notificationList = notificationRepository.findRentalByUserId(user, rentalList);
+
+        return notificationConverter.toNotificationHistoryDtoList(notificationList);
+    }
+
+    @Override
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryPoint(User user){
+        List<NotificationType> pointList = new ArrayList<>();
+
+        pointList.add(NotificationType.REFUND_POINT);
+        pointList.add(NotificationType.USE_POINT);
+        pointList.add(NotificationType.PAYMENT);
+
+        List<Notification> notificationList = notificationRepository.findPointByUserId(user, pointList);
 
         return notificationConverter.toNotificationHistoryDtoList(notificationList);
     }
