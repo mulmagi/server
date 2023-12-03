@@ -29,21 +29,72 @@ public class NotificationController extends BaseController {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
 
-    @ApiOperation(value = "알림 내역 불러오기 API")
-    @ApiResponse(code = 200, message = "알림 내역 불러오기 성공")
-    @GetMapping("/notification/history")
-    public ResponseEntity notificationHistory() {
+    @ApiOperation(value = "전체 알림 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "전체 알림 내역 불러오기 성공")
+    @GetMapping("/notification/history/all")
+    public ResponseEntity notificationHistoryAll() {
         try {
-            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history", "알림 내역 불러오기 API");
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/all", "전체 알림 내역 불러오기 API");
 
             User user = userRepository.findByPhoneNumber("01043939869");
 
 //            푸시알림 테스트 코드
 //            notificationService.sendAndSaveNotification(user, NotificationType.OVERDUE, "연체입니다", "컨텐츠입니다");
 
-            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistory(user.getId());
+            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryAll(user.getId());
 
-            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_READ_SUCCESS, res), HttpStatus.OK);
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_ALL_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation(value = "대여/반납/연체 알림 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "대여/반납/연체 알림 내역 불러오기 성공")
+    @GetMapping("/notification/history/rental")
+    public ResponseEntity notificationHistoryRental() {
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/rental", "대여/반납/연체 알림 내역 불러오기 API");
+
+            User user = userRepository.findByPhoneNumber("01043939869");
+
+            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryRental(user);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_RENTAL_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation(value = "포인트 관련 알림 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "포인트 관련 알림 내역 불러오기 성공")
+    @GetMapping("/notification/history/point")
+    public ResponseEntity notificationHistoryPoint() {
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/point", "포인트 관련 알림 내역 불러오기 API");
+
+            User user = userRepository.findByPhoneNumber("01043939869");
+
+            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryPoint(user);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_POINT_READ_SUCCESS, res), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation(value = "기타 알림 내역 불러오기 API")
+    @ApiResponse(code = 200, message = "기타 알림 내역 불러오기 성공")
+    @GetMapping("/notification/history/etc")
+    public ResponseEntity notificationHistoryEtc() {
+        try {
+            logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/etc", "기타 알림 내역 불러오기 API");
+
+            User user = userRepository.findByPhoneNumber("01043939869");
+
+            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryEtc(user);
+
+            return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_ETC_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }

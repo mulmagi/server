@@ -15,7 +15,10 @@ public class ResponseMessage {
     public static final String PAYMENT_HISTORY_READ_SUCCESS = "포인트 내역 불러오기 성공";
   
     //notification
-    public static final String NOTIFICATION_HISTORY_READ_SUCCESS = "알림 내역 불러오기 성공";
+    public static final String NOTIFICATION_HISTORY_ALL_READ_SUCCESS = "전체 알림 내역 불러오기 성공";
+    public static final String NOTIFICATION_HISTORY_RENTAL_READ_SUCCESS = "대여/반납/연체 알림 내역 불러오기 성공";
+    public static final String NOTIFICATION_HISTORY_POINT_READ_SUCCESS = "포인트 관련 알림 내역 불러오기 성공";
+    public static final String NOTIFICATION_HISTORY_ETC_READ_SUCCESS = "기타 알림 내역 불러오기 성공";
     public static final String NOTIFICATION_ALLOW_SUCCESS = "푸시 알림 허용하기 성공";
     public static final String NOTIFICATION_DENY_SUCCESS = "푸시 알림 거부하기 성공";
 

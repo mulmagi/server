@@ -14,6 +14,7 @@ import shop.mulmagi.app.service.NotificationService;
 import shop.mulmagi.app.web.dto.NotificationRequestDto;
 import shop.mulmagi.app.web.dto.NotificationResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,8 +26,47 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserRepository userRepository;
     private final NotificationConverter notificationConverter;
     @Override
-    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistory(Long userId){
-        List<Notification> notificationList = notificationRepository.findByUserId(userId);
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryAll(Long userId){
+        List<Notification> notificationList = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+
+        return notificationConverter.toNotificationHistoryDtoList(notificationList);
+    }
+
+    @Override
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryRental(User user){
+        List<NotificationType> rentalList = new ArrayList<>();
+
+        rentalList.add(NotificationType.RENTAL);
+        rentalList.add(NotificationType.RETURN);
+        rentalList.add(NotificationType.OVERDUE);
+
+        List<Notification> notificationList = notificationRepository.findRentalByUser(user, rentalList);
+
+        return notificationConverter.toNotificationHistoryDtoList(notificationList);
+    }
+
+    @Override
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryPoint(User user){
+        List<NotificationType> pointList = new ArrayList<>();
+
+        pointList.add(NotificationType.REFUND_POINT);
+        pointList.add(NotificationType.USE_POINT);
+        pointList.add(NotificationType.PAYMENT);
+
+        List<Notification> notificationList = notificationRepository.findPointByUser(user, pointList);
+
+        return notificationConverter.toNotificationHistoryDtoList(notificationList);
+    }
+
+    @Override
+    public List<NotificationResponseDto.NotificationHistoryDto> getNotificationHistoryEtc(User user){
+        List<NotificationType> etcList = new ArrayList<>();
+
+        etcList.add(NotificationType.ANNOUNCE);
+        etcList.add(NotificationType.REPORT);
+        etcList.add(NotificationType.ETC);
+
+        List<Notification> notificationList = notificationRepository.findEtcByUser(user, etcList);
 
         return notificationConverter.toNotificationHistoryDtoList(notificationList);
     }
