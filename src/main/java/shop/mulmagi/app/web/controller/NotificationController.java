@@ -32,7 +32,7 @@ public class NotificationController extends BaseController {
     @ApiOperation(value = "전체 알림 내역 불러오기 API")
     @ApiResponse(code = 200, message = "전체 알림 내역 불러오기 성공")
     @GetMapping("/notification/history/all")
-    public ResponseEntity notificationHistory() {
+    public ResponseEntity notificationHistoryAll() {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/all", "전체 알림 내역 불러오기 API");
 
@@ -41,7 +41,7 @@ public class NotificationController extends BaseController {
 //            푸시알림 테스트 코드
 //            notificationService.sendAndSaveNotification(user, NotificationType.OVERDUE, "연체입니다", "컨텐츠입니다");
 
-            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistory(user.getId());
+            List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryAll(user.getId());
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_HISTORY_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
