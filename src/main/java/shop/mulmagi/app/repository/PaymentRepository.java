@@ -14,7 +14,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             "UNION ALL " +
             "SELECT -9000 as amount, '보증금' as transactionType, created_at FROM rental WHERE user_id = :user " +
             "UNION ALL " +
-            "SELECT 9000 - over_due_amount as amount, '보증금 반환' as transactionType, updated_at FROM rental WHERE user_id = :user and is_return and over_due_amount < 9000 "+
+            "SELECT 9000 - overdue_amount as amount, '보증금 반환' as transactionType, updated_at FROM rental WHERE user_id = :user and is_return and overdue_amount < 9000 "+
             "ORDER BY created_at DESC, amount ASC", nativeQuery = true)
     List findAmountAndCreatedAtByUserId(User user);
 }
