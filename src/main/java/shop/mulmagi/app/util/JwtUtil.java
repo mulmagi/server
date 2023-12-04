@@ -6,10 +6,19 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import shop.mulmagi.app.dao.CustomUserDetails;
+import shop.mulmagi.app.domain.RefreshToken;
+import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.exception.CustomExceptions;
+import shop.mulmagi.app.repository.RefreshTokenRepository;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -29,6 +38,8 @@ public class JwtUtil {
     public long getRefreshExpTime() {
         return refreshExpTime;
     }
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
     public String extractUsername(String token) {
@@ -94,5 +105,57 @@ public class JwtUtil {
         return new Date(currentMillis + refreshExpTime);
     }
 
+    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+        CustomUserDetails userDetails = getUserDetailsFromRefreshToken(refreshToken);
 
+        // 유효한 유저 정보가 없거나 Refresh Token이 만료된 경우
+        if (userDetails == null || isTokenExpired(refreshToken)) {
+            return null;
+        }
+
+        // Access Token 생성
+        return generateAccessToken(userDetails);
+    }
+
+    private CustomUserDetails getUserDetailsFromRefreshToken(String token) {
+
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token);
+
+        // RefreshToken이 없거나 만료된 경우
+        if (refreshToken == null || isTokenExpired(token)) {
+            throw new CustomExceptions.RefreshTokenInvalidException("Refresh Token이 유효하지 않습니다.");
+        }
+
+        User user = refreshToken.getUser();
+        return buildCustomUserDetails(user);
+    }
+
+    public CustomUserDetails buildCustomUserDetails(User user) {
+        return CustomUserDetails.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .isAdmin(user.getIsAdmin())
+                .level(user.getLevel())
+                .experience(user.getExperience())
+                .point(user.getPoint())
+                .profileUrl(user.getProfileUrl())
+                .isRental(user.getIsRental())
+                .status(user.getStatus())
+                .isComplaining(user.getIsComplaining())
+                .authorities(getAuthorities(user.getIsAdmin()))
+                .build();
+    }
+
+    public Collection<GrantedAuthority> getAuthorities(boolean isAdmin) {
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+
+        if (isAdmin) {
+            authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else {
+            authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+
+        return authorityList;
+    }
 }

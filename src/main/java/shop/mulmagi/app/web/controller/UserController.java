@@ -96,22 +96,37 @@ public class UserController extends BaseController {
         }
     }
 
-    @PutMapping("/{userId}/notifications")
-    public ResponseEntity<?> updateNotificationSetting(@PathVariable Long userId,
+    @PutMapping("/{Id}/notifications")
+    public ResponseEntity<?> updateNotificationSetting(@PathVariable Long Id,
                                                        @RequestParam boolean enableNotifications) throws Exception {
         try {
-            userService.updateNotificationSettings(userId, enableNotifications);
+            userService.updateNotificationSettings(Id, enableNotifications);
             Map<String, Object> response = new HashMap<>();
             if (enableNotifications) {
                 response.put("message", ResponseMessage.USER_AGREED_NOTIFICATION);
             } else {
                 response.put("message", ResponseMessage.USER_DECLINE_NOTIFICATION);
             }
-            response.put("id", String.valueOf(userId));
+            response.put("id", String.valueOf(Id));
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(@RequestBody String refreshToken) {
+        String newAccessToken = jwtUtil.generateAccessTokenFromRefreshToken(refreshToken);
+
+        if (newAccessToken != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", ResponseMessage.ACCESS_TOKEN_REISSUE_SUCCESS);
+            response.put("accessToken", newAccessToken);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return ResponseEntity.badRequest().body("Failed to reissue access token");
         }
     }
 

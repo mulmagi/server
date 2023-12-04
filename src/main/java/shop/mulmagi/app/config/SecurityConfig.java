@@ -28,6 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/sms-certification/confirm").permitAll()
                 .antMatchers("/name").permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/reissue").permitAll()
+                .antMatchers("/6/notifications").permitAll()
                 .anyRequest().authenticated().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

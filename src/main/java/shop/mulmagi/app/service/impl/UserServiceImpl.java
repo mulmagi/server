@@ -82,27 +82,12 @@ public class UserServiceImpl implements UserService {
                         .agreeTerms(false)
                         .build();
                 userRepository.save(user);
-                return buildCustomUserDetails(user);
+                return jwtUtil.buildCustomUserDetails(user);
             }
         }
         return null;
     }
-    private CustomUserDetails buildCustomUserDetails(User user) {
-        return CustomUserDetails.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .phoneNumber(user.getPhoneNumber())
-                .isAdmin(user.getIsAdmin())
-                .level(user.getLevel())
-                .experience(user.getExperience())
-                .point(user.getPoint())
-                .profileUrl(user.getProfileUrl())
-                .isRental(user.getIsRental())
-                .status(user.getStatus())
-                .isComplaining(user.getIsComplaining())
-                .authorities(getAuthorities(user.getIsAdmin()))
-                .build();
-    }
+
 
     public void submitName(String name){
         this.storedName = name;
@@ -134,20 +119,10 @@ public class UserServiceImpl implements UserService {
                 .isRental(user.getIsRental())
                 .status(user.getStatus())
                 .isComplaining(user.getIsComplaining())
-                .authorities(getAuthorities(user.getIsAdmin()))
+                .authorities(jwtUtil.getAuthorities(user.getIsAdmin()))
                 .build();
     }
-    private Collection<GrantedAuthority> getAuthorities(boolean isAdmin) {
-        List<GrantedAuthority> authorityList = new ArrayList<>();
 
-        if (isAdmin) {
-            authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else {
-            authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
-        }
-
-        return authorityList;
-    }
 
     public CustomUserDetails verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
         verifySms(requestDto);
