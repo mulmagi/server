@@ -2,6 +2,7 @@ package shop.mulmagi.app.service;
 
 import org.mapstruct.control.MappingControl;
 import shop.mulmagi.app.dao.CustomUserDetails;
+import shop.mulmagi.app.domain.RefreshToken;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.web.dto.UserDto;
 
@@ -16,4 +17,5 @@ public interface UserService {
     void updateNotificationSettings(Long userId, boolean enableNotifications);
 
     void submitName(String name);
+    void saveRefreshToken(RefreshToken refreshToken);
 }

@@ -7,19 +7,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
+import shop.mulmagi.app.domain.RefreshToken;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.UserStatus;
 import shop.mulmagi.app.exception.CustomExceptions;
+import shop.mulmagi.app.repository.RefreshTokenRepository;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.util.JwtUtil;
 import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -32,6 +31,8 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
 
     private final UserRepository userRepository;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private String storedName;
 
@@ -160,6 +161,22 @@ public class UserServiceImpl implements UserService {
             return loadUserByPhoneNumber(requestDto.getPhone());
         }
     }
+
+    public void saveRefreshToken(RefreshToken refreshToken) {
+        if (refreshToken != null) {
+            RefreshToken existingToken = refreshTokenRepository.findByUser(refreshToken.getUser());
+            if (existingToken != null) {
+                existingToken.updateToken(refreshToken.getToken());
+                existingToken.updateExpirationTime(refreshToken.getExpirationTime());
+            } else {
+                refreshTokenRepository.save(refreshToken);
+            }
+        }
+    }
+
+
+
+
     public void logout(String accessToken, String refreshToken) {
         jwtUtil.invalidateToken(accessToken);
         jwtUtil.invalidateToken(refreshToken);

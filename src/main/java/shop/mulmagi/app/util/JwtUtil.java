@@ -26,6 +26,10 @@ public class JwtUtil {
     @Value("${spring.jwt.refresh-expiration-time}")
     private long refreshExpTime;
 
+    public long getRefreshExpTime() {
+        return refreshExpTime;
+    }
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -53,7 +57,7 @@ public class JwtUtil {
                 .setSubject(userDetails.getUsername())
                 .claim("tokenType", "access")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpTime))
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpTime))
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
@@ -84,6 +88,10 @@ public class JwtUtil {
         } else if (claims.get("tokenType").equals("refresh")) {
             claims.setExpiration(new Date());
         }
+    }
+    public Date calculateRefreshExpirationTime() {
+        long currentMillis = System.currentTimeMillis();
+        return new Date(currentMillis + refreshExpTime);
     }
 
 

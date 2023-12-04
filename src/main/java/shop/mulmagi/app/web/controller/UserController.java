@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.mulmagi.app.dao.CustomUserDetails;
+import shop.mulmagi.app.domain.RefreshToken;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
@@ -16,6 +17,7 @@ import shop.mulmagi.app.web.dto.UserDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,14 +67,23 @@ public class UserController extends BaseController {
         try {
             CustomUserDetails userDetails = userService.verifyAndRegisterUser(requestDto);
             String accessToken = jwtUtil.generateAccessToken(userDetails);
-            String refreshToken = jwtUtil.generateRefreshToken(userDetails);
+            String refreshTokenValue = jwtUtil.generateRefreshToken(userDetails);
+            Date refreshExpTime = jwtUtil.calculateRefreshExpirationTime();
+
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .user(userService.findByPhoneNumber(requestDto.getPhone()))
+                    .token(refreshTokenValue)
+                    .expirationTime(refreshExpTime)
+                    .build();
+
+            userService.saveRefreshToken(refreshToken);
 
             Map<String, String> tokens = new HashMap<>();
             tokens.put("access_token", accessToken);
             log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + " : " + accessToken);
 
-            tokens.put("refresh_token", refreshToken);
-            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + " : " + refreshToken);
+            tokens.put("refresh_token", refreshTokenValue);
+            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + " : " + refreshTokenValue);
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", ResponseMessage.USER_LOGIN_SUCCESS);

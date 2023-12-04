@@ -26,6 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/sms-certification/send").permitAll()
                 .antMatchers("/sms-certification/confirm").permitAll()
+                .antMatchers("/name").permitAll()
                 .antMatchers("/login").permitAll()
                 .anyRequest().authenticated().and()
                 .sessionManagement()
@@ -33,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/") // 첫화면
+                .logoutSuccessUrl("/name") // 첫화면
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll();

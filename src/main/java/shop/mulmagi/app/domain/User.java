@@ -50,6 +50,10 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "Boolean default false")
     private boolean notificationEnabled;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private RefreshToken refreshToken;
+
+
     public void updateRental(){
         this.isRental = true;
     }
