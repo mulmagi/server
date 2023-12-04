@@ -11,7 +11,9 @@ public interface UserService {
 
     User findByPhoneNumber(String phoneNumber);
 
-    boolean verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
+    CustomUserDetails verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
     void logout(String accessToken, String refreshToken);
+    void updateNotificationSettings(Long userId, boolean enableNotifications);
 
+    void submitName(String name);
 }

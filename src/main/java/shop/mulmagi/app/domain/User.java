@@ -15,7 +15,7 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -77,5 +77,10 @@ public class User extends BaseEntity {
 
     public void startComplain(){ this.isComplaining = true; }
     public void endComplain(){ this.isComplaining = false; }
+
+    public void updateNotificationEnabled(boolean notificationEnabled){
+        this.notificationEnabled = notificationEnabled;
+
+    }
 
 }

@@ -18,7 +18,8 @@ public class CustomUserDetails implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 174726374856727L;
 
-    private Long id;	// DB에서 PK 값
+    private Long id;
+    private String name;
     private String phoneNumber;
 
     private boolean isAdmin;

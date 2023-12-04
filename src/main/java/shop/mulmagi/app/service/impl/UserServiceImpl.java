@@ -19,6 +19,7 @@ import shop.mulmagi.app.web.dto.UserDto;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
 
     private final UserRepository userRepository;
+
+    private String storedName;
 
 
     public void sendSms(UserDto.SmsCertificationRequest requestDto){
@@ -58,13 +61,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByPhoneNumber(phoneNumber);
     }
 
-    private void registerUser(UserDto.SmsCertificationRequest requestDto){
+    private CustomUserDetails registerUser(UserDto.SmsCertificationRequest requestDto){
         if (isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser == null) {
                 User user = User
                         .builder()
-                        .name(requestDto.getPhone())
+                        .name(storedName)
                         .phoneNumber(requestDto.getPhone())
                         .isAdmin(false)
                         .level(0)
@@ -78,7 +81,38 @@ public class UserServiceImpl implements UserService {
                         .agreeTerms(false)
                         .build();
                 userRepository.save(user);
+                return buildCustomUserDetails(user);
             }
+        }
+        return null;
+    }
+    private CustomUserDetails buildCustomUserDetails(User user) {
+        return CustomUserDetails.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .isAdmin(user.getIsAdmin())
+                .level(user.getLevel())
+                .experience(user.getExperience())
+                .point(user.getPoint())
+                .profileUrl(user.getProfileUrl())
+                .isRental(user.getIsRental())
+                .status(user.getStatus())
+                .isComplaining(user.getIsComplaining())
+                .authorities(getAuthorities(user.getIsAdmin()))
+                .build();
+    }
+
+    public void submitName(String name){
+        this.storedName = name;
+    }
+
+    public void updateNotificationSettings(Long userId, boolean enableNotifications) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.updateNotificationEnabled(enableNotifications);
+                userRepository.save(user);
         }
     }
     public CustomUserDetails loadUserByPhoneNumber(String phoneNumber){
@@ -88,6 +122,7 @@ public class UserServiceImpl implements UserService {
         }
         // User 객체를 UserDetails로 변환하여 반환
         return CustomUserDetails.builder()
+                .name(storedName)
                 .id(user.getId())
                 .phoneNumber(user.getPhoneNumber())
                 .isAdmin(user.getIsAdmin())
@@ -113,16 +148,17 @@ public class UserServiceImpl implements UserService {
         return authorityList;
     }
 
-    public boolean verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
+    public CustomUserDetails verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
         verifySms(requestDto);
 
         User user = findByPhoneNumber(requestDto.getPhone());
         boolean isNewUser = user == null;
 
         if (isNewUser) {
-            registerUser(requestDto);
+            return registerUser(requestDto);
+        }else{
+            return loadUserByPhoneNumber(requestDto.getPhone());
         }
-        return isNewUser;
     }
     public void logout(String accessToken, String refreshToken) {
         jwtUtil.invalidateToken(accessToken);

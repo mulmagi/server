@@ -45,7 +45,7 @@ public class ResponseMessage {
     public static final String MESSAGE_READ_SUCCESS = "메시지 목록 불러오기 성공";
 
     // user
-    public static final String USER_REGISTER_LOGIN_SUCCESS = "회원 가입, 로그인 성공";
+    public static final String NAME_SUBMIT_SUCCESS = "이름 입력 성공";
     public static final String USER_LOGIN_SUCCESS = "로그인 성공";
     public static final String USER_LOGOUT_SUCCESS = "로그아웃 성공";
     public static final String REFRESH_TOKEN_ISSUE_SUCCESS = "Refresh Token 발급 완료";
@@ -54,4 +54,6 @@ public class ResponseMessage {
 
     public static final String TOKEN_VALIDATE_SUCCESS = "Token 인증 완료";
 
+    public static final String USER_AGREED_NOTIFICATION = "알람 수신 동의";
+    public static final String USER_DECLINE_NOTIFICATION = "알람 수신 미동의";
 }

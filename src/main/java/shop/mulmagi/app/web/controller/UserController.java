@@ -26,6 +26,19 @@ public class UserController extends BaseController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
+    @PostMapping("/name")
+    public ResponseEntity<?> submitName(@RequestBody UserDto userDto) {
+        try {
+            userService.submitName(userDto.getName());
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", ResponseMessage.NAME_SUBMIT_SUCCESS);
+            response.put("name", userDto.getName());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
     @PostMapping("/sms-certification/send")
     public ResponseEntity<?> sendSms(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
@@ -40,8 +53,6 @@ public class UserController extends BaseController {
     @PostMapping("/sms-certification/confirm")
     public ResponseEntity<?> smsConfirm(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
-
-            boolean isNewUser = userService.verifyAndRegisterUser(requestDto);
             log.info(ResponseMessage.SMS_CERT_SUCCESS);
             return login(requestDto);
         } catch (CustomExceptions.Exception e) {
@@ -50,9 +61,9 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception{
+    public ResponseEntity<?> login(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
-            CustomUserDetails userDetails = userService.loadUserByPhoneNumber(requestDto.getPhone());
+            CustomUserDetails userDetails = userService.verifyAndRegisterUser(requestDto);
             String accessToken = jwtUtil.generateAccessToken(userDetails);
             String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
@@ -74,6 +85,26 @@ public class UserController extends BaseController {
         }
     }
 
+    @PutMapping("/{userId}/notifications")
+    public ResponseEntity<?> updateNotificationSetting(@PathVariable Long userId,
+                                                       @RequestParam boolean enableNotifications) throws Exception {
+        try {
+            userService.updateNotificationSettings(userId, enableNotifications);
+            Map<String, Object> response = new HashMap<>();
+            if (enableNotifications) {
+                response.put("message", ResponseMessage.USER_AGREED_NOTIFICATION);
+            } else {
+                response.put("message", ResponseMessage.USER_DECLINE_NOTIFICATION);
+            }
+            response.put("id", String.valueOf(userId));
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestParam("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws Exception {
         try {
@@ -84,9 +115,4 @@ public class UserController extends BaseController {
         }
     }
 
-    // 로그아웃했을 때 넘어가는 임시 페이지
-    @GetMapping("/")
-    public String home() {
-        return "index";
-    }
 }
