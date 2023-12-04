@@ -91,7 +91,7 @@
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv);
             });
-            ws.send("/app/chat/enter", {}, JSON.stringify({userId:vm.$data.roomId, type:'ENTER', contents:'enter', isAdmin:true}));
+            ws.send("/app/chat/message", {}, JSON.stringify({userId:vm.$data.roomId, type:'ENTER', contents:'enter', isAdmin:false}));
         }, function(error) {
             if(reconnect++ <= 5) {
                 setTimeout(function() {
