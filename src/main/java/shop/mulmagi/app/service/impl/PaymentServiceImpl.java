@@ -14,6 +14,7 @@ import shop.mulmagi.app.service.PaymentService;
 import shop.mulmagi.app.web.dto.PaymentResponseDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -44,7 +45,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentResponseDto.PaymentHistoryDto> getPaymentHistory(User user){
-        List<PaymentResponseDto.PaymentHistoryDto> paymentHistoryDtoList = paymentRepository.findAmountAndCreatedAtByUserId(user);
-        return paymentHistoryDtoList;
+        List<Object[]> results = paymentRepository.findAmountAndCreatedAtByUserId(user);
+        List<PaymentResponseDto.PaymentHistoryDto> paymentHistoryList = results.stream()
+                .map(PaymentResponseDto.PaymentHistoryDto::new)
+                .collect(Collectors.toList());
+        return paymentHistoryList;
     }
 }
