@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.domain.Message;
@@ -49,6 +50,7 @@ public class ChatRoomController extends BaseController {
 	}
 
 	@ApiOperation(value = "특정 채팅방 메시지 불러오기 API")
+	@ApiImplicitParam(name = "userId", value = "채팅방(에 속한 사용자) ID", example = "1")
 	@GetMapping("/room/{userId}")
 	public ResponseEntity getChatMessages(@PathVariable Long userId){
 		try {
@@ -63,6 +65,7 @@ public class ChatRoomController extends BaseController {
 	}
 
 	@ApiOperation(value = "채팅방 생성 API")
+	@ApiImplicitParam(name = "userId", value = "문의를 시작할 사용자 ID", example = "1")
 	@PostMapping("room/{userId}")
 	public ResponseEntity createChatRoom(@PathVariable Long userId){
 		try {
@@ -77,6 +80,7 @@ public class ChatRoomController extends BaseController {
 	}
 
 	@ApiOperation(value = "채팅방 삭제 API")
+	@ApiImplicitParam(name = "userId", value = "문의를 끝낼 사용자 ID", example = "1")
 	@DeleteMapping("room/{userId}")
 	public ResponseEntity deleteChatRoom(@PathVariable Long userId){
 		try {

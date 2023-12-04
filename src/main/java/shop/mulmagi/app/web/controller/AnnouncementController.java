@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,7 @@ public class AnnouncementController extends BaseController {
 
 	@ApiOperation(value = "공지사항 세부내용 불러오기 API")
 	@ApiResponse(code = 200, message = "공지사항 세부내용 불러오기 성공")
+	@ApiImplicitParam(name = "id", value = "불러올 공지사항 ID", example = "1")
 	@GetMapping("/{id}")
 	public ResponseEntity announcementDetail(@PathVariable Long id){
 		try {
@@ -77,6 +79,7 @@ public class AnnouncementController extends BaseController {
 
 	@ApiOperation(value = "특정 카테고리 공지사항 불러오기 API")
 	@ApiResponse(code = 200, message = "공지사항 카테고리 불러오기 성공")
+	@ApiImplicitParam(name = "category", value = "선택한 특정 공지사항 category(NORMAL/CHARGE/EVENT/SYSTEM/ETC)", example = "NORMAL")
 	@GetMapping("/category/{category}")
 	public ResponseEntity announcementCategory(@PathVariable("category") String categoryValue){
 		try {
@@ -138,6 +141,7 @@ public class AnnouncementController extends BaseController {
 
 	@ApiOperation(value = "공지사항 삭제 API")
 	@ApiResponse(code = 200, message = "공지사항 삭제 성공")
+	@ApiImplicitParam(name = "id", value = "삭제할 공지사항 ID", example = "1")
 	@DeleteMapping("/{id}")
 	public ResponseEntity deleteAnnouncement(@PathVariable Long id) {
 		try {
@@ -150,6 +154,7 @@ public class AnnouncementController extends BaseController {
 
 	@ApiOperation(value = "공지사항 수정 API")
 	@ApiResponse(code = 200, message = "공지사항 수정 성공")
+	@ApiImplicitParam(name = "id", value = "수정할 공지사항 ID", example = "1")
 	@PutMapping("/{id}")
 	public ResponseEntity updateAnnouncement(@PathVariable Long id, @ModelAttribute AnnouncementRequestDto.UpdateDto request) {
 		try {

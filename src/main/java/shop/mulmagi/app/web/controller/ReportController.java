@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class ReportController extends BaseController {
 	private final UserRepository userRepository;
 
 	@ApiOperation(value = "우산 고장신고 접수 API")
+	@ApiImplicitParam(name = "id", value = "고장신고 받은 우산 ID", example = "1")
 	@PutMapping("/receive/{id}")
 	public ResponseEntity receiveReport(@PathVariable("id") Long id){
 		try {
@@ -50,6 +52,7 @@ public class ReportController extends BaseController {
 	}
 
 	@ApiOperation(value = "우산 고장신고 해결처리 API")
+	@ApiImplicitParam(name = "id", value = "고장신고 해제할 우산 ID", example = "1")
 	@PutMapping("/solve/{id}")
 	public ResponseEntity solveReport(@PathVariable("id") Long id){
 		try {
