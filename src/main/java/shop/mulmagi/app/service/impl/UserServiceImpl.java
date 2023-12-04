@@ -74,6 +74,8 @@ public class UserServiceImpl implements UserService {
                         .isRental(false)
                         .isComplaining(false)
                         .status(UserStatus.ACTIVE)
+                        .notificationEnabled(false)
+                        .agreeTerms(false)
                         .build();
                 userRepository.save(user);
             }
