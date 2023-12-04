@@ -2,8 +2,8 @@ package shop.mulmagi.app.web.dto;
 
 import lombok.Getter;
 @Getter
-
 public class UserDto {
+    private String name;
 
     @Getter
     public static class SmsCertificationRequest {
@@ -12,4 +12,5 @@ public class UserDto {
         private String certificationNumber;
 
     }
+
 }

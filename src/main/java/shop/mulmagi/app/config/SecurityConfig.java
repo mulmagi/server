@@ -22,16 +22,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .permitAll()
+                .antMatchers("/sms-certification/send").permitAll()
+                .antMatchers("/sms-certification/confirm").permitAll()
+                .antMatchers("/name").permitAll()
+                .antMatchers("/login").permitAll()
+                .anyRequest().authenticated().and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/name") // 첫화면
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll();
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired

@@ -15,7 +15,7 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -45,6 +45,14 @@ public class User extends BaseEntity {
     private Boolean isComplaining;
 
     private String firebaseToken;
+    @Column(columnDefinition = "Boolean default false")
+    private boolean agreeTerms;
+    @Column(columnDefinition = "Boolean default false")
+    private boolean notificationEnabled;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private RefreshToken refreshToken;
+
 
     public void updateRental(){
         this.isRental = true;
@@ -73,5 +81,10 @@ public class User extends BaseEntity {
 
     public void startComplain(){ this.isComplaining = true; }
     public void endComplain(){ this.isComplaining = false; }
+
+    public void updateNotificationEnabled(boolean notificationEnabled){
+        this.notificationEnabled = notificationEnabled;
+
+    }
 
 }
