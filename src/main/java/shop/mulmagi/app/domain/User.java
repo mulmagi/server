@@ -44,6 +44,8 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "Boolean default false")
     private Boolean isComplaining;
 
+    private String firebaseToken;
+
     public void updateRental(){
         this.isRental = true;
     }
@@ -63,5 +65,13 @@ public class User extends BaseEntity {
     public void returnPoint(Integer amount){
         this.point += amount;
     }
+
+    public void updateExperience(Integer payment){
+        this.experience += payment * 0.05;
+    }
+    public void resetExperience(){ this.experience = 0.0; }
+
+    public void startComplain(){ this.isComplaining = true; }
+    public void endComplain(){ this.isComplaining = false; }
 
 }

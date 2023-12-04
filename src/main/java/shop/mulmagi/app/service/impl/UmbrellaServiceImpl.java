@@ -30,10 +30,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     private final UserRepository userRepository;
 
     @Override
-    public UmbrellaResponseDto.LocationDataListDto getLocationData(User user, UmbrellaRequestDto.LocationPointDto request){
-        Double userLatitude = request.getLatitude();
-        Double userLongitude = request.getLongitude();
-
+    public UmbrellaResponseDto.LocationDataListDto getLocationData(User user, Double userLatitude, Double userLongitude){
         List<Location> nearbyLocations;
         Double distanceThreshold = 1000.0;
 
@@ -68,8 +65,8 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     }
 
     @Override
-    public UmbrellaResponseDto.RentalPageDto getRentalPage(User user, UmbrellaRequestDto.RentalPageDto request){
-        UmbrellaStand umbrellaStand = umbrellaStandRepository.findByQrCode(request.getQrCode());
+    public UmbrellaResponseDto.RentalPageDto getRentalPage(User user, Long qrCode){
+        UmbrellaStand umbrellaStand = umbrellaStandRepository.findByQrCode(qrCode);
         String umbrellaStandNumber = String.valueOf(umbrellaStand.getNumber());
 
         Location location = umbrellaStand.getLocation();
@@ -80,8 +77,8 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     }
 
     @Override
-    public UmbrellaResponseDto.ReturnPageDto getReturnPage(UmbrellaRequestDto.ReturnPageDto request){
-        Rental rental = rentalRepository.findById(request.getRentalId())
+    public UmbrellaResponseDto.ReturnPageDto getReturnPage(Long rentalId){
+        Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new NoSuchElementException("Rental not found."));
 
         UmbrellaStand rentalUmbrellaStand = rental.getRentalUmbrellaStand();
@@ -159,6 +156,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         umbrellaStand.updateReturn();
         user.updateReturn();
         user.returnPoint(9000 - rental.getOverdueAmount());
+        user.updateExperience(rental.getOverdueAmount()+1000);
         rental.updateReturn(umbrellaStand);
 
         locationRepository.save(location);

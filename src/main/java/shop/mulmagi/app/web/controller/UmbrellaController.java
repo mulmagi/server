@@ -1,5 +1,6 @@
 package shop.mulmagi.app.web.controller;
 
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.ResponseMessage;
@@ -29,14 +30,14 @@ public class UmbrellaController extends BaseController {
     @ApiOperation(value = "메인 화면 불러오기 API")
     @ApiResponse(code = 200, message = "메인 화면 불러오기 성공")
     @GetMapping("/main")
-    public ResponseEntity main(@RequestBody UmbrellaRequestDto.LocationPointDto request){
+    public ResponseEntity main(@RequestParam("latitude") @ApiParam(value = "사용자 위치(지도 중심)의 위도", example = "37.2431") double latitude, @RequestParam("longitude") @ApiParam(value = "사용자 위치(지도 중심)의 경도", example = "127.0736") double longitude){
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/main", "메인 화면 불러오기 API");
 
             //로그인 구현 후 유저 정보 토큰으로 받아올 예정
             User user = userRepository.findByPhoneNumber("01029440386");
 
-            UmbrellaResponseDto.LocationDataListDto res = umbrellaService.getLocationData(user, request);
+            UmbrellaResponseDto.LocationDataListDto res = umbrellaService.getLocationData(user, latitude, longitude);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.MAIN_SCREEN_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
@@ -47,7 +48,7 @@ public class UmbrellaController extends BaseController {
     @ApiOperation(value = "location 불러오기 API")
     @ApiResponse(code = 200, message = "location 불러오기 성공")
     @GetMapping("/main/{location-id}")
-    public ResponseEntity location(@PathVariable("location-id") Long locationId){
+    public ResponseEntity location(@PathVariable("location-id") @ApiParam(value = "location ID", example = "1") Long locationId){
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/main/{location-id}", "location 불러오기 API");
 
@@ -65,14 +66,14 @@ public class UmbrellaController extends BaseController {
     @ApiOperation(value = "대여 페이지 불러오기 API")
     @ApiResponse(code = 200, message = "대여 페이지 불러오기 성공")
     @GetMapping("/rental")
-    public ResponseEntity rentalPage(@RequestBody UmbrellaRequestDto.RentalPageDto request){
+    public ResponseEntity rentalPage(@RequestParam("qrCode") @ApiParam(value = "QR 코드", example = "123456") Long qrCode){
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/rental", "대여 페이지 불러오기 API");
 
             //로그인 구현 후 유저 정보 토큰으로 받아올 예정
             User user = userRepository.findByPhoneNumber("01029440386");
 
-            UmbrellaResponseDto.RentalPageDto res = umbrellaService.getRentalPage(user, request);
+            UmbrellaResponseDto.RentalPageDto res = umbrellaService.getRentalPage(user, qrCode);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RENTAL_PAGE_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
@@ -82,15 +83,15 @@ public class UmbrellaController extends BaseController {
 
     @ApiOperation(value = "반납 완료 페이지 불러오기 API")
     @ApiResponse(code = 200, message = "반납 완료 페이지 불러오기 성공")
-    @GetMapping("/return")
-    public ResponseEntity returnPage(@RequestBody UmbrellaRequestDto.ReturnPageDto request){
+    @GetMapping("/return/{rental-id}")
+    public ResponseEntity returnPage(@PathVariable("rental-id") @ApiParam(value = "rental ID", example = "1") Long rentalId){
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/return", "반납 완료 페이지 불러오기 API");
 
             //로그인 구현 후 유저 정보 토큰으로 받아올 예정
             User user = userRepository.findByPhoneNumber("01029440386");
 
-            UmbrellaResponseDto.ReturnPageDto res = umbrellaService.getReturnPage(request);
+            UmbrellaResponseDto.ReturnPageDto res = umbrellaService.getReturnPage(rentalId);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.RETURN_PAGE_READ_SUCCESS, res), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
