@@ -37,13 +37,21 @@ public class UserController extends BaseController {
     }
 
     //인증번호 확인
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
+    @PostMapping("/sms-certification/confirm")
+    public ResponseEntity<?> smsConfirm(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
 
             boolean isNewUser = userService.verifyAndRegisterUser(requestDto);
             log.info(ResponseMessage.SMS_CERT_SUCCESS);
+            return login(requestDto);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception{
+        try {
             CustomUserDetails userDetails = userService.loadUserByPhoneNumber(requestDto.getPhone());
             String accessToken = jwtUtil.generateAccessToken(userDetails);
             String refreshToken = jwtUtil.generateRefreshToken(userDetails);
@@ -55,11 +63,11 @@ public class UserController extends BaseController {
             tokens.put("refresh_token", refreshToken);
             log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + " : " + refreshToken);
 
-            if (isNewUser) {
-                return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_REGISTER_LOGIN_SUCCESS), HttpStatus.OK);
-            } else {
-                return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGIN_SUCCESS), HttpStatus.OK);
-            }
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", ResponseMessage.USER_LOGIN_SUCCESS);
+            response.put("accessToken", accessToken);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
