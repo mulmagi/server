@@ -8,5 +8,7 @@ import shop.mulmagi.app.domain.User;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     RefreshToken findByUser(User user);
 
+    RefreshToken findByToken(String token);
+
     void deleteByUser(User user);
 }

@@ -17,6 +17,10 @@ public class CustomExceptions {
         public UserPhoneNumberNotFoundException(String message){super(message);}
     }
 
+    public static class RefreshTokenInvalidException extends  RuntimeException{
+        public RefreshTokenInvalidException(String message){super(message);}
+    }
+
 
 
 

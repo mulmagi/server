@@ -50,6 +50,7 @@ public class ResponseMessage {
     public static final String USER_LOGOUT_SUCCESS = "로그아웃 성공";
     public static final String REFRESH_TOKEN_ISSUE_SUCCESS = "Refresh Token 발급 완료";
     public static final String ACCESS_TOKEN_ISSUE_SUCCESS = "Access Token 발급 완료";
+    public static final String ACCESS_TOKEN_REISSUE_SUCCESS = "Access Token 재발급 완료";
     public static final String USER_DELETION_SUCCESS = "회원 탈퇴 완료";
 
     public static final String TOKEN_VALIDATE_SUCCESS = "Token 인증 완료";
