@@ -1,11 +1,10 @@
 package shop.mulmagi.app.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
@@ -43,6 +42,7 @@ public class UserController extends BaseController {
         try {
 
             boolean isNewUser = userService.verifyAndRegisterUser(requestDto);
+            log.info(ResponseMessage.SMS_CERT_SUCCESS);
 
             CustomUserDetails userDetails = userService.loadUserByPhoneNumber(requestDto.getPhone());
             String accessToken = jwtUtil.generateAccessToken(userDetails);
@@ -50,17 +50,35 @@ public class UserController extends BaseController {
 
             Map<String, String> tokens = new HashMap<>();
             tokens.put("access_token", accessToken);
+            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + " : " + accessToken);
+
             tokens.put("refresh_token", refreshToken);
+            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + " : " + refreshToken);
 
             if (isNewUser) {
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_REGISTER_LOGIN_SUCCESS), HttpStatus.OK);
-            }
-            else {
+            } else {
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGIN_SUCCESS), HttpStatus.OK);
             }
 
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestParam("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws Exception {
+        try {
+            userService.logout(accessToken, refreshToken);
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGOUT_SUCCESS), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 로그아웃했을 때 넘어가는 임시 페이지
+    @GetMapping("/")
+    public String home() {
+        return "index";
     }
 }

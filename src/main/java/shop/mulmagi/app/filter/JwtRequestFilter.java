@@ -1,4 +1,5 @@
-package shop.mulmagi.app.config;
+package shop.mulmagi.app.filter;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,13 +10,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.util.JwtUtil;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 
+
+
+
+@Slf4j
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 

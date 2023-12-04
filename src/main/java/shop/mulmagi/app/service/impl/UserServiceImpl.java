@@ -8,9 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.domain.enums.UserStatus;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UserService;
+import shop.mulmagi.app.util.JwtUtil;
 import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
 
@@ -26,7 +28,10 @@ public class UserServiceImpl implements UserService {
     private final SmsCertificationUtil smsUtil;
     private final SmsCertificationDao smsCertificationDao;
 
+    private final JwtUtil jwtUtil;
+
     private final UserRepository userRepository;
+
 
     public void sendSms(UserDto.SmsCertificationRequest requestDto){
         String to = requestDto.getPhone();
@@ -68,6 +73,7 @@ public class UserServiceImpl implements UserService {
                         .profileUrl(" ")
                         .isRental(false)
                         .isComplaining(false)
+                        .status(UserStatus.ACTIVE)
                         .build();
                 userRepository.save(user);
             }
@@ -116,7 +122,11 @@ public class UserServiceImpl implements UserService {
         }
         return isNewUser;
     }
-
+    public void logout(String accessToken, String refreshToken) {
+        jwtUtil.invalidateToken(accessToken);
+        jwtUtil.invalidateToken(refreshToken);
+    }
 
 
 }
+
