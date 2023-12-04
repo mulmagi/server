@@ -21,7 +21,7 @@ public class MessageRequestDto {
 		private String contents;
 
 		@ApiModelProperty(example = "TEXT")
-		@ApiParam(name = "type", value = "메시지 타입 입력")
+		@ApiParam(name = "type", value = "메시지 타입 입력(TEXT)")
 		private MessageType type;
 
 		@ApiModelProperty(example = "false")
@@ -39,7 +39,7 @@ public class MessageRequestDto {
 		private MultipartFile img;
 
 		@ApiModelProperty(example = "IMAGE")
-		@ApiParam(name = "type", value = "메시지 타입 입력")
+		@ApiParam(name = "type", value = "메시지 타입 입력(IMAGE)")
 		private MessageType type;
 
 		@ApiModelProperty(example = "false")
