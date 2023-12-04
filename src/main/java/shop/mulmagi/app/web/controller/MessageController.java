@@ -27,22 +27,13 @@ public class MessageController extends BaseController {
 	private final ChatServiceImpl chatService;
 	private final S3UploadServiceImpl s3UploadService;
 
-	@MessageMapping("/chat/enter")
-	public void enter(MessageRequestDto.TextMessageDto messageDto){
-		MessageResponseDto.MessageDto messageRes = chatService.getMessage(messageDto);
-		if(!messageRes.getIsAdmin()){
-			messageRes.setContents("환영합니다 "+ messageRes.getUserId().toString() + "님");
-			messageRes.setType(ENTER);
-			sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
-
-			chatService.saveMessage(messageRes);
-		}
-	}
-
 	@MessageMapping("/chat/message")
 	public void sendTextMessage(MessageRequestDto.TextMessageDto messageDto) {
 		//logger.info(messageDto.getContents());
 		MessageResponseDto.MessageDto messageRes = chatService.getMessage(messageDto);
+		if(messageRes.getType().equals(ENTER) && !messageRes.getIsAdmin()){
+			messageRes.setContents(messageRes.getUserId().toString() + "님이 입장하였습니다");
+		}
 		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 
 		chatService.saveMessage(messageRes);
