@@ -1,7 +1,6 @@
 package shop.mulmagi.app.web.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -141,4 +140,15 @@ public class UserController extends BaseController {
         }
     }
 
+    @PutMapping("/withdraw")
+    public ResponseEntity<?> withdrawUserByPhoneNumber(@RequestBody UserDto.WithdrawRequest userDto) {
+
+        try {
+            userService.withdrawUserByPhoneNumber(userDto.getPhoneNumber());
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_DELETION_SUCCESS), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+
+    }
 }

@@ -18,4 +18,6 @@ public interface UserService {
 
     void submitName(String name);
     void saveRefreshToken(RefreshToken refreshToken);
+
+    void withdrawUserByPhoneNumber(String phoneNumber);
 }

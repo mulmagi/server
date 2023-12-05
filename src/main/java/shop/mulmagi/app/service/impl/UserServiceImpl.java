@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.RefreshToken;
@@ -19,6 +20,8 @@ import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
 
 import java.util.*;
+
+import static shop.mulmagi.app.domain.enums.UserStatus.INACTIVE;
 
 @Service
 @Transactional
@@ -155,6 +158,15 @@ public class UserServiceImpl implements UserService {
     public void logout(String accessToken, String refreshToken) {
         jwtUtil.invalidateToken(accessToken);
         jwtUtil.invalidateToken(refreshToken);
+    }
+
+
+    public void withdrawUserByPhoneNumber(String phoneNumber){
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user != null) {
+            user.updateStatus(INACTIVE);
+            userRepository.save(user);
+        }
     }
 
 
