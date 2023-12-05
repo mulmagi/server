@@ -103,5 +103,9 @@ public class User extends BaseEntity {
         this.agreeTerms = false;
     }
 
+    public void updateProfileURL(String profileUrl){
+        this.profileUrl = profileUrl;
+    }
+
 
 }

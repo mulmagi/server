@@ -20,4 +20,5 @@ public interface UserService {
     void saveRefreshToken(RefreshToken refreshToken);
 
     void withdrawUserByPhoneNumber(String phoneNumber);
+    void updateProfileImage(Long userId, String profileImageUrl);
 }
