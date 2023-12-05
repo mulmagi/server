@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.RefreshToken;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final RefreshTokenRepository refreshTokenRepository;
+
 
     private String storedName;
 
@@ -180,6 +182,15 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null) {
             user.updateStatus(INACTIVE);
+            userRepository.save(user);
+        }
+    }
+
+    public void updateProfileImage(Long userId, String profileImageUrl) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.updateProfileURL(profileImageUrl);
             userRepository.save(user);
         }
     }

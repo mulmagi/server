@@ -141,14 +141,22 @@ public class UserController extends BaseController {
     }
 
     @PutMapping("/withdraw")
-    public ResponseEntity<?> withdrawUserByPhoneNumber(@RequestBody UserDto.WithdrawRequest userDto) {
-
+    public ResponseEntity<?> withdrawUserByPhoneNumber(@RequestBody UserDto.WithdrawRequest userDto){
         try {
             userService.withdrawUserByPhoneNumber(userDto.getPhoneNumber());
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_DELETION_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
-
     }
+    @PutMapping("/{id}/profile-image")
+    public ResponseEntity<?> setUserProfileImage( @PathVariable Long id, @RequestParam String profileImageUrl) {
+        try {
+            userService.updateProfileImage(id, profileImageUrl);
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PROFILE_IMAGE_UPLOAD_SUCCESS), HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
