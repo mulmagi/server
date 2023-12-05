@@ -90,6 +90,17 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+    private CustomUserDetails registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
+        if (isVerify(requestDto)) {
+            User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
+            if (existingUser != null && existingUser.getStatus() == INACTIVE) {
+                existingUser.resetUser(storedName, requestDto.getPhone());
+                userRepository.save(existingUser);
+                return jwtUtil.buildCustomUserDetails(existingUser);
+            }
+        }
+        return null;
+    }
 
 
     public void submitName(String name){
@@ -107,7 +118,7 @@ public class UserServiceImpl implements UserService {
     public CustomUserDetails loadUserByPhoneNumber(String phoneNumber){
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
-            throw new CustomExceptions.UserPhoneNumberNotFoundException("User not found with phone number: " + phoneNumber);
+            throw new CustomExceptions.UserPhoneNumberNotFoundException("전화번호 " + phoneNumber + "를 사용하는 사용자가 없습니다.");
         }
         // User 객체를 UserDetails로 변환하여 반환
         return CustomUserDetails.builder()
@@ -135,7 +146,11 @@ public class UserServiceImpl implements UserService {
 
         if (isNewUser) {
             return registerUser(requestDto);
-        }else{
+        }
+        else if (user.getStatus() == INACTIVE){
+            return registerWithdrawUser(requestDto);
+        }
+        else {
             return loadUserByPhoneNumber(requestDto.getPhone());
         }
     }

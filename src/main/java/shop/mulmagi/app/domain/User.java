@@ -88,5 +88,20 @@ public class User extends BaseEntity {
     public void updateStatus(UserStatus status){
         this.status = status;
     }
+    public void resetUser(String name, String phoneNumber){
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.level = 0;
+        this.experience = 0.0;
+        this.point = 0;
+        this.profileUrl = " ";
+        this.isRental = false;
+        this.isAdmin = false;
+        this.isComplaining = false;
+        this.status = UserStatus.ACTIVE;
+        this.notificationEnabled = false;
+        this.agreeTerms = false;
+    }
+
 
 }
