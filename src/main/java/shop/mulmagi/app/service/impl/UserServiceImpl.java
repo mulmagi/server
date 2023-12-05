@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.RefreshToken;
@@ -19,6 +20,8 @@ import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
 
 import java.util.*;
+
+import static shop.mulmagi.app.domain.enums.UserStatus.INACTIVE;
 
 @Service
 @Transactional
@@ -87,6 +90,17 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+    private CustomUserDetails registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
+        if (isVerify(requestDto)) {
+            User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
+            if (existingUser != null && existingUser.getStatus() == INACTIVE) {
+                existingUser.resetUser(storedName, requestDto.getPhone());
+                userRepository.save(existingUser);
+                return jwtUtil.buildCustomUserDetails(existingUser);
+            }
+        }
+        return null;
+    }
 
 
     public void submitName(String name){
@@ -104,7 +118,7 @@ public class UserServiceImpl implements UserService {
     public CustomUserDetails loadUserByPhoneNumber(String phoneNumber){
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
-            throw new CustomExceptions.UserPhoneNumberNotFoundException("User not found with phone number: " + phoneNumber);
+            throw new CustomExceptions.UserPhoneNumberNotFoundException("전화번호 " + phoneNumber + "를 사용하는 사용자가 없습니다.");
         }
         // User 객체를 UserDetails로 변환하여 반환
         return CustomUserDetails.builder()
@@ -132,7 +146,11 @@ public class UserServiceImpl implements UserService {
 
         if (isNewUser) {
             return registerUser(requestDto);
-        }else{
+        }
+        else if (user.getStatus() == INACTIVE){
+            return registerWithdrawUser(requestDto);
+        }
+        else {
             return loadUserByPhoneNumber(requestDto.getPhone());
         }
     }
@@ -155,6 +173,15 @@ public class UserServiceImpl implements UserService {
     public void logout(String accessToken, String refreshToken) {
         jwtUtil.invalidateToken(accessToken);
         jwtUtil.invalidateToken(refreshToken);
+    }
+
+
+    public void withdrawUserByPhoneNumber(String phoneNumber){
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user != null) {
+            user.updateStatus(INACTIVE);
+            userRepository.save(user);
+        }
     }
 
 

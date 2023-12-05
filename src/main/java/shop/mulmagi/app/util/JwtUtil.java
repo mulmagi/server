@@ -1,6 +1,7 @@
 package shop.mulmagi.app.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,22 @@ public class JwtUtil {
     @Value("${spring.jwt.refresh-expiration-time}")
     private long refreshExpTime;
 
+    public Long extractId(String jwtToken) {
+        Claims claims = null;
+        try {
+            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(jwtToken).getBody();
+        } catch ( JwtException | IllegalArgumentException e) {
+            // 예외 처리 (예: 유효하지 않은 토큰 등)
+            e.printStackTrace(); // 예외 처리 방식을 개선해야 함
+        }
+
+        if (claims != null) {
+            return Long.parseLong(claims.getSubject());
+        } else {
+            // 토큰이 유효하지 않은 경우 처리 (예: 로깅, 예외 처리)
+            return null;
+        }
+    }
     public long getRefreshExpTime() {
         return refreshExpTime;
     }
@@ -117,7 +134,7 @@ public class JwtUtil {
         return generateAccessToken(userDetails);
     }
 
-    private CustomUserDetails getUserDetailsFromRefreshToken(String token) {
+    public CustomUserDetails getUserDetailsFromRefreshToken(String token) {
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token);
 
