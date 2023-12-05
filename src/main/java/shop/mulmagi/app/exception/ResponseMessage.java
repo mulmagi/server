@@ -56,6 +56,7 @@ public class ResponseMessage {
     public static final String TOKEN_VALIDATE_SUCCESS = "Token 인증 완료";
 
     public static final String PROFILE_IMAGE_UPLOAD_SUCCESS = "프로필 이미지 업로드 성공";
+    public static final String PRINT_RENTAL_HISTORY_SUCCESS = "반납 및 대여 내역 조회 성공";
 
     public static final String USER_AGREED_NOTIFICATION = "알람 수신 동의";
     public static final String USER_DECLINE_NOTIFICATION = "알람 수신 미동의";

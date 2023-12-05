@@ -11,4 +11,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findByIsReturn(Boolean isReturn);
     Rental findByUserAndIsReturn(User user, Boolean isReturn);
     Rental findByReturnUmbrellaStand(UmbrellaStand umbrellaStand);
+
+    List<Rental> findByUserId(Long userId);
 }
