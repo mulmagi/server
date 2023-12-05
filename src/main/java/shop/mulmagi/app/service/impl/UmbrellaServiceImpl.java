@@ -8,11 +8,13 @@ import shop.mulmagi.app.domain.Location;
 import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.UmbrellaStand;
 import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.domain.enums.NotificationType;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.LocationRepository;
 import shop.mulmagi.app.repository.RentalRepository;
 import shop.mulmagi.app.repository.UmbrellaStandRepository;
 import shop.mulmagi.app.repository.UserRepository;
+import shop.mulmagi.app.service.NotificationService;
 import shop.mulmagi.app.service.UmbrellaService;
 import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
@@ -28,6 +30,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     private final UmbrellaConverter umbrellaConverter;
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Override
     public UmbrellaResponseDto.LocationDataListDto getLocationData(User user, Double userLatitude, Double userLongitude){
@@ -114,6 +117,12 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             throw new CustomExceptions.Exception("고장난 우산입니다.");
         }
 
+        String umbrellaStandNumber = String.valueOf(umbrellaStand.getNumber());
+        String str = String.join(" | ", location.getName(), umbrellaStandNumber);
+        String notificationMsg = str+"번 대여 완료";
+
+        notificationService.sendAndSaveNotification(user, NotificationType.RENTAL, notificationMsg, "");
+
         location.updateRental();
         umbrellaStand.updateRental();
         user.updateRental();
@@ -151,6 +160,13 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         } else if (rental.getIsReturn()){
             throw new CustomExceptions.Exception("이미 반납된 우산입니다.");
         }
+
+        String umbrellaStandNumber = String.valueOf(umbrellaStand.getNumber());
+        String str = String.join(" | ", location.getName(), umbrellaStandNumber);
+        String notificationMsg = str+"번 반납 완료";
+        System.out.println(notificationMsg);
+
+        notificationService.sendAndSaveNotification(user, NotificationType.RETURN, notificationMsg, "");
 
         location.updateReturn();
         umbrellaStand.updateReturn();
