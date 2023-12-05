@@ -10,5 +10,5 @@ import java.util.List;
 public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findByIsReturn(Boolean isReturn);
     Rental findByUserAndIsReturn(User user, Boolean isReturn);
-    Rental findByReturnUmbrellaStand(UmbrellaStand umbrellaStand);
+    //Rental findByReturnUmbrellaStand(UmbrellaStand umbrellaStand);
 }
