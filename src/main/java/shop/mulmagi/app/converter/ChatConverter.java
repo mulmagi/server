@@ -21,6 +21,7 @@ public class ChatConverter {
 			.contents(message.getContent())
 			.type(message.getType())
 			.isAdmin(message.getIsAdmin())
+			.createdAt(message.getCreatedAt())
 			.build();
 	}
 
