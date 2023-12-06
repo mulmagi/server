@@ -1,5 +1,6 @@
 package shop.mulmagi.app.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,11 +33,12 @@ public class ChatServiceImpl implements ChatService {
 	@Override
 	public List<ChatResponseDto.chatRoomDto> findAllChatRooms(){
 		List<User> complainingUsers = userRepository.findByIsComplaining(true); //활성화된 roomId들은 현재 문의중인 user의 id와 동일
-
-		List<ChatResponseDto.chatRoomDto> chatRoomDtos = complainingUsers.stream().map(
-			User -> chatConverter.toChatRoomDto(User, messageRepository.findTopByUserOrderByCreatedAtDesc(User))
-		).collect(Collectors.toList());
-
+		List<ChatResponseDto.chatRoomDto> chatRoomDtos = new ArrayList<>();
+		if(!complainingUsers.isEmpty()){
+			chatRoomDtos = complainingUsers.stream().map(
+				User -> chatConverter.toChatRoomDto(User, messageRepository.findTopByUserOrderByCreatedAtDesc(User))
+			).collect(Collectors.toList());
+		}
 		return chatRoomDtos;
 	}
 
