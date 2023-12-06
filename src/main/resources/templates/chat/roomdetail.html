@@ -33,7 +33,7 @@
     </div>
     <ul class="list-group">
         <li class="list-group-item" v-for="message in messages">
-            [Admin = {{message.isAdmin}}] - {{message.contents}}
+            [Admin = {{message.isAdmin}}] - {{message.contents}} - {{message.createdAt}}
         </li>
     </ul>
     <div></div>
@@ -79,7 +79,7 @@
                 this.message = '';
             },
             recvMessage: function(recv) {
-                this.messages.unshift({"type":recv.type,"isAdmin":recv.isAdmin, "contents":recv.contents})
+                this.messages.unshift({"type":recv.type,"isAdmin":recv.isAdmin, "contents":recv.contents, "createdAt":recv.createdAt})
             }
         }
     });
