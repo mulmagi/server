@@ -1,5 +1,7 @@
 package shop.mulmagi.app.web.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,4 +21,5 @@ public class MessageDto {
 	private String contents;
 	private MessageType type;
 	private Boolean isAdmin;
+	private LocalDateTime createdAt;
 }

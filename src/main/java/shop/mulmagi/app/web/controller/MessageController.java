@@ -34,9 +34,20 @@ public class MessageController extends BaseController {
 		if(messageRes.getType().equals(ENTER) && !messageRes.getIsAdmin()){
 			messageRes.setContents(messageRes.getUserId().toString() + "님이 입장하였습니다");
 		}
+		messageRes = chatService.saveMessage(messageRes); //id와 createdAt 가져옴
 		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
+	}
 
-		chatService.saveMessage(messageRes);
+	@ApiOperation(value = "POST로 채팅보내기 test API")
+	@PostMapping("/chat/message/test")
+	public void sendTextMessageTest(@ModelAttribute MessageRequestDto.TextMessageDto request) {
+		//logger.info(messageDto.getContents());
+		MessageResponseDto.MessageDto messageRes = chatService.getMessage(request);
+		if(messageRes.getType().equals(ENTER) && !messageRes.getIsAdmin()){
+			messageRes.setContents(messageRes.getUserId().toString() + "님이 입장하였습니다");
+		}
+		messageRes = chatService.saveMessage(messageRes); //id와 createdAt 가져옴
+		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 	}
 
 	//이미지 채팅 전송
@@ -50,8 +61,8 @@ public class MessageController extends BaseController {
 			imgUrl = s3UploadService.uploadAWSChatImg(img);
 		}
 		MessageResponseDto.MessageDto messageRes = chatService.getMessage(request, imgUrl);
-		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 
-		chatService.saveMessage(messageRes);
+		messageRes = chatService.saveMessage(messageRes);
+		sendingOperations.convertAndSend("/topic/chat/room/" + messageRes.getUserId().toString(), messageRes);
 	}
 }

@@ -28,8 +28,9 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void receiveReport(User user, Long id){
-		UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(id).orElseThrow();
-		Rental rental = rentalRepository.findByReturnUmbrellaStand(umbrellaStand);
+		Rental rental = rentalRepository.findById(id).orElseThrow();
+		UmbrellaStand umbrellaStand = rental.getReturnUmbrellaStand();
+
 		Location location = umbrellaStand.getLocation();
 
 		LocalDateTime rentalStartTime = rental.getCreatedAt();
@@ -52,8 +53,8 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void solveReport(Long id){
-		UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(id).orElseThrow();
-		Rental rental = rentalRepository.findByReturnUmbrellaStand(umbrellaStand);
+		Rental rental = rentalRepository.findById(id).orElseThrow();
+		UmbrellaStand umbrellaStand = rental.getReturnUmbrellaStand();
 		Location location = umbrellaStand.getLocation();
 
 		location.solveReport();
