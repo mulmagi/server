@@ -1,12 +1,8 @@
 package shop.mulmagi.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.multipart.MultipartFile;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.RefreshToken;
@@ -44,6 +40,15 @@ public class UserServiceImpl implements UserService {
 
 
     private String storedName;
+
+    public User findById(Long userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return user;
+        }
+        return null;
+    }
 
 
     public void sendSms(UserDto.SmsCertificationRequest requestDto){
@@ -140,6 +145,9 @@ public class UserServiceImpl implements UserService {
                 .status(user.getStatus())
                 .isComplaining(user.getIsComplaining())
                 .authorities(jwtUtil.getAuthorities(user.getIsAdmin()))
+                .firebaseToken(user.getFirebaseToken())
+                .agreeTerms(user.isAgreeTerms())
+                .notificationEnabled(user.isNotificationEnabled())
                 .build();
     }
 
@@ -161,20 +169,21 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void saveRefreshToken(RefreshToken refreshToken) {
-        if (refreshToken != null) {
-            RefreshToken existingToken = refreshTokenRepository.findByUser(refreshToken.getUser());
-            if (existingToken != null) {
-                existingToken.updateToken(refreshToken.getToken());
-                existingToken.updateExpirationTime(refreshToken.getExpirationTime());
-            } else {
-                refreshTokenRepository.save(refreshToken);
-            }
+    public void saveRefreshToken(String token) {
+        Date tokenExpTime = jwtUtil.extractExpiration(token);
+        String user_id = jwtUtil.extractId(token);
+        Optional<User> optionalUser = userRepository.findById(Long.parseLong(user_id));
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            RefreshToken refreshToken = RefreshToken
+                    .builder()
+                    .token(token)
+                    .expirationTime(tokenExpTime)
+                    .user(user)
+                    .build();
+            refreshTokenRepository.save(refreshToken);
         }
     }
-
-
-
 
     public void logout(String accessToken, String refreshToken) {
         jwtUtil.invalidateToken(accessToken);
@@ -206,7 +215,34 @@ public class UserServiceImpl implements UserService {
         }
         throw new CustomExceptions.NoRentalHistoryFoundException("no rental history");
     }
-
+    public CustomUserDetails loadUserById(Long Id){
+        Optional<User> optionalUser = userRepository.findById(Id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (user == null) {
+                throw new CustomExceptions.UserNotFoundException("사용자를 찾을 수 없습니다.");
+            }
+            // User 객체를 UserDetails로 변환하여 반환
+            return CustomUserDetails.builder()
+                    .name(storedName)
+                    .id(user.getId())
+                    .phoneNumber(user.getPhoneNumber())
+                    .isAdmin(user.getIsAdmin())
+                    .level(user.getLevel())
+                    .experience(user.getExperience())
+                    .point(user.getPoint())
+                    .profileUrl(user.getProfileUrl())
+                    .isRental(user.getIsRental())
+                    .status(user.getStatus())
+                    .isComplaining(user.getIsComplaining())
+                    .authorities(jwtUtil.getAuthorities(user.getIsAdmin()))
+                    .firebaseToken(user.getFirebaseToken())
+                    .agreeTerms(user.isAgreeTerms())
+                    .notificationEnabled(user.isNotificationEnabled())
+                    .build();
+        }
+        return null;
+    }
 
 
 }

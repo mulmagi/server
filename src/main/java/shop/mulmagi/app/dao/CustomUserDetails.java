@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import shop.mulmagi.app.domain.enums.UserStatus;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +38,11 @@ public class CustomUserDetails implements UserDetails, Serializable {
     private UserStatus status;
 
     private Boolean isComplaining;
+    private String firebaseToken;
+    private boolean agreeTerms;
+
+    private boolean notificationEnabled;
+
 
     private Collection<GrantedAuthority> authorities;	//권한 목록
 
@@ -58,9 +64,10 @@ public class CustomUserDetails implements UserDetails, Serializable {
         return null;
     }
 
+    // 해당 함수는 user의 id를 반환.
     @Override
     public String getUsername() {
-        return phoneNumber;
+        return String.valueOf(id);
     }
 
     @Override

@@ -3,7 +3,6 @@ package shop.mulmagi.app.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,13 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/sms-certification/send").permitAll()
-                .antMatchers("/sms-certification/confirm").permitAll()
-                .antMatchers("/name").permitAll()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/reissue").permitAll()
-                .antMatchers("/withdraw").permitAll()
-                .antMatchers("/6/notifications").permitAll()
+                // 여기에 권한 설정을 추가
                 .anyRequest().authenticated().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -16,10 +16,7 @@ import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.RefreshTokenRepository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 
@@ -35,51 +32,39 @@ public class JwtUtil {
 
     @Value("${spring.jwt.refresh-expiration-time}")
     private long refreshExpTime;
-
-    public Long extractId(String jwtToken) {
-        Claims claims = null;
-        try {
-            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(jwtToken).getBody();
-        } catch ( JwtException | IllegalArgumentException e) {
-            // 예외 처리 (예: 유효하지 않은 토큰 등)
-            e.printStackTrace(); // 예외 처리 방식을 개선해야 함
-        }
-
-        if (claims != null) {
-            return Long.parseLong(claims.getSubject());
-        } else {
-            // 토큰이 유효하지 않은 경우 처리 (예: 로깅, 예외 처리)
-            return null;
-        }
-    }
-    public long getRefreshExpTime() {
-        return refreshExpTime;
-    }
-
     private final RefreshTokenRepository refreshTokenRepository;
 
 
-    public String extractUsername(String token) {
+    // jwt토큰의 claim 중 하나인 subject로 지정되는 User의id를 추출하는 함수
+    public String extractId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    // jwt토큰의 claim 중 하나인 Expiration으로 지정되는 만료 시간 추출하는 함수
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    //jwt 토큰에서 특정 클레임만 추출하는 함수
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
+    // jwt 토큰에서 모든 클레임을 추출하는 함수
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
+    // token이 만료되었는지 확인하는 함수
+    // token의 만료 시간을 가져온 후, 현재 시간과 비교해 토큰의 만료 여부를 return
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
+    // accessToken 발급 함수
+    // subject로 지정되는 사용자 이름은 휴대폰 번호임
+    //tokenType은 access, 지금 시간으로 발급, accessExpTime에 만료됨.
     public String generateAccessToken(CustomUserDetails userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
@@ -90,6 +75,9 @@ public class JwtUtil {
                 .compact();
     }
 
+    //refreshToken 발급 함수
+    // subject로 지정되는 사용자 이름은 User의 id임
+    //tokenType은 refresh, 지금 시간으로 발급, refreshExpTime에 만료됨.
     public String generateRefreshToken(CustomUserDetails userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
@@ -101,11 +89,14 @@ public class JwtUtil {
     }
 
 
+    // 토큰이 유효한지 검사하는 함수
+    // userDetails.getUsername은 User의 id를 return함
     public Boolean validateToken(String token, CustomUserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String user_id = extractId(token);
+        return (user_id.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    // token들의 만료 시간을 지금으로 설정해서 토큰을 무효화시키는 함수
     public void invalidateToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secret)
@@ -117,28 +108,16 @@ public class JwtUtil {
             claims.setExpiration(new Date());
         }
     }
+
     public Date calculateRefreshExpirationTime() {
         long currentMillis = System.currentTimeMillis();
         return new Date(currentMillis + refreshExpTime);
-    }
-
-    public String generateAccessTokenFromRefreshToken(String refreshToken) {
-        CustomUserDetails userDetails = getUserDetailsFromRefreshToken(refreshToken);
-
-        // 유효한 유저 정보가 없거나 Refresh Token이 만료된 경우
-        if (userDetails == null || isTokenExpired(refreshToken)) {
-            return null;
-        }
-
-        // Access Token 생성
-        return generateAccessToken(userDetails);
     }
 
     public CustomUserDetails getUserDetailsFromRefreshToken(String token) {
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token);
 
-        // RefreshToken이 없거나 만료된 경우
         if (refreshToken == null || isTokenExpired(token)) {
             throw new CustomExceptions.RefreshTokenInvalidException("Refresh Token이 유효하지 않습니다.");
         }
@@ -147,6 +126,18 @@ public class JwtUtil {
         return buildCustomUserDetails(user);
     }
 
+    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+        CustomUserDetails userDetails = getUserDetailsFromRefreshToken(refreshToken);
+
+        if (userDetails == null || isTokenExpired(refreshToken)) {
+            throw new CustomExceptions.RefreshTokenInvalidException("Refresh Token이 유효하지 않습니다.");
+        }
+
+        return generateAccessToken(userDetails);
+    }
+
+
+// User 엔티티를 CustomUserDetails로 바꿔주는 함수
     public CustomUserDetails buildCustomUserDetails(User user) {
         return CustomUserDetails.builder()
                 .id(user.getId())
@@ -161,6 +152,9 @@ public class JwtUtil {
                 .status(user.getStatus())
                 .isComplaining(user.getIsComplaining())
                 .authorities(getAuthorities(user.getIsAdmin()))
+                .firebaseToken(user.getFirebaseToken())
+                .agreeTerms(user.isAgreeTerms())
+                .notificationEnabled(user.isNotificationEnabled())
                 .build();
     }
 
