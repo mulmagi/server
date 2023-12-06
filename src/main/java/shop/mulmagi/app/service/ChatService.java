@@ -11,5 +11,5 @@ public interface ChatService {
 	List<MessageDto> getMessages(Long userId);
 	void createRoom(Long userId);
 	void deleteRoom(Long userId);
-	void saveMessage(MessageResponseDto.MessageDto messageDto);
+	MessageResponseDto.MessageDto saveMessage(MessageResponseDto.MessageDto messageDto);
 }
