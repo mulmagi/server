@@ -30,7 +30,6 @@ public class UmbrellaServiceImpl implements UmbrellaService {
     private final UmbrellaConverter umbrellaConverter;
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
 
     @Override
     public UmbrellaResponseDto.LocationDataListDto getLocationData(User user, Double userLatitude, Double userLongitude){
@@ -101,7 +100,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
 
     @Override
     @Transactional
-    public void rental(User user, UmbrellaRequestDto.RentalDto request) throws CustomExceptions.Exception {
+    public String rental(User user, UmbrellaRequestDto.RentalDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(request.getUmbrellaStandId())
                 .orElseThrow(() -> new NoSuchElementException("Umbrella stand not found."));
 
@@ -121,8 +120,6 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         String str = String.join(" | ", location.getName(), umbrellaStandNumber);
         String notificationMsg = str+"번 대여 완료";
 
-        notificationService.sendAndSaveNotification(user, NotificationType.RENTAL, notificationMsg, "");
-
         location.updateRental();
         umbrellaStand.updateRental();
         user.updateRental();
@@ -141,11 +138,13 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
+
+        return notificationMsg;
     }
 
     @Override
     @Transactional
-    public void returnUmb(User user, UmbrellaRequestDto.ReturnDto request) throws CustomExceptions.Exception {
+    public String returnUmb(User user, UmbrellaRequestDto.ReturnDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findByQrCode(request.getQrCode());
 
         Location location = umbrellaStand.getLocation();
@@ -164,9 +163,6 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         String umbrellaStandNumber = String.valueOf(umbrellaStand.getNumber());
         String str = String.join(" | ", location.getName(), umbrellaStandNumber);
         String notificationMsg = str+"번 반납 완료";
-        System.out.println(notificationMsg);
-
-        notificationService.sendAndSaveNotification(user, NotificationType.RETURN, notificationMsg, "");
 
         location.updateReturn();
         umbrellaStand.updateReturn();
@@ -179,5 +175,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
+
+        return notificationMsg;
     }
 }

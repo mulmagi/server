@@ -11,6 +11,6 @@ public interface UmbrellaService {
     UmbrellaResponseDto.LocationDto getLocation(User user, Long locationId);
     UmbrellaResponseDto.RentalPageDto getRentalPage(User user, Long qrCode);
     UmbrellaResponseDto.ReturnPageDto getReturnPage(Long rentalId);
-    void rental(User user, UmbrellaRequestDto.RentalDto request);
-    void returnUmb(User user, UmbrellaRequestDto.ReturnDto request);
+    String rental(User user, UmbrellaRequestDto.RentalDto request);
+    String returnUmb(User user, UmbrellaRequestDto.ReturnDto request);
 }
