@@ -17,12 +17,12 @@ public class ChatTestController {
 	//@ApiOperation(value = "채팅방 목록 test")
 	@GetMapping("/list")
 	public String chatList(Model model){
-		return "/chat/room";
+		return "chat/room";
 	}
 
 	//@ApiOperation(value = "채팅방 메시지 test")
 	@GetMapping("/room/enter/{roomId}")
 	public String chatList(Model model, @PathVariable String roomId){
-		return "/chat/roomdetail";
+		return "chat/roomdetail";
 	}
 }
