@@ -2,6 +2,7 @@ package shop.mulmagi.app.domain;
 
 import lombok.*;
 import shop.mulmagi.app.domain.base.BaseEntity;
+import shop.mulmagi.app.domain.enums.NotificationType;
 
 import javax.persistence.*;
 
@@ -48,7 +49,7 @@ public class Rental extends BaseEntity {
         this.isOverdue = true;
     }
 
-    public void updateOverdueAmount(Integer rentalPeriod){
+    public Boolean updateOverdueAmount(Integer rentalPeriod){
         Integer overduePeriod = rentalPeriod - 7;
 
         this.overdueAmount = 500*overduePeriod;
@@ -56,9 +57,9 @@ public class Rental extends BaseEntity {
         if(this.overdueAmount >= 9000){
             this.isReturn = true;
             this.overdueAmount = 9000;
-            //자동 반납 알림 후 종료
+            return true;
         }
-        //연체 알림 후 종료
+        return false;
     }
     public void receiveReport(){ this.isWrong = true; }
 
