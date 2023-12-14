@@ -36,8 +36,8 @@ public class JwtUtil {
 
 
     // jwt토큰의 claim 중 하나인 subject로 지정되는 User의id를 추출하는 함수
-    public String extractId(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public Long extractId(String token) {
+        return Long.valueOf(extractClaim(token, Claims::getSubject));
     }
 
     // jwt토큰의 claim 중 하나인 Expiration으로 지정되는 만료 시간 추출하는 함수
@@ -65,9 +65,9 @@ public class JwtUtil {
     // accessToken 발급 함수
     // subject로 지정되는 사용자 이름은 휴대폰 번호임
     //tokenType은 access, 지금 시간으로 발급, accessExpTime에 만료됨.
-    public String generateAccessToken(CustomUserDetails userDetails) {
+    public String generateAccessToken(Long userId) {
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(String.valueOf(userId))
                 .claim("tokenType", "access")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessExpTime))
@@ -78,9 +78,9 @@ public class JwtUtil {
     //refreshToken 발급 함수
     // subject로 지정되는 사용자 이름은 User의 id임
     //tokenType은 refresh, 지금 시간으로 발급, refreshExpTime에 만료됨.
-    public String generateRefreshToken(CustomUserDetails userDetails) {
+    public String generateRefreshToken(Long userId) {
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(String.valueOf(userId))
                 .claim("tokenType", "refresh")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpTime))
@@ -92,7 +92,7 @@ public class JwtUtil {
     // 토큰이 유효한지 검사하는 함수
     // userDetails.getUsername은 User의 id를 return함
     public Boolean validateToken(String token, CustomUserDetails userDetails) {
-        final String user_id = extractId(token);
+        final Long user_id = extractId(token);
         return (user_id.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
@@ -128,12 +128,12 @@ public class JwtUtil {
 
     public String generateAccessTokenFromRefreshToken(String refreshToken) {
         CustomUserDetails userDetails = getUserDetailsFromRefreshToken(refreshToken);
+        Long id = extractId(refreshToken);
 
         if (userDetails == null || isTokenExpired(refreshToken)) {
             throw new CustomExceptions.RefreshTokenInvalidException("Refresh Token이 유효하지 않습니다.");
         }
-
-        return generateAccessToken(userDetails);
+        return generateAccessToken(id);
     }
 
 

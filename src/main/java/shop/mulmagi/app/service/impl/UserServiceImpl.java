@@ -1,6 +1,7 @@
 package shop.mulmagi.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mulmagi.app.dao.CustomUserDetails;
@@ -21,7 +22,7 @@ import shop.mulmagi.app.web.dto.UserDto;
 import java.util.*;
 
 import static shop.mulmagi.app.domain.enums.UserStatus.INACTIVE;
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -41,13 +42,8 @@ public class UserServiceImpl implements UserService {
 
     private String storedName;
 
-    public User findById(Long userId){
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            return user;
-        }
-        return null;
+    public void submitName(String name){
+        this.storedName = name;
     }
 
 
@@ -59,6 +55,18 @@ public class UserServiceImpl implements UserService {
         smsCertificationDao.createSmsCertification(to,certificationNumber);
     }
 
+
+    public User findById(Long userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return user;
+        }
+        return null;
+    }
+
+
+
     private void verifySms(UserDto.SmsCertificationRequest requestDto) {
         if (isVerify(requestDto)) {
             throw new CustomExceptions.SmsCertificationNumberMismatchException("인증번호가 일치하지 않습니다.");
@@ -66,18 +74,14 @@ public class UserServiceImpl implements UserService {
         smsCertificationDao.removeSmsCertification(requestDto.getPhone());
     }
 
-    private boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
-        return !(smsCertificationDao.hasKey(requestDto.getPhone()) &&
-                smsCertificationDao.getSmsCertification(requestDto.getPhone())
-                        .equals(requestDto.getCertificationNumber()));
-    }
-
     public User findByPhoneNumber(String phoneNumber) {
         return userRepository.findByPhoneNumber(phoneNumber);
     }
 
+    public Long findIdByPhoneNumber(String phoneNumber){return userRepository.findByPhoneNumber(phoneNumber).getId();}
+
     private CustomUserDetails registerUser(UserDto.SmsCertificationRequest requestDto){
-        if (isVerify(requestDto)) {
+        if (!isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser == null) {
                 User user = User
@@ -102,7 +106,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
     private CustomUserDetails registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
-        if (isVerify(requestDto)) {
+        if (!isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser != null && existingUser.getStatus() == INACTIVE) {
                 existingUser.resetUser(storedName, requestDto.getPhone());
@@ -113,10 +117,12 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-
-    public void submitName(String name){
-        this.storedName = name;
+    private boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
+        return !(smsCertificationDao.hasKey(requestDto.getPhone()) &&
+                smsCertificationDao.getSmsCertification(requestDto.getPhone())
+                        .equals(requestDto.getCertificationNumber()));
     }
+
 
     public void updateNotificationSettings(Long userId, boolean enableNotifications) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -144,7 +150,6 @@ public class UserServiceImpl implements UserService {
                 .isRental(user.getIsRental())
                 .status(user.getStatus())
                 .isComplaining(user.getIsComplaining())
-                .authorities(jwtUtil.getAuthorities(user.getIsAdmin()))
                 .firebaseToken(user.getFirebaseToken())
                 .agreeTerms(user.isAgreeTerms())
                 .notificationEnabled(user.isNotificationEnabled())
@@ -171,8 +176,8 @@ public class UserServiceImpl implements UserService {
 
     public void saveRefreshToken(String token) {
         Date tokenExpTime = jwtUtil.extractExpiration(token);
-        String user_id = jwtUtil.extractId(token);
-        Optional<User> optionalUser = userRepository.findById(Long.parseLong(user_id));
+        Long user_id = jwtUtil.extractId(token);
+        Optional<User> optionalUser = userRepository.findById(user_id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             RefreshToken refreshToken = RefreshToken
@@ -243,6 +248,8 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+
 
 
 }

@@ -19,7 +19,7 @@ public class User extends BaseEntity {
     private String name;
 
     @Column(unique = true, nullable = false)
-    private  String phoneNumber;
+    private String phoneNumber;
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean isAdmin;

@@ -1,6 +1,7 @@
 package shop.mulmagi.app.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import shop.mulmagi.app.web.dto.UserDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,7 @@ public class UserController extends BaseController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/name")
-    public ResponseEntity<?> submitName(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> submitName(@RequestBody UserDto.NameRequest userDto) {
         try {
             userService.submitName(userDto.getName());
             Map<String, Object> response = new HashMap<>();
@@ -65,25 +67,18 @@ public class UserController extends BaseController {
     public ResponseEntity<?> login(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
             CustomUserDetails userDetails = userService.verifyAndRegisterUser(requestDto);
-            String accessToken = jwtUtil.generateAccessToken(userDetails);
-            String refreshToken = jwtUtil.generateRefreshToken(userDetails);
-
+            Long userId = userDetails.getId();
+            String accessToken = jwtUtil.generateAccessToken(userId);
+            String refreshToken = jwtUtil.generateRefreshToken(userId);
             userService.saveRefreshToken(refreshToken);
 
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("access_token", accessToken);
-            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + " : " + accessToken);
-
-            tokens.put("refresh_token", refreshToken);
-            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + " : " + refreshToken);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", ResponseMessage.USER_LOGIN_SUCCESS);
-            response.put("accessToken", accessToken);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } catch (CustomExceptions.Exception e) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + accessToken);
+            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS+refreshToken);
+            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS+accessToken);
+            log.info(ResponseMessage.ACCESS_TOKEN_SEND_SUCCESS);
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGIN_SUCCESS), HttpStatus.OK);
+        }catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
@@ -108,7 +103,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody String refreshToken) {
+    public ResponseEntity<?> reissue(String refreshToken) {
         String newAccessToken = jwtUtil.generateAccessTokenFromRefreshToken(refreshToken);
 
         if (newAccessToken != null) {
@@ -134,7 +129,7 @@ public class UserController extends BaseController {
     }
 
     @PutMapping("/withdraw")
-    public ResponseEntity<?> withdrawUserByPhoneNumber(@RequestBody UserDto.WithdrawRequest userDto){
+    public ResponseEntity<?> withdrawUserByPhoneNumber(UserDto.WithdrawRequest userDto){
         try {
             userService.withdrawUserByPhoneNumber(userDto.getPhoneNumber());
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_DELETION_SUCCESS), HttpStatus.OK);

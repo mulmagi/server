@@ -10,6 +10,8 @@ import java.util.List;
 public interface UserService {
     void sendSms(UserDto.SmsCertificationRequest requestDto);
 
+    Long findIdByPhoneNumber(String phoneNumber);
+
     User findById(Long userId);
     CustomUserDetails loadUserByPhoneNumber(String phoneNumber);
 

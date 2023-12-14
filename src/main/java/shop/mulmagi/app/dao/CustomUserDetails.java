@@ -51,9 +51,9 @@ public class CustomUserDetails implements UserDetails, Serializable {
         List<GrantedAuthority> authorityList = new ArrayList<>();
 
         if (this.isAdmin) {
-            authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            authorityList.add(new SimpleGrantedAuthority("ADMIN"));
         } else {
-            authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+            authorityList.add(new SimpleGrantedAuthority("USER"));
         }
 
         return authorityList;
