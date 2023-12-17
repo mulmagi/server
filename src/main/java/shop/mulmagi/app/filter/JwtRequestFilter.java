@@ -58,13 +58,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority("USER")));
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request,response);
                 } catch (Exception e) {
                     log.error("JWT token validation failed: {}", e.getMessage());
                 }
             }
-            filterChain.doFilter(request, response);
         }
+        filterChain.doFilter(request, response);
     }
     private boolean isPermittedEndpoint(String requestURI) {
         return PERMITTED_ENDPOINTS.contains(requestURI);

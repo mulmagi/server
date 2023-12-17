@@ -45,3 +45,6 @@ out/
 application-secret.yml
 application-redis.yml
 application-jwt.yml
+
+### firebase ###
+firebase/
