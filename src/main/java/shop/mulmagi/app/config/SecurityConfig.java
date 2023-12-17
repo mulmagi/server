@@ -25,23 +25,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/sms-certification/send").permitAll()
-                .antMatchers("/sms-certification/confirm").permitAll()
-                .antMatchers("/name").permitAll()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/reissue").permitAll()
-                .antMatchers("/withdraw").permitAll()
-                .antMatchers("/6/notifications").permitAll()
-                .anyRequest().authenticated().and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .antMatchers("/**").permitAll()  // 모든 경로에 대해 접근 허용
+                .anyRequest().authenticated()
                 .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/name") // 첫화면
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll();
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

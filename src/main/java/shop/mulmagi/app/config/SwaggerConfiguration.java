@@ -33,7 +33,7 @@ public class SwaggerConfiguration {
     private ApiInfo apiInfo() {
 //        Contact contact = new Contact("Jaeyun Park", "https://github.com/qkrwodsbfjq", "qkrwodbsfjq@khu.ac.kr");
 
-        String title = "template API Documents"; // 스웨거 UI 타이틀
+        String title = "Mulmagi API Documents"; // 스웨거 UI 타이틀
         String version = "1.0.0";
 
         return new ApiInfoBuilder()

@@ -1,5 +1,6 @@
 package shop.mulmagi.app.service;
 
+import com.google.firebase.auth.FirebaseAuthException;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.NotificationType;
 import shop.mulmagi.app.web.dto.NotificationResponseDto;
@@ -14,6 +15,6 @@ public interface NotificationService {
 
     public void sendAndSaveNotification(User user, NotificationType type, String title, String body);
 
-    public void saveFirebaseToken(User user, String firebaseToken);
+    public void saveFirebaseToken(User user, String firebaseToken) throws FirebaseAuthException;
     public void deleteFirebaseToken(User user);
 }

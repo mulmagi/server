@@ -30,5 +30,5 @@ public class Message extends BaseEntity{
 	private String content; //type==IMAGE면 img url
 
 	@Column(columnDefinition = "Boolean default false")
-	private boolean isAdmin; //true면 admin이 사용자에게 보낸 message
+	private Boolean isAdmin; //true면 admin이 사용자에게 보낸 message
 }
