@@ -5,8 +5,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.domain.Rental;
+import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
@@ -17,7 +17,6 @@ import shop.mulmagi.app.web.dto.UserDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,18 +72,18 @@ public class UserController extends BaseController {
         }
     }
 
-    @PutMapping("/{Id}/notifications")
-    public ResponseEntity<?> updateNotificationSetting(@PathVariable Long Id,
-                                                       @RequestParam boolean enableNotifications) throws Exception {
+    @PutMapping("/notifications")
+    public ResponseEntity<?> updateNotificationSetting(@RequestParam boolean enableNotifications) throws Exception {
         try {
-            userService.updateNotificationSettings(Id, enableNotifications);
+            User user = userService.getCurrentUser();
+            userService.updateNotificationSettings(user.getId(), enableNotifications);
             Map<String, Object> response = new HashMap<>();
             if (enableNotifications) {
                 response.put("message", ResponseMessage.USER_AGREED_NOTIFICATION);
             } else {
                 response.put("message", ResponseMessage.USER_DECLINE_NOTIFICATION);
             }
-            response.put("id", String.valueOf(Id));
+            response.put("id", String.valueOf(user.getId()));
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
@@ -94,6 +93,8 @@ public class UserController extends BaseController {
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(String refreshToken) {
+        User user = userService.getCurrentUser();
+
         String newAccessToken = jwtUtil.generateAccessTokenFromRefreshToken(refreshToken);
 
         if (newAccessToken != null) {
@@ -109,9 +110,10 @@ public class UserController extends BaseController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestParam("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws Exception {
+    public ResponseEntity<String> logout()throws Exception {
         try {
-            userService.logout(accessToken, refreshToken);
+            User user = userService.getCurrentUser();
+            userService.logout(user);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGOUT_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
@@ -119,26 +121,29 @@ public class UserController extends BaseController {
     }
 
     @PutMapping("/withdraw")
-    public ResponseEntity<?> withdrawUserByPhoneNumber(UserDto.WithdrawRequest userDto){
+    public ResponseEntity<?> withdrawUserByPhoneNumber(){
         try {
-            userService.withdrawUserByPhoneNumber(userDto.getPhoneNumber());
+            User user = userService.getCurrentUser();
+            userService.withdrawUser(user);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_DELETION_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/{id}/profile-image")
-    public ResponseEntity<?> setUserProfileImage( @PathVariable Long id, @RequestParam String profileImageUrl) {
+    @PutMapping("/profile-image")
+    public ResponseEntity<?> setUserProfileImage(@RequestParam String profileImageUrl) {
         try {
-            userService.updateProfileImage(id, profileImageUrl);
+            User user = userService.getCurrentUser();
+            userService.updateProfileImage(user.getId(),profileImageUrl);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PROFILE_IMAGE_UPLOAD_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/user/rental-history/{id}")
-    public ResponseEntity<?> getUserRentals(@PathVariable Long id) {
-        List<Rental> userRentals = userService.getUserRentals(id);
+    @GetMapping("/user/rental-history")
+    public ResponseEntity<?> getUserRentals() {
+        User user = userService.getCurrentUser();
+        List<Rental> userRentals = userService.getUserRentals(user.getId());
         if (userRentals != null && !userRentals.isEmpty()) {
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PRINT_RENTAL_HISTORY_SUCCESS), HttpStatus.OK);
         } else {

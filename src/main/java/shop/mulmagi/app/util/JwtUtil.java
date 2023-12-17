@@ -97,14 +97,12 @@ public class JwtUtil {
     }
 
     // token들의 만료 시간을 지금으로 설정해서 토큰을 무효화시키는 함수
-    public void invalidateToken(String token) {
+    public void invalidateRefreshToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
-        if (claims.get("tokenType").equals("access")) {
-            claims.setExpiration(new Date());
-        } else if (claims.get("tokenType").equals("refresh")) {
+        if (claims.get("tokenType").equals("refresh")) {
             claims.setExpiration(new Date());
         }
     }
@@ -162,9 +160,9 @@ public class JwtUtil {
         List<GrantedAuthority> authorityList = new ArrayList<>();
 
         if (isAdmin) {
-            authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            authorityList.add(new SimpleGrantedAuthority("ADMIN"));
         } else {
-            authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+            authorityList.add(new SimpleGrantedAuthority("USER"));
         }
 
         return authorityList;

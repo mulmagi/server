@@ -20,9 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-
     private static final List<String> PERMITTED_ENDPOINTS = Arrays.asList("/name", "/sms-certification/send","/sms-certification/confirm");
-
 
     private final UserService userService;
 

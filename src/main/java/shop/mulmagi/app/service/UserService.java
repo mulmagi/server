@@ -18,12 +18,12 @@ public interface UserService {
     User findByPhoneNumber(String phoneNumber);
 
     Long verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
-    void logout(String accessToken, String refreshToken);
+    void logout(User user);
     void updateNotificationSettings(Long userId, boolean enableNotifications);
 
     void submitName(String name);
 
-    void withdrawUserByPhoneNumber(String phoneNumber);
+    void withdrawUser(User user);
     void updateProfileImage(Long userId, String profileImageUrl);
     List<Rental> getUserRentals(Long userId);
     User getCurrentUser();

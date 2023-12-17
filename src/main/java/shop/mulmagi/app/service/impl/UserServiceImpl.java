@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
         throw new CustomExceptions.Exception("회원가입을 할 수 없습니다.");
     }
     private Long registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
-        if (!isVerify(requestDto)) {
+        if (isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser != null && existingUser.getStatus() == INACTIVE) {
                 existingUser.resetUser(storedName, requestDto.getPhone());
@@ -183,14 +183,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void logout(String accessToken, String refreshToken) {
-        jwtUtil.invalidateToken(accessToken);
-        jwtUtil.invalidateToken(refreshToken);
+    public void logout(User user) {
+        RefreshToken token = refreshTokenRepository.findByUser(user);
+        if (token != null) {
+            String refreshToken = token.getToken();
+            jwtUtil.invalidateRefreshToken(refreshToken);
+            refreshTokenRepository.delete(token);
+        }
+
     }
 
 
-    public void withdrawUserByPhoneNumber(String phoneNumber){
-        User user = userRepository.findByPhoneNumber(phoneNumber);
+    public void withdrawUser(User user){
         if (user != null) {
             user.updateStatus(INACTIVE);
             userRepository.save(user);
