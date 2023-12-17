@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.domain.RefreshToken;
+import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -156,6 +158,16 @@ public class UserController extends BaseController {
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PROFILE_IMAGE_UPLOAD_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserRentals(@PathVariable Long userId) {
+        List<Rental> userRentals = userService.getUserRentals(userId);
+        if (userRentals != null && !userRentals.isEmpty()) {
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PRINT_RENTAL_HISTORY_SUCCESS), HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 

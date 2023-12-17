@@ -3,8 +3,11 @@ package shop.mulmagi.app.service;
 import org.mapstruct.control.MappingControl;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.domain.RefreshToken;
+import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.web.dto.UserDto;
+
+import java.util.List;
 
 public interface UserService {
     void sendSms(UserDto.SmsCertificationRequest requestDto);
@@ -21,4 +24,5 @@ public interface UserService {
 
     void withdrawUserByPhoneNumber(String phoneNumber);
     void updateProfileImage(Long userId, String profileImageUrl);
+    List<Rental> getUserRentals(Long userId);
 }

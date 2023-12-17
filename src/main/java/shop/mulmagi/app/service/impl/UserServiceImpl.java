@@ -10,10 +10,12 @@ import org.springframework.web.multipart.MultipartFile;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.RefreshToken;
+import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.UserStatus;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.RefreshTokenRepository;
+import shop.mulmagi.app.repository.RentalRepository;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.util.JwtUtil;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final RentalRepository rentalRepository;
 
 
     private String storedName;
@@ -194,6 +198,15 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
     }
+    public List<Rental>getUserRentals(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return rentalRepository.findByUserId(user.getId());
+        }
+        throw new CustomExceptions.NoRentalHistoryFoundException("no rental history");
+    }
+
 
 
 }

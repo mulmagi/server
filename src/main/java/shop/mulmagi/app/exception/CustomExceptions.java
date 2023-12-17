@@ -1,5 +1,9 @@
 package shop.mulmagi.app.exception;
 
+import shop.mulmagi.app.domain.Rental;
+
+import java.util.List;
+
 public class CustomExceptions {
     public static class Exception extends RuntimeException {
         public Exception(String message) { super(message);}
@@ -23,6 +27,10 @@ public class CustomExceptions {
 
     public static class UserNotActiveException extends RuntimeException{
         public UserNotActiveException(String message){super(message);}
+    }
+
+    public static class NoRentalHistoryFoundException extends RuntimeException{
+        public NoRentalHistoryFoundException(String message){super(message);}
     }
 
 
