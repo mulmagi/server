@@ -28,7 +28,9 @@ public class CustomExceptions {
     public static class UserNotActiveException extends RuntimeException{
         public UserNotActiveException(String message){super(message);}
     }
-
+    public static class UserNotFoundException extends RuntimeException{
+        public UserNotFoundException(String message){super(message);}
+    }
     public static class NoRentalHistoryFoundException extends RuntimeException{
         public NoRentalHistoryFoundException(String message){super(message);}
     }

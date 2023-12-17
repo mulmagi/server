@@ -4,6 +4,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+src/main/.DS_Store
+src/.DS_Store
+.DS_Store
+src/main/resources/firebase/
+
 
 ### STS ###
 .apt_generated

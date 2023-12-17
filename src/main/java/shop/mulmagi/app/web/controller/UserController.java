@@ -1,12 +1,12 @@
 package shop.mulmagi.app.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.mulmagi.app.dao.CustomUserDetails;
-import shop.mulmagi.app.domain.RefreshToken;
 import shop.mulmagi.app.domain.Rental;
+import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
@@ -17,7 +17,6 @@ import shop.mulmagi.app.web.dto.UserDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class UserController extends BaseController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/name")
-    public ResponseEntity<?> submitName(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> submitName(@RequestBody UserDto.NameRequest userDto) {
         try {
             userService.submitName(userDto.getName());
             Map<String, Object> response = new HashMap<>();
@@ -56,59 +55,35 @@ public class UserController extends BaseController {
     @PostMapping("/sms-certification/confirm")
     public ResponseEntity<?> smsConfirm(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
-            log.info(ResponseMessage.SMS_CERT_SUCCESS);
-            return login(requestDto);
-        } catch (CustomExceptions.Exception e) {
-            return handleApiException(e, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
-        try {
-            CustomUserDetails userDetails = userService.verifyAndRegisterUser(requestDto);
-            String accessToken = jwtUtil.generateAccessToken(userDetails);
-            String refreshTokenValue = jwtUtil.generateRefreshToken(userDetails);
-            Date refreshExpTime = jwtUtil.calculateRefreshExpirationTime();
-
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .user(userService.findByPhoneNumber(requestDto.getPhone()))
-                    .token(refreshTokenValue)
-                    .expirationTime(refreshExpTime)
-                    .build();
+            Long userId = userService.verifyAndRegisterUser(requestDto);
+            String accessToken = jwtUtil.generateAccessToken(userId);
+            String refreshToken = jwtUtil.generateRefreshToken(userId);
 
             userService.saveRefreshToken(refreshToken);
 
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("access_token", accessToken);
-            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + " : " + accessToken);
-
-            tokens.put("refresh_token", refreshTokenValue);
-            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + " : " + refreshTokenValue);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", ResponseMessage.USER_LOGIN_SUCCESS);
-            response.put("accessToken", accessToken);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + accessToken);
+            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + refreshToken);
+            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + accessToken);
+            log.info(ResponseMessage.ACCESS_TOKEN_SEND_SUCCESS);
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGIN_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PutMapping("/{Id}/notifications")
-    public ResponseEntity<?> updateNotificationSetting(@PathVariable Long Id,
-                                                       @RequestParam boolean enableNotifications) throws Exception {
+    @PutMapping("/notifications")
+    public ResponseEntity<?> updateNotificationSetting(@RequestParam boolean enableNotifications) throws Exception {
         try {
-            userService.updateNotificationSettings(Id, enableNotifications);
+            User user = userService.getCurrentUser();
+            userService.updateNotificationSettings(user.getId(), enableNotifications);
             Map<String, Object> response = new HashMap<>();
             if (enableNotifications) {
                 response.put("message", ResponseMessage.USER_AGREED_NOTIFICATION);
             } else {
                 response.put("message", ResponseMessage.USER_DECLINE_NOTIFICATION);
             }
-            response.put("id", String.valueOf(Id));
+            response.put("id", String.valueOf(user.getId()));
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
@@ -117,7 +92,9 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody String refreshToken) {
+    public ResponseEntity<?> reissue(String refreshToken) {
+        User user = userService.getCurrentUser();
+
         String newAccessToken = jwtUtil.generateAccessTokenFromRefreshToken(refreshToken);
 
         if (newAccessToken != null) {
@@ -133,9 +110,10 @@ public class UserController extends BaseController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestParam("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws Exception {
+    public ResponseEntity<String> logout()throws Exception {
         try {
-            userService.logout(accessToken, refreshToken);
+            User user = userService.getCurrentUser();
+            userService.logout(user);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGOUT_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
@@ -143,32 +121,35 @@ public class UserController extends BaseController {
     }
 
     @PutMapping("/withdraw")
-    public ResponseEntity<?> withdrawUserByPhoneNumber(@RequestBody UserDto.WithdrawRequest userDto){
+    public ResponseEntity<?> withdrawUserByPhoneNumber(){
         try {
-            userService.withdrawUserByPhoneNumber(userDto.getPhoneNumber());
+            User user = userService.getCurrentUser();
+            userService.withdrawUser(user);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_DELETION_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/{id}/profile-image")
-    public ResponseEntity<?> setUserProfileImage( @PathVariable Long id, @RequestParam String profileImageUrl) {
+    @PutMapping("/profile-image")
+    public ResponseEntity<?> setUserProfileImage(@RequestParam String profileImageUrl) {
         try {
-            userService.updateProfileImage(id, profileImageUrl);
+            User user = userService.getCurrentUser();
+            userService.updateProfileImage(user.getId(),profileImageUrl);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PROFILE_IMAGE_UPLOAD_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getUserRentals(@PathVariable Long userId) {
-        List<Rental> userRentals = userService.getUserRentals(userId);
+    @GetMapping("/user/rental-history")
+    public ResponseEntity<?> getUserRentals() {
+        User user = userService.getCurrentUser();
+        List<Rental> userRentals = userService.getUserRentals(user.getId());
         if (userRentals != null && !userRentals.isEmpty()) {
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PRINT_RENTAL_HISTORY_SUCCESS), HttpStatus.OK);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 
 }

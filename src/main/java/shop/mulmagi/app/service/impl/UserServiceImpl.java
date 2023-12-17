@@ -1,12 +1,13 @@
 package shop.mulmagi.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.RefreshToken;
@@ -14,6 +15,7 @@ import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.UserStatus;
 import shop.mulmagi.app.exception.CustomExceptions;
+import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.repository.RefreshTokenRepository;
 import shop.mulmagi.app.repository.RentalRepository;
 import shop.mulmagi.app.repository.UserRepository;
@@ -25,7 +27,7 @@ import shop.mulmagi.app.web.dto.UserDto;
 import java.util.*;
 
 import static shop.mulmagi.app.domain.enums.UserStatus.INACTIVE;
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -45,6 +47,10 @@ public class UserServiceImpl implements UserService {
 
     private String storedName;
 
+    public void submitName(String name){
+        this.storedName = name;
+    }
+
 
     public void sendSms(UserDto.SmsCertificationRequest requestDto){
         String to = requestDto.getPhone();
@@ -54,12 +60,34 @@ public class UserServiceImpl implements UserService {
         smsCertificationDao.createSmsCertification(to,certificationNumber);
     }
 
+
+    public User findById(Long userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return user;
+        }
+        return null;
+    }
+
+
+
     private void verifySms(UserDto.SmsCertificationRequest requestDto) {
         if (isVerify(requestDto)) {
             throw new CustomExceptions.SmsCertificationNumberMismatchException("인증번호가 일치하지 않습니다.");
         }
+        log.info(ResponseMessage.SMS_CERT_SUCCESS);
         smsCertificationDao.removeSmsCertification(requestDto.getPhone());
     }
+
+    public User findByPhoneNumber(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber);
+    }
+
+    public Long findIdByPhoneNumber(String phoneNumber){return findByPhoneNumber(phoneNumber).getId();}
+
+
+
 
     private boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
         return !(smsCertificationDao.hasKey(requestDto.getPhone()) &&
@@ -67,13 +95,18 @@ public class UserServiceImpl implements UserService {
                         .equals(requestDto.getCertificationNumber()));
     }
 
-    public User findByPhoneNumber(String phoneNumber) {
-        return userRepository.findByPhoneNumber(phoneNumber);
-    }
 
-    private CustomUserDetails registerUser(UserDto.SmsCertificationRequest requestDto){
+    public void updateNotificationSettings(Long userId, boolean enableNotifications) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.updateNotificationEnabled(enableNotifications);
+                userRepository.save(user);
+        }
+    }
+    private Long registerUser(UserDto.SmsCertificationRequest requestDto){
         if (isVerify(requestDto)) {
-            User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
+            User existingUser = findByPhoneNumber(requestDto.getPhone());
             if (existingUser == null) {
                 User user = User
                         .builder()
@@ -91,60 +124,33 @@ public class UserServiceImpl implements UserService {
                         .agreeTerms(false)
                         .build();
                 userRepository.save(user);
-                return jwtUtil.buildCustomUserDetails(user);
+                log.info("회원가입 성공");
+                return user.getId();
             }
         }
-        return null;
+        throw new CustomExceptions.Exception("회원가입을 할 수 없습니다.");
     }
-    private CustomUserDetails registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
+    private Long registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
         if (isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser != null && existingUser.getStatus() == INACTIVE) {
                 existingUser.resetUser(storedName, requestDto.getPhone());
                 userRepository.save(existingUser);
-                return jwtUtil.buildCustomUserDetails(existingUser);
+                return existingUser.getId();
             }
         }
-        return null;
+        throw new CustomExceptions.Exception("탈퇴한 유저를 되돌릴 수 없습니다.");
     }
-
-
-    public void submitName(String name){
-        this.storedName = name;
-    }
-
-    public void updateNotificationSettings(Long userId, boolean enableNotifications) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                user.updateNotificationEnabled(enableNotifications);
-                userRepository.save(user);
-        }
-    }
-    public CustomUserDetails loadUserByPhoneNumber(String phoneNumber){
+    public Long loadUserByPhoneNumber(String phoneNumber){
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
             throw new CustomExceptions.UserPhoneNumberNotFoundException("전화번호 " + phoneNumber + "를 사용하는 사용자가 없습니다.");
         }
-        // User 객체를 UserDetails로 변환하여 반환
-        return CustomUserDetails.builder()
-                .name(storedName)
-                .id(user.getId())
-                .phoneNumber(user.getPhoneNumber())
-                .isAdmin(user.getIsAdmin())
-                .level(user.getLevel())
-                .experience(user.getExperience())
-                .point(user.getPoint())
-                .profileUrl(user.getProfileUrl())
-                .isRental(user.getIsRental())
-                .status(user.getStatus())
-                .isComplaining(user.getIsComplaining())
-                .authorities(jwtUtil.getAuthorities(user.getIsAdmin()))
-                .build();
+        return user.getId();
     }
 
 
-    public CustomUserDetails verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
+    public Long verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
         verifySms(requestDto);
 
         User user = findByPhoneNumber(requestDto.getPhone());
@@ -161,29 +167,34 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void saveRefreshToken(RefreshToken refreshToken) {
-        if (refreshToken != null) {
-            RefreshToken existingToken = refreshTokenRepository.findByUser(refreshToken.getUser());
-            if (existingToken != null) {
-                existingToken.updateToken(refreshToken.getToken());
-                existingToken.updateExpirationTime(refreshToken.getExpirationTime());
-            } else {
-                refreshTokenRepository.save(refreshToken);
-            }
+    public void saveRefreshToken(String token) {
+        Date tokenExpTime = jwtUtil.extractExpiration(token);
+        Long user_id = jwtUtil.extractId(token);
+        Optional<User> optionalUser = userRepository.findById(user_id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            RefreshToken refreshToken = RefreshToken
+                    .builder()
+                    .token(token)
+                    .expirationTime(tokenExpTime)
+                    .user(user)
+                    .build();
+            refreshTokenRepository.save(refreshToken);
         }
     }
 
+    public void logout(User user) {
+        RefreshToken token = refreshTokenRepository.findByUser(user);
+        if (token != null) {
+            String refreshToken = token.getToken();
+            jwtUtil.invalidateRefreshToken(refreshToken);
+            refreshTokenRepository.delete(token);
+        }
 
-
-
-    public void logout(String accessToken, String refreshToken) {
-        jwtUtil.invalidateToken(accessToken);
-        jwtUtil.invalidateToken(refreshToken);
     }
 
 
-    public void withdrawUserByPhoneNumber(String phoneNumber){
-        User user = userRepository.findByPhoneNumber(phoneNumber);
+    public void withdrawUser(User user){
         if (user != null) {
             user.updateStatus(INACTIVE);
             userRepository.save(user);
@@ -206,8 +217,49 @@ public class UserServiceImpl implements UserService {
         }
         throw new CustomExceptions.NoRentalHistoryFoundException("no rental history");
     }
+    public CustomUserDetails loadUserById(Long Id){
+        Optional<User> optionalUser = userRepository.findById(Id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (user == null) {
+                throw new CustomExceptions.UserNotFoundException("사용자를 찾을 수 없습니다.");
+            }
+            // User 객체를 UserDetails로 변환하여 반환
+            return CustomUserDetails.builder()
+                    .name(storedName)
+                    .id(user.getId())
+                    .phoneNumber(user.getPhoneNumber())
+                    .isAdmin(user.getIsAdmin())
+                    .level(user.getLevel())
+                    .experience(user.getExperience())
+                    .point(user.getPoint())
+                    .profileUrl(user.getProfileUrl())
+                    .isRental(user.getIsRental())
+                    .status(user.getStatus())
+                    .isComplaining(user.getIsComplaining())
+                    .authorities(jwtUtil.getAuthorities(user.getIsAdmin()))
+                    .firebaseToken(user.getFirebaseToken())
+                    .agreeTerms(user.isAgreeTerms())
+                    .notificationEnabled(user.isNotificationEnabled())
+                    .build();
+        }
+        return null;
+    }
+    public User getCurrentUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "로그인 되지 않았습니다."
+            );
+        }
+        Long userId = (Long)authentication.getPrincipal();
+        User user = findById(userId);
 
-
+        if(user.getStatus().equals(UserStatus.INACTIVE)) {
+            throw new IllegalArgumentException("해당 사용자는 탈퇴한 사용자입니다.");
+        }
+        return user;
+    }
 
 }
 
