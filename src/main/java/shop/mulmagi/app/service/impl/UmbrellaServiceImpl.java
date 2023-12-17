@@ -8,11 +8,13 @@ import shop.mulmagi.app.domain.Location;
 import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.UmbrellaStand;
 import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.domain.enums.NotificationType;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.LocationRepository;
 import shop.mulmagi.app.repository.RentalRepository;
 import shop.mulmagi.app.repository.UmbrellaStandRepository;
 import shop.mulmagi.app.repository.UserRepository;
+import shop.mulmagi.app.service.NotificationService;
 import shop.mulmagi.app.service.UmbrellaService;
 import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
@@ -98,7 +100,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
 
     @Override
     @Transactional
-    public void rental(User user, UmbrellaRequestDto.RentalDto request) throws CustomExceptions.Exception {
+    public String rental(User user, UmbrellaRequestDto.RentalDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findById(request.getUmbrellaStandId())
                 .orElseThrow(() -> new NoSuchElementException("Umbrella stand not found."));
 
@@ -113,6 +115,10 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         } else if (umbrellaStand.getIsWrong()){
             throw new CustomExceptions.Exception("고장난 우산입니다.");
         }
+
+        String umbrellaStandNumber = String.valueOf(umbrellaStand.getNumber());
+        String str = String.join(" | ", location.getName(), umbrellaStandNumber);
+        String notificationMsg = str+"번 대여 완료";
 
         location.updateRental();
         umbrellaStand.updateRental();
@@ -132,11 +138,13 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
+
+        return notificationMsg;
     }
 
     @Override
     @Transactional
-    public void returnUmb(User user, UmbrellaRequestDto.ReturnDto request) throws CustomExceptions.Exception {
+    public String returnUmb(User user, UmbrellaRequestDto.ReturnDto request) throws CustomExceptions.Exception {
         UmbrellaStand umbrellaStand = umbrellaStandRepository.findByQrCode(request.getQrCode());
 
         Location location = umbrellaStand.getLocation();
@@ -152,6 +160,10 @@ public class UmbrellaServiceImpl implements UmbrellaService {
             throw new CustomExceptions.Exception("이미 반납된 우산입니다.");
         }
 
+        String umbrellaStandNumber = String.valueOf(umbrellaStand.getNumber());
+        String str = String.join(" | ", location.getName(), umbrellaStandNumber);
+        String notificationMsg = str+"번 반납 완료";
+
         location.updateReturn();
         umbrellaStand.updateReturn();
         user.updateReturn();
@@ -163,5 +175,7 @@ public class UmbrellaServiceImpl implements UmbrellaService {
         rentalRepository.save(rental);
         userRepository.save(user);
         umbrellaStandRepository.save(umbrellaStand);
+
+        return notificationMsg;
     }
 }

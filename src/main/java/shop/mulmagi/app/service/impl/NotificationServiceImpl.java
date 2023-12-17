@@ -1,5 +1,7 @@
 package shop.mulmagi.app.service.impl;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,7 +100,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void saveFirebaseToken(User user, String firebaseToken){
+    public void saveFirebaseToken(User user, String firebaseToken) throws FirebaseAuthException {
+        FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
         userRepository.updateFirebaseToken(user.getId(), firebaseToken);
     }
 

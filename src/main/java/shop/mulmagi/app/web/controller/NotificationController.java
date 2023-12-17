@@ -1,6 +1,7 @@
 package shop.mulmagi.app.web.controller;
 
 
+import com.google.firebase.auth.FirebaseAuthException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -110,10 +111,11 @@ public class NotificationController extends BaseController {
             User user = userRepository.findByPhoneNumber("01043939869");
             String firebaseToken = request.getFirebaseToken();
             notificationService.saveFirebaseToken(user, firebaseToken);
-
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_ALLOW_SUCCESS), HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException(e);
         }
     }
 

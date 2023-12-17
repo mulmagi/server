@@ -46,7 +46,7 @@ public class OverdueRentalBatchConfig {
                 .writer(overdueRentalWriter)
                 .faultTolerant() // Skip 및 Retry를 사용하도록 설정
                 .skip(Exception.class)
-                .skipLimit(10) // 허용되는 최대 건너뛰기 수
+                .skipLimit(1000) // 허용되는 최대 건너뛰기 수
                 .build();
     }
 
