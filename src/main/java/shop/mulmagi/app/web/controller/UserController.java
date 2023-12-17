@@ -56,29 +56,19 @@ public class UserController extends BaseController {
     @PostMapping("/sms-certification/confirm")
     public ResponseEntity<?> smsConfirm(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
-            log.info(ResponseMessage.SMS_CERT_SUCCESS);
-            return login(requestDto);
-        } catch (CustomExceptions.Exception e) {
-            return handleApiException(e, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
-        try {
-            CustomUserDetails userDetails = userService.verifyAndRegisterUser(requestDto);
-            Long userId = userDetails.getId();
+            Long userId = userService.verifyAndRegisterUser(requestDto);
             String accessToken = jwtUtil.generateAccessToken(userId);
             String refreshToken = jwtUtil.generateRefreshToken(userId);
+
             userService.saveRefreshToken(refreshToken);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + accessToken);
-            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS+refreshToken);
-            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS+accessToken);
+            log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + refreshToken);
+            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + accessToken);
             log.info(ResponseMessage.ACCESS_TOKEN_SEND_SUCCESS);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGIN_SUCCESS), HttpStatus.OK);
-        }catch (CustomExceptions.Exception e) {
+        } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }

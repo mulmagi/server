@@ -11,6 +11,7 @@ import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.UserStatus;
 import shop.mulmagi.app.exception.CustomExceptions;
+import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.repository.RefreshTokenRepository;
 import shop.mulmagi.app.repository.RentalRepository;
 import shop.mulmagi.app.repository.UserRepository;
@@ -71,6 +72,7 @@ public class UserServiceImpl implements UserService {
         if (isVerify(requestDto)) {
             throw new CustomExceptions.SmsCertificationNumberMismatchException("인증번호가 일치하지 않습니다.");
         }
+        log.info(ResponseMessage.SMS_CERT_SUCCESS);
         smsCertificationDao.removeSmsCertification(requestDto.getPhone());
     }
 
@@ -78,11 +80,29 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByPhoneNumber(phoneNumber);
     }
 
-    public Long findIdByPhoneNumber(String phoneNumber){return userRepository.findByPhoneNumber(phoneNumber).getId();}
+    public Long findIdByPhoneNumber(String phoneNumber){return findByPhoneNumber(phoneNumber).getId();}
 
-    private CustomUserDetails registerUser(UserDto.SmsCertificationRequest requestDto){
-        if (!isVerify(requestDto)) {
-            User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
+
+
+
+    private boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
+        return !(smsCertificationDao.hasKey(requestDto.getPhone()) &&
+                smsCertificationDao.getSmsCertification(requestDto.getPhone())
+                        .equals(requestDto.getCertificationNumber()));
+    }
+
+
+    public void updateNotificationSettings(Long userId, boolean enableNotifications) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.updateNotificationEnabled(enableNotifications);
+                userRepository.save(user);
+        }
+    }
+    private Long registerUser(UserDto.SmsCertificationRequest requestDto){
+        if (isVerify(requestDto)) {
+            User existingUser = findByPhoneNumber(requestDto.getPhone());
             if (existingUser == null) {
                 User user = User
                         .builder()
@@ -100,64 +120,33 @@ public class UserServiceImpl implements UserService {
                         .agreeTerms(false)
                         .build();
                 userRepository.save(user);
-                return jwtUtil.buildCustomUserDetails(user);
+                log.info("회원가입 성공");
+                return user.getId();
             }
         }
-        return null;
+        throw new CustomExceptions.Exception("회원가입을 할 수 없습니다.");
     }
-    private CustomUserDetails registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
+    private Long registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
         if (!isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser != null && existingUser.getStatus() == INACTIVE) {
                 existingUser.resetUser(storedName, requestDto.getPhone());
                 userRepository.save(existingUser);
-                return jwtUtil.buildCustomUserDetails(existingUser);
+                return existingUser.getId();
             }
         }
-        return null;
+        throw new CustomExceptions.Exception("탈퇴한 유저를 되돌릴 수 없습니다.");
     }
-
-    private boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
-        return !(smsCertificationDao.hasKey(requestDto.getPhone()) &&
-                smsCertificationDao.getSmsCertification(requestDto.getPhone())
-                        .equals(requestDto.getCertificationNumber()));
-    }
-
-
-    public void updateNotificationSettings(Long userId, boolean enableNotifications) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                user.updateNotificationEnabled(enableNotifications);
-                userRepository.save(user);
-        }
-    }
-    public CustomUserDetails loadUserByPhoneNumber(String phoneNumber){
+    public Long loadUserByPhoneNumber(String phoneNumber){
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
             throw new CustomExceptions.UserPhoneNumberNotFoundException("전화번호 " + phoneNumber + "를 사용하는 사용자가 없습니다.");
         }
-        // User 객체를 UserDetails로 변환하여 반환
-        return CustomUserDetails.builder()
-                .name(storedName)
-                .id(user.getId())
-                .phoneNumber(user.getPhoneNumber())
-                .isAdmin(user.getIsAdmin())
-                .level(user.getLevel())
-                .experience(user.getExperience())
-                .point(user.getPoint())
-                .profileUrl(user.getProfileUrl())
-                .isRental(user.getIsRental())
-                .status(user.getStatus())
-                .isComplaining(user.getIsComplaining())
-                .firebaseToken(user.getFirebaseToken())
-                .agreeTerms(user.isAgreeTerms())
-                .notificationEnabled(user.isNotificationEnabled())
-                .build();
+        return user.getId();
     }
 
 
-    public CustomUserDetails verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
+    public Long verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto) {
         verifySms(requestDto);
 
         User user = findByPhoneNumber(requestDto.getPhone());

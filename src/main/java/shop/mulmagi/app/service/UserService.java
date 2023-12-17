@@ -13,11 +13,11 @@ public interface UserService {
     Long findIdByPhoneNumber(String phoneNumber);
 
     User findById(Long userId);
-    CustomUserDetails loadUserByPhoneNumber(String phoneNumber);
+    Long loadUserByPhoneNumber(String phoneNumber);
 
     User findByPhoneNumber(String phoneNumber);
 
-    CustomUserDetails verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
+    Long verifyAndRegisterUser(UserDto.SmsCertificationRequest requestDto);
     void logout(String accessToken, String refreshToken);
     void updateNotificationSettings(Long userId, boolean enableNotifications);
 
