@@ -2,8 +2,12 @@ package shop.mulmagi.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
 import shop.mulmagi.app.domain.RefreshToken;
@@ -237,9 +241,21 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+    public User getCurrentUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "로그인 되지 않았습니다."
+            );
+        }
+        Long userId = (Long)authentication.getPrincipal();
+        User user = findById(userId);
 
-
-
+        if(user.getStatus().equals(UserStatus.INACTIVE)) {
+            throw new IllegalArgumentException("해당 사용자는 탈퇴한 사용자입니다.");
+        }
+        return user;
+    }
 
 }
 

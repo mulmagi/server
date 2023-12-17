@@ -26,6 +26,7 @@ public interface UserService {
     void withdrawUserByPhoneNumber(String phoneNumber);
     void updateProfileImage(Long userId, String profileImageUrl);
     List<Rental> getUserRentals(Long userId);
+    User getCurrentUser();
 
     void saveRefreshToken(String token);
 
