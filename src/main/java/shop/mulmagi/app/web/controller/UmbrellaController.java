@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.NotificationService;
+import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.service.impl.UmbrellaServiceImpl;
+import shop.mulmagi.app.service.impl.UserServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
@@ -29,6 +31,7 @@ public class UmbrellaController extends BaseController {
     private final UserRepository userRepository;
     private final UmbrellaServiceImpl umbrellaService;
     private final NotificationService notificationService;
+    private final UserServiceImpl userService;
 
     @ApiOperation(value = "메인 화면 불러오기 API")
     @ApiResponse(code = 200, message = "메인 화면 불러오기 성공")
@@ -37,8 +40,7 @@ public class UmbrellaController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/main", "메인 화면 불러오기 API");
 
-            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
-            User user = userRepository.findByPhoneNumber("01029440386");
+            User user = userService.getCurrentUser();
 
             UmbrellaResponseDto.LocationDataListDto res = umbrellaService.getLocationData(user, latitude, longitude);
 
@@ -55,8 +57,7 @@ public class UmbrellaController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/main/{location-id}", "location 불러오기 API");
 
-            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
-            User user = userRepository.findByPhoneNumber("01029440386");
+            User user = userService.getCurrentUser();
 
             UmbrellaResponseDto.LocationDto res = umbrellaService.getLocation(user, locationId);
 
@@ -73,8 +74,7 @@ public class UmbrellaController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/rental", "대여 페이지 불러오기 API");
 
-            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
-            User user = userRepository.findByPhoneNumber("01029440386");
+            User user = userService.getCurrentUser();
 
             UmbrellaResponseDto.RentalPageDto res = umbrellaService.getRentalPage(user, qrCode);
 
@@ -91,8 +91,7 @@ public class UmbrellaController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/return", "반납 완료 페이지 불러오기 API");
 
-            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
-            User user = userRepository.findByPhoneNumber("01029440386");
+            User user = userService.getCurrentUser();
 
             UmbrellaResponseDto.ReturnPageDto res = umbrellaService.getReturnPage(rentalId);
 
@@ -109,8 +108,7 @@ public class UmbrellaController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "POST", "/api/rental", "대여하기 API");
 
-            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
-            User user = userRepository.findByPhoneNumber("01029440386");
+            User user = userService.getCurrentUser();
 
             String notificationMsg = umbrellaService.rental(user, request);
 
@@ -129,8 +127,7 @@ public class UmbrellaController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "PATCH", "/api/return", "반납하기 API");
 
-            //로그인 구현 후 유저 정보 토큰으로 받아올 예정
-            User user = userRepository.findByPhoneNumber("01029440386");
+            User user = userService.getCurrentUser();
 
             String notificationMsg = umbrellaService.returnUmb(user, request);
 
