@@ -15,6 +15,7 @@ public class UserDto {
 
     }
     @Getter
+    @Setter
     @Builder
     public static class SmsCertificationRequest {
 

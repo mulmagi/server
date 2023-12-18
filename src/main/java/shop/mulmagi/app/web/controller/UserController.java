@@ -1,5 +1,7 @@
 package shop.mulmagi.app.web.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -28,9 +30,9 @@ import java.util.Map;
 public class UserController extends BaseController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
-
+    @ApiOperation(value = "이름 입력하는 API")
     @PostMapping("/name")
-    public ResponseEntity<?> submitName(@RequestBody UserDto.NameRequest userDto) {
+    public ResponseEntity<?> submitName(@ApiParam(value = "이름", example = "{\"name\": \"최유정\"}") @RequestBody UserDto.NameRequest userDto) {
         try {
             userService.submitName(userDto.getName());
             Map<String, Object> response = new HashMap<>();
@@ -41,9 +43,9 @@ public class UserController extends BaseController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-
+    @ApiOperation(value = "SMS 인증 문자 보내는 API")
     @PostMapping("/sms-certification/send")
-    public ResponseEntity<?> sendSms(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
+    public ResponseEntity<?> sendSms(@ApiParam(value = "문자 전송", example = "{\"number\": \"01012345678\",\"certificationNumber\": \"\"}") @RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
             userService.sendSms(requestDto);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.SMS_CERT_MESSAGE_SUCCESS), HttpStatus.OK);
@@ -53,8 +55,9 @@ public class UserController extends BaseController {
     }
 
     //인증번호 확인
+    @ApiOperation(value = "인증번호 확인하고 로그인하는 API")
     @PostMapping("/sms-certification/confirm")
-    public ResponseEntity<?> smsConfirm(@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
+    public ResponseEntity<?> smsConfirm(@ApiParam(value = "인증 번호 확인", example = "{\"number\": \"01012345678\",\"certificationNumber\": \"5678\"}")@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
             Long userId = userService.verifyAndRegisterUser(requestDto);
             String accessToken = jwtUtil.generateAccessToken(userId);
@@ -74,9 +77,9 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-
+    @ApiOperation(value = "알림 설정 허용하는 API")
     @PutMapping("/notifications")
-    public ResponseEntity<?> updateNotificationSetting(@RequestParam boolean enableNotifications) throws Exception {
+    public ResponseEntity<?> updateNotificationSetting(@RequestParam @ApiParam(value="enableNotifications", example = "true")boolean enableNotifications) throws Exception {
         try {
             User user = userService.getCurrentUser();
             userService.updateNotificationSettings(user.getId(), enableNotifications);
@@ -93,12 +96,12 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-
+    @ApiOperation(value = "AccessToken 재발급하는 API")
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(String refreshToken) {
+    public ResponseEntity<?> reissue() {
         User user = userService.getCurrentUser();
 
-        String newAccessToken = jwtUtil.generateAccessTokenFromRefreshToken(refreshToken);
+        String newAccessToken = userService.reissueAccessToken(user);
 
         if (newAccessToken != null) {
             Map<String, Object> response = new HashMap<>();
@@ -111,7 +114,7 @@ public class UserController extends BaseController {
         }
     }
 
-
+    @ApiOperation(value = "회원 로그아웃하는 API")
     @PostMapping("/logout")
     public ResponseEntity<String> logout()throws Exception {
         try {
@@ -122,7 +125,7 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-
+    @ApiOperation(value = "회원 탈퇴하는 API")
     @PutMapping("/withdraw")
     public ResponseEntity<?> withdrawUserByPhoneNumber(){
         try {
@@ -133,8 +136,9 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
+    @ApiOperation(value = "회원 프로필 이미지 변경하는 API")
     @PutMapping("/profile-image")
-    public ResponseEntity<?> setUserProfileImage(@RequestParam String profileImageUrl) {
+    public ResponseEntity<?> setUserProfileImage(@RequestParam @ApiParam(value="profileImageUrl", example = "https://url.kr/liwqn2")String profileImageUrl) {
         try {
             User user = userService.getCurrentUser();
             userService.updateProfileImage(user.getId(),profileImageUrl);
@@ -143,10 +147,10 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-
+    @ApiOperation(value = "회원 대여 기록 가져오는 API")
     @GetMapping("/user/rental-history")
     public ResponseEntity<?> getUserRentals(@RequestParam(value = "cursor", required = false)
-                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor) {
+                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @ApiParam(value="cursor",example = "2023-12-18T06:23:27")LocalDateTime cursor) {
         int pageSize = 6;
         try {
             User user = userService.getCurrentUser();
@@ -164,6 +168,4 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
-
-
 }

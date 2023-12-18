@@ -1,7 +1,6 @@
 package shop.mulmagi.app.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,6 +30,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/name","/sms-certification/send","/sms-certification/confirm").permitAll()
+                .antMatchers("/v2/api-docs", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**","/swagger/**").permitAll() //swagger
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
