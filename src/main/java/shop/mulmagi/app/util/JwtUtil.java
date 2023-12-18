@@ -90,10 +90,9 @@ public class JwtUtil {
 
 
     // 토큰이 유효한지 검사하는 함수
-    // userDetails.getUsername은 User의 id를 return함
-    public Boolean validateToken(String token, CustomUserDetails userDetails) {
+    public Boolean validateToken(String token, User user) {
         final Long user_id = extractId(token);
-        return (user_id.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (user_id.equals(user.getId()) && !isTokenExpired(token));
     }
 
     // token들의 만료 시간을 지금으로 설정해서 토큰을 무효화시키는 함수

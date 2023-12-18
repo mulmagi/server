@@ -61,4 +61,6 @@ public class ResponseMessage {
     public static final String USER_AGREED_NOTIFICATION = "알람 수신 동의";
     public static final String USER_DECLINE_NOTIFICATION = "알람 수신 미동의";
     public static final String ACCESS_TOKEN_SEND_SUCCESS = "Access token을 클라이언트에게 줌";
+
+    public static final String USER_INFO_LOAD_SUCCESS = "메뉴 화면 회원 정보 불러오기 성공";
 }

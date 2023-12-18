@@ -33,6 +33,9 @@ public interface UserService {
 
     CustomUserDetails loadUserById(Long id);
 
+    String reissueAccessToken(User user);
+
     List<UserDto.RentalHistoryResponse> getRentalHistory(User user, int pageSize, LocalDateTime cursor);
     LocalDateTime getNextCursor(User user, LocalDateTime cursor);
+
 }
