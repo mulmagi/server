@@ -35,7 +35,9 @@ public class UserDto {
     @Builder
     public static class RentalHistoryResponse{
         private String rentalUmbrellaStandName;
+        private Long rentalUmbrellaStandId;
         private String returnUmbrellaStandName;
+        private Long returnUmbrellaStandId;
 
         private Integer point;
         private Double experience;

@@ -267,17 +267,21 @@ public class UserServiceImpl implements UserService {
             UmbrellaStand returnStand = rental.getReturnUmbrellaStand();
             if (returnStand != null) {
                 Location returnLocation = returnStand.getLocation();
+                Long returnID = returnStand.getId();
                 if (returnLocation != null) {
                     String returnUmbrellaStandLocationName = returnLocation.getName();
                     log.info(returnUmbrellaStandLocationName);
                     UmbrellaStand rentalStand = rental.getRentalUmbrellaStand();
                     Location rentalLocation = rentalStand.getLocation();
+                    Long rentalId = rentalStand.getId();
                     String rentalUmbrellaStandLocationName = rentalLocation.getName();
                     UserDto.RentalHistoryResponse response =
                             UserDto.RentalHistoryResponse
                                     .builder()
                                     .rentalUmbrellaStandName(rentalUmbrellaStandLocationName)
+                                    .rentalUmbrellaStandId(rentalId)
                                     .returnUmbrellaStandName(returnUmbrellaStandLocationName)
+                                    .returnUmbrellaStandId(returnID)
                                     .rentaldate(rental.getCreatedAt())
                                     .returndate(rental.getUpdatedAt())
                                     .point(rental.getOverdueAmount() + 1000)
