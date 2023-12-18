@@ -2,6 +2,8 @@ package shop.mulmagi.app.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,7 @@ import shop.mulmagi.app.util.JwtUtil;
 import shop.mulmagi.app.util.SmsCertificationUtil;
 import shop.mulmagi.app.web.dto.UserDto;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static shop.mulmagi.app.domain.enums.UserStatus.INACTIVE;
@@ -42,24 +45,24 @@ public class UserServiceImpl implements UserService {
 
     private final RentalRepository rentalRepository;
 
-
     private String storedName;
+    private String nextCursor;
 
-    public void submitName(String name){
+    public void submitName(String name) {
         this.storedName = name;
     }
 
 
-    public void sendSms(UserDto.SmsCertificationRequest requestDto){
+    public void sendSms(UserDto.SmsCertificationRequest requestDto) {
         String to = requestDto.getPhone();
         int randomNumber = (int) (Math.random() * 9000) + 1000;
         String certificationNumber = String.valueOf(randomNumber);
         smsUtil.sendSms(to, certificationNumber);
-        smsCertificationDao.createSmsCertification(to,certificationNumber);
+        smsCertificationDao.createSmsCertification(to, certificationNumber);
     }
 
 
-    public User findById(Long userId){
+    public User findById(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -67,7 +70,6 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
-
 
 
     private void verifySms(UserDto.SmsCertificationRequest requestDto) {
@@ -82,9 +84,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByPhoneNumber(phoneNumber);
     }
 
-    public Long findIdByPhoneNumber(String phoneNumber){return findByPhoneNumber(phoneNumber).getId();}
-
-
+    public Long findIdByPhoneNumber(String phoneNumber) {
+        return findByPhoneNumber(phoneNumber).getId();
+    }
 
 
     private boolean isVerify(UserDto.SmsCertificationRequest requestDto) {
@@ -97,12 +99,13 @@ public class UserServiceImpl implements UserService {
     public void updateNotificationSettings(Long userId, boolean enableNotifications) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                user.updateNotificationEnabled(enableNotifications);
-                userRepository.save(user);
+            User user = optionalUser.get();
+            user.updateNotificationEnabled(enableNotifications);
+            userRepository.save(user);
         }
     }
-    private Long registerUser(UserDto.SmsCertificationRequest requestDto){
+
+    private Long registerUser(UserDto.SmsCertificationRequest requestDto) {
         if (isVerify(requestDto)) {
             User existingUser = findByPhoneNumber(requestDto.getPhone());
             if (existingUser == null) {
@@ -128,7 +131,8 @@ public class UserServiceImpl implements UserService {
         }
         throw new CustomExceptions.Exception("회원가입을 할 수 없습니다.");
     }
-    private Long registerWithdrawUser(UserDto.SmsCertificationRequest requestDto){
+
+    private Long registerWithdrawUser(UserDto.SmsCertificationRequest requestDto) {
         if (isVerify(requestDto)) {
             User existingUser = userRepository.findByPhoneNumber(requestDto.getPhone());
             if (existingUser != null && existingUser.getStatus() == INACTIVE) {
@@ -139,7 +143,8 @@ public class UserServiceImpl implements UserService {
         }
         throw new CustomExceptions.Exception("탈퇴한 유저를 되돌릴 수 없습니다.");
     }
-    public Long loadUserByPhoneNumber(String phoneNumber){
+
+    public Long loadUserByPhoneNumber(String phoneNumber) {
         User user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
             throw new CustomExceptions.UserPhoneNumberNotFoundException("전화번호 " + phoneNumber + "를 사용하는 사용자가 없습니다.");
@@ -156,11 +161,9 @@ public class UserServiceImpl implements UserService {
 
         if (isNewUser) {
             return registerUser(requestDto);
-        }
-        else if (user.getStatus() == INACTIVE){
+        } else if (user.getStatus() == INACTIVE) {
             return registerWithdrawUser(requestDto);
-        }
-        else {
+        } else {
             return loadUserByPhoneNumber(requestDto.getPhone());
         }
     }
@@ -192,7 +195,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public void withdrawUser(User user){
+    public void withdrawUser(User user) {
         if (user != null) {
             user.updateStatus(INACTIVE);
             userRepository.save(user);
@@ -207,7 +210,8 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
     }
-    public List<Rental>getUserRentals(Long userId) {
+
+    public List<Rental> getUserRentals(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -215,7 +219,8 @@ public class UserServiceImpl implements UserService {
         }
         throw new CustomExceptions.NoRentalHistoryFoundException("no rental history");
     }
-    public CustomUserDetails loadUserById(Long Id){
+
+    public CustomUserDetails loadUserById(Long Id) {
         Optional<User> optionalUser = userRepository.findById(Id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -243,57 +248,60 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
-    public User getCurrentUser(){
+
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "로그인 되지 않았습니다."
             );
         }
-        Long userId = (Long)authentication.getPrincipal();
+        Long userId = (Long) authentication.getPrincipal();
         User user = findById(userId);
 
-        if(user.getStatus().equals(UserStatus.INACTIVE)) {
+        if (user.getStatus().equals(UserStatus.INACTIVE)) {
             throw new IllegalArgumentException("해당 사용자는 탈퇴한 사용자입니다.");
         }
         return user;
     }
-    public List<UserDto.RentalHistoryResponse> getRentalHistory(User user){
+
+
+    public List<UserDto.RentalHistoryResponse> getRentalHistory(User user, int pageSize, LocalDateTime cursor) {
+        PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         List<UserDto.RentalHistoryResponse> rentalHistoryResponses = new ArrayList<>();
-        List<Rental> userRentals = rentalRepository.findByUserId(user.getId());
-
-        for (Rental rental : userRentals) {
-            log.info(rental.getUser().getId().toString());
-            UmbrellaStand returnStand = rental.getReturnUmbrellaStand();
-            if (returnStand != null) {
-                Location returnLocation = returnStand.getLocation();
-                Long returnID = returnStand.getId();
-                if (returnLocation != null) {
-                    String returnUmbrellaStandLocationName = returnLocation.getName();
-                    log.info(returnUmbrellaStandLocationName);
-                    UmbrellaStand rentalStand = rental.getRentalUmbrellaStand();
-                    Location rentalLocation = rentalStand.getLocation();
-                    Long rentalId = rentalStand.getId();
-                    String rentalUmbrellaStandLocationName = rentalLocation.getName();
-                    UserDto.RentalHistoryResponse response =
-                            UserDto.RentalHistoryResponse
-                                    .builder()
-                                    .rentalUmbrellaStandName(rentalUmbrellaStandLocationName)
-                                    .rentalUmbrellaStandId(rentalId)
-                                    .returnUmbrellaStandName(returnUmbrellaStandLocationName)
-                                    .returnUmbrellaStandId(returnID)
-                                    .rentaldate(rental.getCreatedAt())
-                                    .returndate(rental.getUpdatedAt())
-                                    .point(rental.getOverdueAmount() + 1000)
-                                    .experience(rental.getUser().getExperience())
-                                    .build();
-                    // Add other fields from Rental to RentalHistoryResponse
-                    rentalHistoryResponses.add(response);
-                }
-            }
-
+        List<Rental> rentals = rentalRepository.findByUserIdAndCreatedAtBeforeAndNotNullReturnUmbrellaStand(user.getId(), cursor, pageRequest);
+        for(Rental rental : rentals) {
+            UserDto.RentalHistoryResponse res = mapRentalToResponse(rental);
+            rentalHistoryResponses.add(res);
         }
         return rentalHistoryResponses;
     }
+
+    public LocalDateTime getNextCursor(User user, LocalDateTime cursor) {
+        int pageSize = 1;
+        PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        List<Rental> rentals = rentalRepository.findByUserIdAndCreatedAtBeforeAndNotNullReturnUmbrellaStand(user.getId(), cursor, pageRequest);
+        if (!rentals.isEmpty()) {
+            LocalDateTime lastCreatedAt = rentals.get(0).getCreatedAt();
+            Optional<Rental> nextRental = rentalRepository.findTop1ByUserIdAndCreatedAtBeforeOrderByCreatedAtDesc(user.getId(), lastCreatedAt);
+            return nextRental.map(Rental::getCreatedAt).orElse(null);
+        }
+        return null;
+    }
+
+    private UserDto.RentalHistoryResponse mapRentalToResponse(Rental rental) {
+        return UserDto.RentalHistoryResponse.builder()
+                .rentalUmbrellaStandName(rental.getRentalUmbrellaStand().getLocation().getName())
+                .rentalUmbrellaStandId(rental.getRentalUmbrellaStand().getId())
+                .returnUmbrellaStandName(rental.getReturnUmbrellaStand().getLocation().getName())
+                .returnUmbrellaStandId(rental.getReturnUmbrellaStand().getId())
+                .point(rental.getOverdueAmount() + 1000)
+                .experience(rental.getUser().getExperience())
+                .rentaldate(rental.getCreatedAt())
+                .returndate(rental.getUpdatedAt())
+                .build();
+    }
 }
+
 

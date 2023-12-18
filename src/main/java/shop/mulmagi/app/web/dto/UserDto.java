@@ -3,7 +3,6 @@ package shop.mulmagi.app.web.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import shop.mulmagi.app.domain.UmbrellaStand;
 
 import java.time.LocalDateTime;
 
