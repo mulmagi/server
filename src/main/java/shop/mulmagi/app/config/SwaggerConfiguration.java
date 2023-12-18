@@ -1,13 +1,12 @@
 package shop.mulmagi.app.config;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -22,12 +21,12 @@ public class SwaggerConfiguration {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(this.apiInfo())
+                .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(this.basePackage))
                 .paths(PathSelectors.ant("/**"))
-                .build()
-                .apiInfo(this.apiInfo())
-                .useDefaultResponseMessages(false);
+                .build();
     }
 
     private ApiInfo apiInfo() {
@@ -35,10 +34,12 @@ public class SwaggerConfiguration {
 
         String title = "Mulmagi API Documents"; // 스웨거 UI 타이틀
         String version = "1.0.0";
+        String description = "API 명세서";
 
         return new ApiInfoBuilder()
                 .title(title)
                 .version(version)
+                .description(description)
 //                .contact(contact)
                 .build();
     }

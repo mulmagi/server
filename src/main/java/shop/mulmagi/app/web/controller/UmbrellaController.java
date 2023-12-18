@@ -1,23 +1,19 @@
 package shop.mulmagi.app.web.controller;
 
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.NotificationType;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.NotificationService;
+import shop.mulmagi.app.service.UmbrellaService;
 import shop.mulmagi.app.service.UserService;
-import shop.mulmagi.app.service.impl.UmbrellaServiceImpl;
-import shop.mulmagi.app.service.impl.UserServiceImpl;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.UmbrellaRequestDto;
 import shop.mulmagi.app.web.dto.UmbrellaResponseDto;
@@ -28,12 +24,14 @@ import shop.mulmagi.app.web.dto.base.DefaultRes;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UmbrellaController extends BaseController {
-    private final UserRepository userRepository;
-    private final UmbrellaServiceImpl umbrellaService;
+    private final UmbrellaService umbrellaService;
     private final NotificationService notificationService;
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @ApiOperation(value = "메인 화면 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "메인 화면 불러오기 성공")
     @GetMapping("/main")
     public ResponseEntity main(@RequestParam("latitude") @ApiParam(value = "사용자 위치(지도 중심)의 위도", example = "37.2431") double latitude, @RequestParam("longitude") @ApiParam(value = "사용자 위치(지도 중심)의 경도", example = "127.0736") double longitude){
@@ -51,6 +49,9 @@ public class UmbrellaController extends BaseController {
     }
 
     @ApiOperation(value = "location 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "location 불러오기 성공")
     @GetMapping("/main/{location-id}")
     public ResponseEntity location(@PathVariable("location-id") @ApiParam(value = "location ID", example = "1") Long locationId){
@@ -68,6 +69,9 @@ public class UmbrellaController extends BaseController {
     }
 
     @ApiOperation(value = "대여 페이지 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "대여 페이지 불러오기 성공")
     @GetMapping("/rental")
     public ResponseEntity rentalPage(@RequestParam("qrCode") @ApiParam(value = "QR 코드", example = "123456") Long qrCode){
@@ -85,6 +89,9 @@ public class UmbrellaController extends BaseController {
     }
 
     @ApiOperation(value = "반납 완료 페이지 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "반납 완료 페이지 불러오기 성공")
     @GetMapping("/return/{rental-id}")
     public ResponseEntity returnPage(@PathVariable("rental-id") @ApiParam(value = "rental ID", example = "1") Long rentalId){
@@ -102,6 +109,9 @@ public class UmbrellaController extends BaseController {
     }
 
     @ApiOperation(value = "대여하기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "대여 성공")
     @PostMapping("/rental")
     public ResponseEntity rentalUmbrella(@RequestBody UmbrellaRequestDto.RentalDto request){
@@ -121,6 +131,9 @@ public class UmbrellaController extends BaseController {
     }
 
     @ApiOperation(value = "반납하기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "반납 성공")
     @PatchMapping("/return")
     public ResponseEntity returnUmbrella(@RequestBody UmbrellaRequestDto.ReturnDto request){
