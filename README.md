@@ -27,7 +27,7 @@
 
 <img src="development_environment.png">
 
-- swagger - [Swagger Documentation](http://localhost:8080/swagger-ui/index.html#/)
+- swagger - [Swagger Documentation](http://mulmagi.shop/swagger-ui/index.html#/)
 
 - Figma - [Figma Design](https://www.figma.com/file/T9cbZSQslVkdP1zqeV0W9k/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?type=design&node-id=1-3&mode=design&t=0s8Hqg2p9CXWEgH2-0)
 
