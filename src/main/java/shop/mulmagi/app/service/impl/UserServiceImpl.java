@@ -10,9 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import shop.mulmagi.app.dao.CustomUserDetails;
 import shop.mulmagi.app.dao.SmsCertificationDao;
-import shop.mulmagi.app.domain.RefreshToken;
-import shop.mulmagi.app.domain.Rental;
-import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.domain.*;
 import shop.mulmagi.app.domain.enums.UserStatus;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
@@ -260,6 +258,38 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+    public List<UserDto.RentalHistoryResponse> getRentalHistory(User user){
+        List<UserDto.RentalHistoryResponse> rentalHistoryResponses = new ArrayList<>();
+        List<Rental> userRentals = rentalRepository.findByUserId(user.getId());
 
+        for (Rental rental : userRentals) {
+            log.info(rental.getUser().getId().toString());
+            UmbrellaStand returnStand = rental.getReturnUmbrellaStand();
+            if (returnStand != null) {
+                Location returnLocation = returnStand.getLocation();
+                if (returnLocation != null) {
+                    String returnUmbrellaStandLocationName = returnLocation.getName();
+                    log.info(returnUmbrellaStandLocationName);
+                    UmbrellaStand rentalStand = rental.getRentalUmbrellaStand();
+                    Location rentalLocation = rentalStand.getLocation();
+                    String rentalUmbrellaStandLocationName = rentalLocation.getName();
+                    UserDto.RentalHistoryResponse response =
+                            UserDto.RentalHistoryResponse
+                                    .builder()
+                                    .rentalUmbrellaStandName(rentalUmbrellaStandLocationName)
+                                    .returnUmbrellaStandName(returnUmbrellaStandLocationName)
+                                    .rentaldate(rental.getCreatedAt())
+                                    .returndate(rental.getUpdatedAt())
+                                    .point(rental.getOverdueAmount() + 1000)
+                                    .experience(rental.getUser().getExperience())
+                                    .build();
+                    // Add other fields from Rental to RentalHistoryResponse
+                    rentalHistoryResponses.add(response);
+                }
+            }
+
+        }
+        return rentalHistoryResponses;
+    }
 }
 

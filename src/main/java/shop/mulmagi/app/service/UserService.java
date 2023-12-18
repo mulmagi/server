@@ -31,4 +31,6 @@ public interface UserService {
     void saveRefreshToken(String token);
 
     CustomUserDetails loadUserById(Long id);
+
+    List<UserDto.RentalHistoryResponse> getRentalHistory(User user);
 }

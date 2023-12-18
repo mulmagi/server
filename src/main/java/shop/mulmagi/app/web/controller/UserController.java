@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Slf4j
@@ -140,14 +141,23 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/user/rental-history")
-    public ResponseEntity<?> getUserRentals() {
-        User user = userService.getCurrentUser();
-        List<Rental> userRentals = userService.getUserRentals(user.getId());
-        if (userRentals != null && !userRentals.isEmpty()) {
-            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PRINT_RENTAL_HISTORY_SUCCESS), HttpStatus.OK);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getUserRentals(@RequestParam(value = "cursor", required = false) String cursor) {
+        try {
+            User user = userService.getCurrentUser();
+            log.info("currentUser id = "+ user.getId());
+            List<UserDto.RentalHistoryResponse> rentals = userService.getRentalHistory(user);
+
+            // 가져온 다음 페이지의 항목과 다음 커서를 클라이언트에 전달
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message : ", ResponseMessage.PRINT_RENTAL_HISTORY_SUCCESS);
+            response.put("rentalHistory : ", rentals);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
 
