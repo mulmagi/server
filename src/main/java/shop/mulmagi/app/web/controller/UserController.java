@@ -1,11 +1,11 @@
 package shop.mulmagi.app.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
@@ -17,6 +17,7 @@ import shop.mulmagi.app.web.dto.UserDto;
 import shop.mulmagi.app.web.dto.base.DefaultRes;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +65,11 @@ public class UserController extends BaseController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + accessToken);
             log.info(ResponseMessage.REFRESH_TOKEN_ISSUE_SUCCESS + refreshToken);
-            log.info(ResponseMessage.ACCESS_TOKEN_ISSUE_SUCCESS + accessToken);
-            log.info(ResponseMessage.ACCESS_TOKEN_SEND_SUCCESS);
-            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.USER_LOGIN_SUCCESS), HttpStatus.OK);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", ResponseMessage.ACCESS_TOKEN_REISSUE_SUCCESS);
+            response.put("accessToken", accessToken);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (CustomExceptions.Exception e) {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
@@ -140,14 +143,25 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/user/rental-history")
-    public ResponseEntity<?> getUserRentals() {
-        User user = userService.getCurrentUser();
-        List<Rental> userRentals = userService.getUserRentals(user.getId());
-        if (userRentals != null && !userRentals.isEmpty()) {
-            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.PRINT_RENTAL_HISTORY_SUCCESS), HttpStatus.OK);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getUserRentals(@RequestParam(value = "cursor", required = false)
+                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor) {
+        int pageSize = 6;
+        try {
+            User user = userService.getCurrentUser();
+            List<UserDto.RentalHistoryResponse> rentals = userService.getRentalHistory(user, pageSize, cursor);
+
+            LocalDateTime nextCursor = userService.getNextCursor(user,cursor);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message : ", ResponseMessage.PRINT_RENTAL_HISTORY_SUCCESS);
+            response.put("rentalHistory : ", rentals);
+            response.put("nextCursor", nextCursor);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
 

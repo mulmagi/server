@@ -5,6 +5,7 @@ import shop.mulmagi.app.domain.Rental;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.web.dto.UserDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
@@ -31,4 +32,7 @@ public interface UserService {
     void saveRefreshToken(String token);
 
     CustomUserDetails loadUserById(Long id);
+
+    List<UserDto.RentalHistoryResponse> getRentalHistory(User user, int pageSize, LocalDateTime cursor);
+    LocalDateTime getNextCursor(User user, LocalDateTime cursor);
 }
