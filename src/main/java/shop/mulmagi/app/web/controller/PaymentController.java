@@ -18,7 +18,7 @@ import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
 import shop.mulmagi.app.repository.UserRepository;
-import shop.mulmagi.app.service.impl.PaymentServiceImpl;
+import shop.mulmagi.app.service.PaymentService;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.PaymentRequestDto;
 import shop.mulmagi.app.web.dto.PaymentResponseDto;
@@ -38,10 +38,10 @@ public class PaymentController extends BaseController {
     @Value("${iamport.secret}")
     private String restApiSecret;
     private IamportClient iamportClient;
-    private final PaymentServiceImpl paymentService;
+    private final PaymentService paymentService;
     private final UserRepository userRepository;
 
-    @PostConstruct
+    @PostConstruct경
     public void init() {
         iamportClient = new IamportClient(restApiKey, restApiSecret);
     }
