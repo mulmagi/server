@@ -6,9 +6,9 @@
 ### ☔물막이 - QR 코드로 간편한 우산 대여 서비스
 
 
-갑작스러운 비에 우산이 없어 당황한 적이 있나요?:sweat_smile:
+갑작스러운 비에 우산이 없어 당황한 적이 있나요? 😅
 
-그런 당신을 위해 **우산을 간편하게 빌릴 수 있는 서비스**를 제공합니다.:wink:
+그런 당신을 위해 **우산을 간편하게 빌릴 수 있는 서비스**를 제공합니다.😉
 
 손은 가볍게 옷은 뽀송하게 지켜보아요!🥰
 
@@ -27,7 +27,7 @@
 
 <img src="development_environment.png">
 
-- swagger - [Swagger Documentation](http://localhost:8080/swagger-ui/index.html#/)
+- swagger - [Swagger Documentation](http://mulmagi.shop/swagger-ui/index.html#/)
 
 - Figma - [Figma Design](https://www.figma.com/file/T9cbZSQslVkdP1zqeV0W9k/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?type=design&node-id=1-3&mode=design&t=0s8Hqg2p9CXWEgH2-0)
 

@@ -15,13 +15,41 @@ public class UserDto {
 
     }
     @Getter
-    @Setter
-    @Builder
     public static class SmsCertificationRequest {
-
         private String phone;
         private String certificationNumber;
 
+        private SmsCertificationRequest() {
+        }
+
+        public static SmsCertificationRequestBuilder builder() {
+            return new SmsCertificationRequestBuilder();
+        }
+
+        public static class SmsCertificationRequestBuilder {
+            private String phone;
+            private String certificationNumber;
+
+            private SmsCertificationRequestBuilder() {
+            }
+
+            public SmsCertificationRequestBuilder phone(String phone) {
+                this.phone = phone;
+                return this;
+            }
+
+            public SmsCertificationRequestBuilder certificationNumber(String certificationNumber) {
+                this.certificationNumber = certificationNumber;
+                return this;
+            }
+
+            public SmsCertificationRequest build() {
+                SmsCertificationRequest request = new SmsCertificationRequest();
+                request.phone = this.phone;
+                request.certificationNumber = this.certificationNumber;
+                return request;
+            }
+        }
     }
 
     @Getter

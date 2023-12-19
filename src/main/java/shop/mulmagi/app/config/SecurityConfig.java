@@ -29,8 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/name","/sms-certification/send","/sms-certification/confirm").permitAll()
-                .antMatchers("/v2/api-docs", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**","/swagger/**").permitAll() //swagger
+                .antMatchers("/name","/sms-certification/send","/sms-certification/confirm", "/v2/api-docs", "/swagger-resources/**", "/webjars/**","/swagger/**","/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
