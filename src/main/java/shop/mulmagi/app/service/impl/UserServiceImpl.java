@@ -312,7 +312,16 @@ public class UserServiceImpl implements UserService {
 
     }
 
-
+    public UserDto.UserMenuResponse loadUserInfo(User user){
+        return UserDto.UserMenuResponse.builder()
+                .level(user.getLevel())
+                .experience(user.getExperience())
+                .userName(user.getName())
+                .profileUrl(user.getProfileUrl())
+                .phoneNumber(user.getPhoneNumber())
+                .point(user.getPoint())
+                .build();
+    }
 }
 
 
