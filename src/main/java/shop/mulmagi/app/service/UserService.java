@@ -37,4 +37,7 @@ public interface UserService {
 
     List<UserDto.RentalHistoryResponse> getRentalHistory(User user, int pageSize, LocalDateTime cursor);
     LocalDateTime getNextCursor(User user, LocalDateTime cursor);
+
+    UserDto.UserMenuResponse loadUserInfo(User user);
+
 }

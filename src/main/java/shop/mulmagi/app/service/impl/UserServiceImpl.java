@@ -311,6 +311,18 @@ public class UserServiceImpl implements UserService {
             throw new CustomExceptions.Exception("refreshToken이 만료되었습니다.");
 
     }
+
+    public UserDto.UserMenuResponse loadUserInfo(User user){
+        return UserDto.UserMenuResponse.builder()
+                .level(user.getLevel())
+                .experience(user.getExperience())
+                .userName(user.getName())
+                .profileUrl(user.getProfileUrl())
+                .phoneNumber(user.getPhoneNumber())
+                .point(user.getPoint())
+                .build();
+    }
+
 }
 
 

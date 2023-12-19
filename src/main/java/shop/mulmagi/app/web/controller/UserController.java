@@ -168,4 +168,21 @@ public class UserController extends BaseController {
             return handleApiException(e, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @ApiOperation(value = "회원 정보를 메뉴화면에 보여주는 API")
+    @GetMapping("/user/menu")
+    public ResponseEntity<?> loadUserInfo(){
+        User user = userService.getCurrentUser();
+        try{
+            UserDto.UserMenuResponse res = userService.loadUserInfo(user);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message : ", ResponseMessage.USER_INFO_LOAD_SUCCESS);
+            response.put("UserInfo : ", res);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (CustomExceptions.Exception e) {
+            return handleApiException(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 }

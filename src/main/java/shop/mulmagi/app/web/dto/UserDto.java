@@ -76,6 +76,17 @@ public class UserDto {
 
     }
 
+    @Getter
+    @Builder
+    public static class UserMenuResponse{
+        private Integer level;
+        private Double experience;
+        private String userName;
+        private String profileUrl;
+        private String phoneNumber;
+        private Integer point;
+    }
+
 
 
 }
