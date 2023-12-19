@@ -4,6 +4,7 @@ import java.util.List;
 
 import shop.mulmagi.app.web.dto.ChatResponseDto;
 import shop.mulmagi.app.web.dto.MessageDto;
+import shop.mulmagi.app.web.dto.MessageRequestDto;
 import shop.mulmagi.app.web.dto.MessageResponseDto;
 
 public interface ChatService {
@@ -12,4 +13,6 @@ public interface ChatService {
 	void createRoom(Long userId);
 	void deleteRoom(Long userId);
 	MessageResponseDto.MessageDto saveMessage(MessageResponseDto.MessageDto messageDto);
+	MessageResponseDto.MessageDto getMessage(MessageRequestDto.TextMessageDto request);
+	MessageResponseDto.MessageDto getMessage(MessageRequestDto.ImgMessageDto request, String imgUrl);
 }

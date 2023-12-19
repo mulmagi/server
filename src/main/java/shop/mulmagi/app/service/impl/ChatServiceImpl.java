@@ -79,10 +79,12 @@ public class ChatServiceImpl implements ChatService {
 		return chatConverter.toResponseMessage(savedMessage);
 	}
 
+	@Override
 	public MessageResponseDto.MessageDto getMessage(MessageRequestDto.TextMessageDto request){
 		return chatConverter.toResponseMessage(request);
 	}
 
+	@Override
 	public MessageResponseDto.MessageDto getMessage(MessageRequestDto.ImgMessageDto request, String imgUrl){
 		return chatConverter.toResponseMessage(request, imgUrl);
 	}

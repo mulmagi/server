@@ -3,12 +3,8 @@ package shop.mulmagi.app.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.amazonaws.services.s3.AmazonS3;
 
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.converter.AnnouncementConverter;
@@ -25,7 +21,7 @@ import shop.mulmagi.app.web.dto.AnnouncementResponseDto;
 public class AnnouncementServiceImpl implements AnnouncementService {
 	private final AnnouncementRepository announcementRepository;
 	private final AnnouncementConverter announcementConverter;
-	private final S3UploadServiceImpl s3UploadService;
+	private final S3UploadService s3UploadService;
 
 	//전체 공지사항 조회
 	@Override
