@@ -66,7 +66,7 @@ public class ChatRoomController extends BaseController {
 
 	@ApiOperation(value = "채팅방 생성 API")
 	@ApiImplicitParam(name = "userId", value = "문의를 시작할 사용자 ID", example = "1")
-	@PostMapping("room/{userId}")
+	@PostMapping("/room/{userId}")
 	public ResponseEntity createChatRoom(@PathVariable Long userId){
 		try {
 			logger.info("Received request: method={}, path={}, description={}", "Post", "/chat/room/{userId}", "채팅방 생성 API");
@@ -81,7 +81,7 @@ public class ChatRoomController extends BaseController {
 
 	@ApiOperation(value = "채팅방 삭제 API")
 	@ApiImplicitParam(name = "userId", value = "문의를 끝낼 사용자 ID", example = "1")
-	@DeleteMapping("room/{userId}")
+	@DeleteMapping("/room/{userId}")
 	public ResponseEntity deleteChatRoom(@PathVariable Long userId){
 		try {
 			logger.info("Received request: method={}, path={}, description={}", "Delete", "/chat/room/{userId}", "채팅방 삭제 API");
