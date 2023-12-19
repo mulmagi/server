@@ -322,6 +322,7 @@ public class UserServiceImpl implements UserService {
                 .point(user.getPoint())
                 .build();
     }
+
 }
 
 
