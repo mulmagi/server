@@ -45,7 +45,7 @@ public class UserController extends BaseController {
     }
     @ApiOperation(value = "SMS 인증 문자 보내는 API")
     @PostMapping("/sms-certification/send")
-    public ResponseEntity<?> sendSms(@ApiParam(value = "문자 전송", example = "{\"number\": \"01012345678\",\"certificationNumber\": \"\"}") @RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
+    public ResponseEntity<?> sendSms(@ApiParam(value = "문자 전송", example = "{\"phone\": \"01012345678\",\"certificationNumber\": \"\"}") @RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
             userService.sendSms(requestDto);
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.SMS_CERT_MESSAGE_SUCCESS), HttpStatus.OK);
@@ -57,7 +57,7 @@ public class UserController extends BaseController {
     //인증번호 확인
     @ApiOperation(value = "인증번호 확인하고 로그인하는 API")
     @PostMapping("/sms-certification/confirm")
-    public ResponseEntity<?> smsConfirm(@ApiParam(value = "인증 번호 확인", example = "{\"number\": \"01012345678\",\"certificationNumber\": \"5678\"}")@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
+    public ResponseEntity<?> smsConfirm(@ApiParam(value = "인증 번호 확인", example = "{\"phone\": \"01012345678\",\"certificationNumber\": \"5678\"}")@RequestBody UserDto.SmsCertificationRequest requestDto) throws Exception {
         try {
             Long userId = userService.verifyAndRegisterUser(requestDto);
             String accessToken = jwtUtil.generateAccessToken(userId);
