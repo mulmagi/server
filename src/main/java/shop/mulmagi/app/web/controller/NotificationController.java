@@ -15,6 +15,7 @@ import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
 import shop.mulmagi.app.repository.UserRepository;
 import shop.mulmagi.app.service.NotificationService;
+import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.NotificationRequestDto;
 import shop.mulmagi.app.web.dto.NotificationResponseDto;
@@ -29,6 +30,7 @@ import java.util.List;
 public class NotificationController extends BaseController {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final UserService userService;
 
     @ApiOperation(value = "전체 알림 내역 불러오기 API")
     @ApiResponse(code = 200, message = "전체 알림 내역 불러오기 성공")
@@ -37,7 +39,7 @@ public class NotificationController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/all", "전체 알림 내역 불러오기 API");
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
 
 //            푸시알림 테스트 코드
 //            notificationService.sendAndSaveNotification(user, NotificationType.OVERDUE, "연체입니다", "컨텐츠입니다");
@@ -57,7 +59,7 @@ public class NotificationController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/rental", "대여/반납/연체 알림 내역 불러오기 API");
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
 
             List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryRental(user);
 
@@ -74,7 +76,7 @@ public class NotificationController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/point", "포인트 관련 알림 내역 불러오기 API");
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
 
             List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryPoint(user);
 
@@ -91,7 +93,7 @@ public class NotificationController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Get", "/api/notification/history/etc", "기타 알림 내역 불러오기 API");
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
 
             List<NotificationResponseDto.NotificationHistoryDto> res = notificationService.getNotificationHistoryEtc(user);
 
@@ -108,7 +110,7 @@ public class NotificationController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Post", "/api/notification/allow", "푸시 알림 허용하기 API");
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
             String firebaseToken = request.getFirebaseToken();
             notificationService.saveFirebaseToken(user, firebaseToken);
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_ALLOW_SUCCESS), HttpStatus.OK);
@@ -126,7 +128,7 @@ public class NotificationController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Post", "/api/notification/deny", "푸시 알림 거부하기 API");
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
             notificationService.deleteFirebaseToken(user);
 
             return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTIFICATION_DENY_SUCCESS), HttpStatus.OK);

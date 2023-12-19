@@ -17,8 +17,8 @@ import shop.mulmagi.app.domain.enums.PaymentMethod;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
-import shop.mulmagi.app.repository.UserRepository;
-import shop.mulmagi.app.service.impl.PaymentServiceImpl;
+import shop.mulmagi.app.service.PaymentService;
+import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.PaymentRequestDto;
 import shop.mulmagi.app.web.dto.PaymentResponseDto;
@@ -38,8 +38,8 @@ public class PaymentController extends BaseController {
     @Value("${iamport.secret}")
     private String restApiSecret;
     private IamportClient iamportClient;
-    private final PaymentServiceImpl paymentService;
-    private final UserRepository userRepository;
+    private final PaymentService paymentService;
+    private final UserService userService;
 
     @PostConstruct
     public void init() {
@@ -64,7 +64,7 @@ public class PaymentController extends BaseController {
 
             logger.info("Received Data: impUid={}, amount={}, method={}", impUid, amount, method);
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
 
             IamportResponse<Payment> irsp = paymentLookup(impUid);
             paymentService.verifyIamportService(irsp, user, amount, method);
@@ -82,7 +82,7 @@ public class PaymentController extends BaseController {
         try {
             logger.info("Received request: method={}, path={}, description={}", "Post", "/api/payment/history", "포인트 충전 내역 불러오기 API");
 
-            User user = userRepository.findByPhoneNumber("01043939869");
+            User user = userService.getCurrentUser();
 
             List<PaymentResponseDto.PaymentHistoryDto> res = paymentService.getPaymentHistory(user);
 
