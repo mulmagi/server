@@ -18,11 +18,7 @@ import shop.mulmagi.app.security.CustomAuthenticationProvider;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-
     private final JwtRequestFilter jwtRequestFilter;
-
-
     private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
