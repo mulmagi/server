@@ -4,9 +4,7 @@ import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -51,6 +49,9 @@ public class PaymentController extends BaseController {
     }
 
     @ApiOperation(value = "결제하기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "결제 성공")
     @PostMapping("/verifyIamport")
     @CrossOrigin("*") // 임시 허용
@@ -76,6 +77,9 @@ public class PaymentController extends BaseController {
     }
 
     @ApiOperation(value = "포인트 충전/사용 내역 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "포인트 충전/사용 내역 불러오기 성공")
     @GetMapping("/payment/history")
     public ResponseEntity paymentHistory() {

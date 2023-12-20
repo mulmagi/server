@@ -2,9 +2,7 @@ package shop.mulmagi.app.web.controller;
 
 
 import com.google.firebase.auth.FirebaseAuthException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +31,9 @@ public class NotificationController extends BaseController {
     private final UserService userService;
 
     @ApiOperation(value = "전체 알림 내역 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "전체 알림 내역 불러오기 성공")
     @GetMapping("/notification/history/all")
     public ResponseEntity notificationHistoryAll() {
@@ -53,6 +54,9 @@ public class NotificationController extends BaseController {
     }
 
     @ApiOperation(value = "대여/반납/연체 알림 내역 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "대여/반납/연체 알림 내역 불러오기 성공")
     @GetMapping("/notification/history/rental")
     public ResponseEntity notificationHistoryRental() {
@@ -70,6 +74,9 @@ public class NotificationController extends BaseController {
     }
 
     @ApiOperation(value = "포인트 관련 알림 내역 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "포인트 관련 알림 내역 불러오기 성공")
     @GetMapping("/notification/history/point")
     public ResponseEntity notificationHistoryPoint() {
@@ -87,6 +94,9 @@ public class NotificationController extends BaseController {
     }
 
     @ApiOperation(value = "기타 알림 내역 불러오기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "기타 알림 내역 불러오기 성공")
     @GetMapping("/notification/history/etc")
     public ResponseEntity notificationHistoryEtc() {
@@ -104,6 +114,9 @@ public class NotificationController extends BaseController {
     }
 
     @ApiOperation(value = "푸시 알림 허용하기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "푸시 알림 허용하기 성공")
     @PostMapping("/notification/allow")
     public ResponseEntity notificationAllow(@RequestBody NotificationRequestDto.NotificationAllowRequestDto request) {
@@ -122,6 +135,9 @@ public class NotificationController extends BaseController {
     }
 
     @ApiOperation(value = "푸시 알림 거부하기 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @ApiResponse(code = 200, message = "푸시 알림 거부하기 성공")
     @PatchMapping("/notification/deny")
     public ResponseEntity notificationDeny() {
