@@ -1,5 +1,6 @@
 package shop.mulmagi.app.web.controller;
 
+import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+
 import lombok.RequiredArgsConstructor;
 import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.exception.CustomExceptions;
@@ -29,6 +31,9 @@ public class ReportController extends BaseController {
 	private final UserService userService;
 
 	@ApiOperation(value = "우산 고장신고 접수 API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@ApiImplicitParam(name = "id", value = "고장신고 받은 대여(rental) ID", example = "1")
 	@PutMapping("/receive/{id}")
 	public ResponseEntity receiveReport(@PathVariable("id") Long id){
@@ -46,6 +51,9 @@ public class ReportController extends BaseController {
 	}
 
 	@ApiOperation(value = "우산 고장신고 해결처리 API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@ApiImplicitParam(name = "id", value = "고장신고 해제할 대여(rental) ID", example = "1")
 	@PutMapping("/solve/{id}")
 	public ResponseEntity solveReport(@PathVariable("id") Long id){

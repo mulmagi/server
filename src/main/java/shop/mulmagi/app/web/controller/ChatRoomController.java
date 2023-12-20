@@ -2,6 +2,7 @@ package shop.mulmagi.app.web.controller;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,6 +37,9 @@ public class ChatRoomController extends BaseController {
 	private final UserService userService;
 
 	@ApiOperation(value = "모든 채팅방 불러오기 API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@GetMapping("/rooms")
 	public ResponseEntity getAllChatRooms(){
 		try {
@@ -50,6 +54,9 @@ public class ChatRoomController extends BaseController {
 	}
 
 	@ApiOperation(value = "특정 채팅방 메시지 불러오기 API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@ApiImplicitParam(name = "userId", value = "채팅방(에 속한 사용자) ID", example = "1")
 	@GetMapping("/room/{userId}")
 	public ResponseEntity getChatMessages(@PathVariable Long userId){
@@ -65,6 +72,9 @@ public class ChatRoomController extends BaseController {
 	}
 
 	@ApiOperation(value = "채팅방 생성 API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@ApiImplicitParam(name = "userId", value = "문의를 시작할 사용자 ID", example = "1")
 	@PostMapping("/room/{userId}")
 	public ResponseEntity createChatRoom(@PathVariable Long userId){
@@ -80,6 +90,9 @@ public class ChatRoomController extends BaseController {
 	}
 
 	@ApiOperation(value = "채팅방 삭제 API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@ApiImplicitParam(name = "userId", value = "문의를 끝낼 사용자 ID", example = "1")
 	@DeleteMapping("/room/{userId}")
 	public ResponseEntity deleteChatRoom(@PathVariable Long userId){

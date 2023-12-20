@@ -4,6 +4,9 @@ import static shop.mulmagi.app.domain.enums.MessageType.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,6 +47,9 @@ public class MessageController extends BaseController {
 	}
 
 	@ApiOperation(value = "POST로 채팅보내기 test API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@PostMapping("/chat/message/test")
 	public ResponseEntity sendTextMessageTest(@ModelAttribute MessageRequestDto.TextMessageDto request) {
 		try {
@@ -62,6 +68,9 @@ public class MessageController extends BaseController {
 
 	//이미지 채팅 전송
 	@ApiOperation(value = "이미지 메시지 전송하기 API")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+	})
 	@PostMapping("/chat/message")
 	public ResponseEntity sendImgMessage(@ModelAttribute MessageRequestDto.ImgMessageDto request) {
 		try {
