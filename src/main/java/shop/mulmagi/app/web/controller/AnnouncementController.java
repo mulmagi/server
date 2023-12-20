@@ -2,7 +2,6 @@ package shop.mulmagi.app.web.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
@@ -14,20 +13,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import shop.mulmagi.app.domain.Announcement;
+import shop.mulmagi.app.domain.User;
 import shop.mulmagi.app.domain.enums.AnnouncementCategory;
 import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
-import shop.mulmagi.app.repository.AnnouncementRepository;
+import shop.mulmagi.app.service.AnnouncementService;
 import shop.mulmagi.app.service.S3UploadService;
-import shop.mulmagi.app.service.impl.AnnouncementServiceImpl;
-import shop.mulmagi.app.service.impl.S3UploadServiceImpl;
+import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.AnnouncementRequestDto;
 import shop.mulmagi.app.web.dto.AnnouncementResponseDto;
@@ -39,9 +36,9 @@ import shop.mulmagi.app.web.dto.base.DefaultRes;
 @RequestMapping("/api/announcement")
 public class AnnouncementController extends BaseController {
 
-	private final AnnouncementRepository announcementRepository;
-	private final AnnouncementServiceImpl announcementService;
-	private final S3UploadServiceImpl s3UploadService;
+	private final AnnouncementService announcementService;
+	private final S3UploadService s3UploadService;
+	private final UserService userService;
 
 	@ApiOperation(value = "공지사항 불러오기 API")
 	@ApiImplicitParams({
@@ -56,7 +53,7 @@ public class AnnouncementController extends BaseController {
 			List<AnnouncementResponseDto.AnnouncementPageDto> res = announcementService.getAnnouncements();
 
 			return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_READ_SUCCESS, res), HttpStatus.OK);
-		} catch(Exception e) {
+		} catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -75,7 +72,7 @@ public class AnnouncementController extends BaseController {
 			AnnouncementResponseDto.AnnouncementDetailDto res = announcementService.getAnnouncementDetail(id);
 
 			return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_DETAIL_READ_SUCCESS, res), HttpStatus.OK);
-		} catch(Exception e) {
+		} catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -95,7 +92,7 @@ public class AnnouncementController extends BaseController {
 			List<AnnouncementResponseDto.AnnouncementPageDto> res = announcementService.getAnnouncementCategory(category);
 
 			return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_CATEGORY_READ_SUCCESS, res), HttpStatus.OK);
-		} catch(Exception e) {
+		}  catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -109,6 +106,8 @@ public class AnnouncementController extends BaseController {
 	public ResponseEntity addAnnouncement(@ModelAttribute AnnouncementRequestDto.UploadDto request) throws IOException {
 		logger.info("Received request: method={}, path={}, description={}", "Post", "/api/announcement/add", "공지사항 업로드");
 		try{
+			User user = userService.getCurrentUser();
+
 			logger.info("=========================================================================");
 			logger.info("[title] " + request.getTitle());
 			logger.info("[category] " + request.getCategory());
@@ -143,8 +142,6 @@ public class AnnouncementController extends BaseController {
 			return new ResponseEntity( DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_UPLOAD_SUCCESS), HttpStatus.OK);
 		} catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -157,10 +154,11 @@ public class AnnouncementController extends BaseController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity deleteAnnouncement(@PathVariable Long id) {
 		try {
+			User user = userService.getCurrentUser();
 			announcementService.deleteAnnouncement(id);
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_DELETE_SUCCESS), HttpStatus.OK);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (CustomExceptions.Exception e) {
+			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -173,6 +171,8 @@ public class AnnouncementController extends BaseController {
 	@PutMapping("/{id}")
 	public ResponseEntity updateAnnouncement(@PathVariable Long id, @ModelAttribute AnnouncementRequestDto.UpdateDto request) {
 		try {
+			User user = userService.getCurrentUser();
+
 			String title = request.getTitle();
 			String content = request.getContent();
 			AnnouncementCategory category = request.getCategory();
@@ -189,8 +189,8 @@ public class AnnouncementController extends BaseController {
 			announcementService.updateAnnouncement(id, title, category, content, imgUrl, fileUrl);
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOTICE_UPDATE_SUCCESS), HttpStatus.OK);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		}  catch (CustomExceptions.Exception e) {
+			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
 }

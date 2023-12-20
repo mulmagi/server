@@ -16,12 +16,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import shop.mulmagi.app.domain.Message;
 import shop.mulmagi.app.domain.User;
+import shop.mulmagi.app.exception.CustomExceptions;
 import shop.mulmagi.app.exception.ResponseMessage;
 import shop.mulmagi.app.exception.StatusCode;
-import shop.mulmagi.app.repository.UserRepository;
-import shop.mulmagi.app.service.impl.ChatServiceImpl;
+import shop.mulmagi.app.service.ChatService;
+import shop.mulmagi.app.service.UserService;
 import shop.mulmagi.app.web.controller.base.BaseController;
 import shop.mulmagi.app.web.dto.ChatResponseDto;
 import shop.mulmagi.app.web.dto.MessageDto;
@@ -33,8 +33,8 @@ import shop.mulmagi.app.web.dto.base.DefaultRes;
 @RequestMapping("/chat")
 public class ChatRoomController extends BaseController {
 
-	private final UserRepository userRepository;
-	private final ChatServiceImpl chatService;
+	private final ChatService chatService;
+	private final UserService userService;
 
 	@ApiOperation(value = "모든 채팅방 불러오기 API")
 	@ApiImplicitParams({
@@ -44,11 +44,11 @@ public class ChatRoomController extends BaseController {
 	public ResponseEntity getAllChatRooms(){
 		try {
 			logger.info("Received request: method={}, path={}, description={}", "Get", "/chat/rooms", "모든 채팅방 불러오기 API");
-			
+			User user = userService.getCurrentUser();
 			List<ChatResponseDto.chatRoomDto> res = chatService.findAllChatRooms();
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_READ_SUCCESS, res), HttpStatus.OK);
-		} catch (Exception e) {
+		} catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -62,11 +62,11 @@ public class ChatRoomController extends BaseController {
 	public ResponseEntity getChatMessages(@PathVariable Long userId){
 		try {
 			logger.info("Received request: method={}, path={}, description={}", "Get", "/chat/room/{userId}", "특정 채팅방 메시지 불러오기 API");
-
-			List<MessageDto> res = chatService.getMessages(userId); //userId == roomId
+			User user = userService.getCurrentUser();
+			List<MessageDto> res = chatService.getMessages(user.getId()); //userId == roomId
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.MESSAGE_READ_SUCCESS, res), HttpStatus.OK);
-		} catch (Exception e) {
+		} catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -76,15 +76,15 @@ public class ChatRoomController extends BaseController {
 			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
 	})
 	@ApiImplicitParam(name = "userId", value = "문의를 시작할 사용자 ID", example = "1")
-	@PostMapping("room/{userId}")
+	@PostMapping("/room/{userId}")
 	public ResponseEntity createChatRoom(@PathVariable Long userId){
 		try {
 			logger.info("Received request: method={}, path={}, description={}", "Post", "/chat/room/{userId}", "채팅방 생성 API");
-
-			chatService.createRoom(userId);
+			User user = userService.getCurrentUser();
+			chatService.createRoom(user.getId());
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_CREAT_SUCCESS), HttpStatus.OK);
-		} catch (Exception e) {
+		} catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -94,15 +94,15 @@ public class ChatRoomController extends BaseController {
 			@ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
 	})
 	@ApiImplicitParam(name = "userId", value = "문의를 끝낼 사용자 ID", example = "1")
-	@DeleteMapping("room/{userId}")
+	@DeleteMapping("/room/{userId}")
 	public ResponseEntity deleteChatRoom(@PathVariable Long userId){
 		try {
 			logger.info("Received request: method={}, path={}, description={}", "Delete", "/chat/room/{userId}", "채팅방 삭제 API");
-
-			chatService.deleteRoom(userId);
+			User user = userService.getCurrentUser();
+			chatService.deleteRoom(user.getId());
 
 			return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.CHATROOM_DELETE_SUCCESS), HttpStatus.OK);
-		} catch (Exception e) {
+		} catch (CustomExceptions.Exception e) {
 			return handleApiException(e, HttpStatus.BAD_REQUEST);
 		}
 	}
