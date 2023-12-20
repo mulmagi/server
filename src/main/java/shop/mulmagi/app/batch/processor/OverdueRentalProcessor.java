@@ -26,12 +26,12 @@ public class OverdueRentalProcessor implements ItemProcessor<Rental, Rental> {
             Boolean isReturn = rental.updateOverdueAmount(rentalPeriod(rental));
 
             if (isReturn){
-                notificationService.sendAndSaveNotification(rental.getUser(), NotificationType.OVERDUE, "보증금을 모두 소진하여 자동 반납 처리합니다.", "");
+                //notificationService.sendAndSaveNotification(rental.getUser(), NotificationType.OVERDUE, "보증금을 모두 소진하여 자동 반납 처리합니다.", "");
             }else {
                 Integer beforeDeposit = 9000 - (rentalPeriod-8);
                 Integer afterDeposit = 9000 - (rentalPeriod-7);
                 String notificationBody = "보증금 | " + beforeDeposit + " 포인트 > " + afterDeposit + " 포인트";
-                notificationService.sendAndSaveNotification(rental.getUser(), NotificationType.OVERDUE, "우산이 연체되어 보증금을 차감합니다. 가까운 물막이에서 반납 부탁드립니다.", notificationBody);
+                //notificationService.sendAndSaveNotification(rental.getUser(), NotificationType.OVERDUE, "우산이 연체되어 보증금을 차감합니다. 가까운 물막이에서 반납 부탁드립니다.", notificationBody);
             }
         }
 

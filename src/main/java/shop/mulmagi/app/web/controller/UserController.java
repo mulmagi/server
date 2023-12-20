@@ -1,5 +1,7 @@
 package shop.mulmagi.app.web.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -78,6 +80,9 @@ public class UserController extends BaseController {
         }
     }
     @ApiOperation(value = "알림 설정 허용하는 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @PutMapping("/notifications")
     public ResponseEntity<?> updateNotificationSetting(@RequestParam @ApiParam(value="enableNotifications", example = "true")boolean enableNotifications) throws Exception {
         try {
@@ -115,6 +120,9 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation(value = "회원 로그아웃하는 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @PostMapping("/logout")
     public ResponseEntity<String> logout()throws Exception {
         try {
@@ -126,6 +134,9 @@ public class UserController extends BaseController {
         }
     }
     @ApiOperation(value = "회원 탈퇴하는 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @PutMapping("/withdraw")
     public ResponseEntity<?> withdrawUserByPhoneNumber(){
         try {
@@ -137,6 +148,9 @@ public class UserController extends BaseController {
         }
     }
     @ApiOperation(value = "회원 프로필 이미지 변경하는 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @PutMapping("/profile-image")
     public ResponseEntity<?> setUserProfileImage(@RequestParam @ApiParam(value="profileImageUrl", example = "https://url.kr/liwqn2")String profileImageUrl) {
         try {
@@ -148,6 +162,9 @@ public class UserController extends BaseController {
         }
     }
     @ApiOperation(value = "회원 대여 기록 가져오는 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @GetMapping("/user/rental-history")
     public ResponseEntity<?> getUserRentals(@RequestParam(value = "cursor", required = false)
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @ApiParam(value="cursor",example = "2023-12-18T06:23:27")LocalDateTime cursor) {
@@ -170,6 +187,9 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation(value = "회원 정보를 메뉴화면에 보여주는 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "인증 토큰", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer accessToken")
+    })
     @GetMapping("/user/menu")
     public ResponseEntity<?> loadUserInfo(){
         User user = userService.getCurrentUser();
